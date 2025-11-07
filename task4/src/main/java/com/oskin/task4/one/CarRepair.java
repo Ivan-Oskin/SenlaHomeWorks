@@ -38,18 +38,18 @@ public class CarRepair {
 
     //метод для сортировки
 
-    private void sortOrders(ArrayList<Order> list, String sortType) {
+    private void sortOrders(ArrayList<Order> list, SortType sortType) {
         switch (sortType) {
-            case "create":
+            case CREATE:
                 list.sort(Comparator.comparing(Order::getTimeCreate));
                 break;
-            case "start":
+            case START:
                 list.sort(Comparator.comparing(Order::getTimeStart));
                 break;
-            case "complete":
+            case COMPLETE:
                 list.sort(Comparator.comparing(Order::getTimeComplete));
                 break;
-            default:
+            case COST:
                 list.sort(Comparator.comparing(Order::getCost));
                 break;
         }
@@ -166,7 +166,7 @@ public class CarRepair {
         }
         LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
-        ArrayList<Order> ordersByTime = getOrdersInTime("active", start, finish, "");
+        ArrayList<Order> ordersByTime = getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortType.START);
         for (int i = 0; i < ordersByTime.size(); i++) {
             if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
                 delete(ordersByTime.get(i).getPlace().getName(), newList);
@@ -200,7 +200,7 @@ public class CarRepair {
     }
 
     //список заказов
-    public ArrayList<Order> getListOfOrders(String sortType) {
+    public ArrayList<Order> getListOfOrders(SortType sortType) {
         ArrayList<Order> newList = new ArrayList<>();
         for (int i = 0; i < orders.size(); i++) {
             newList.add((Order) orders.get(i));
@@ -211,19 +211,15 @@ public class CarRepair {
 
     //Список текущих выполняемых заказов
 
-    public ArrayList<Order> getListOfActiveOrders(String sortType) {
+    public ArrayList<Order> getListOfActiveOrders(SortType sortType) {
         ArrayList<Order> newList = new ArrayList<>();
         for (int i = 0; i < orders.size(); i++) {
             Order order = (Order) orders.get(i);
-            if (order.getStatus().equals("active")) {
+            if (order.getStatus().equals(StatusOrder.ACTIVE)) {
                 newList.add(order);
             }
         }
-        if (sortType.equals("start")) {
-            sortOrders(newList, "");
-        } else {
-            sortOrders(newList, sortType);
-        }
+        sortOrders(newList, sortType);
         return newList;
     }
 
@@ -260,7 +256,7 @@ public class CarRepair {
 
     //Заказы за промежуток времени
 
-    public ArrayList<Order> getOrdersInTime(String status, LocalDateTime startDate, LocalDateTime endDate, String sortType) {
+    public ArrayList<Order> getOrdersInTime(StatusOrder status, LocalDateTime startDate, LocalDateTime endDate, SortType sortType) {
         ArrayList<Order> newList = new ArrayList<>();
         for (int i = 0; i < orders.size(); i++) {
             Order order = (Order) orders.get(i);
@@ -268,11 +264,7 @@ public class CarRepair {
                 newList.add(order);
             }
         }
-        if (sortType.equals("start")) {
-            sortOrders(newList, "");
-        } else {
-            sortOrders(newList, sortType);
-        }
+        sortOrders(newList, sortType);
         return newList;
     }
 
@@ -284,7 +276,7 @@ public class CarRepair {
         int countMaster = masters.size();
         LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
-        ArrayList<Order> ordersByTime = getOrdersInTime("active", start, finish, "");
+        ArrayList<Order> ordersByTime = getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortType.START);
         for (int i = 0; i < ordersByTime.size(); i++) {
             if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
                 countMaster -= getMastersByOrder(ordersByTime.get(i).getName()).size();

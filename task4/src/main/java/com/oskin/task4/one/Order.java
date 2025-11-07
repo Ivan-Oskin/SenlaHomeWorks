@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 
 public class Order implements Nameable {
     private String name;
-
-    private String status;
+    private StatusOrder status;
     private LocalDateTime timeCreate;
     private LocalDateTime timeStart;
     private LocalDateTime timeComplete;
@@ -14,18 +13,18 @@ public class Order implements Nameable {
 
 
     void close() {
-        this.status = "close";
+        this.status = StatusOrder.CLOSE;
     }
 
     void cancel() {
-        this.status = "cancel";
+        this.status = StatusOrder.CANCEL;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public String getStatus() {
+    public StatusOrder getStatus() {
         return this.status;
     }
 
@@ -56,7 +55,7 @@ public class Order implements Nameable {
         this.timeCreate = timeCreate;
         this.timeStart = timeStart;
         this.timeComplete = timeComplete;
-        this.status = "active";
+        this.status = StatusOrder.ACTIVE;
         this.place = place;
     }
 

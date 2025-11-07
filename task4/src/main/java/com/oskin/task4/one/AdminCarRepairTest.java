@@ -67,10 +67,10 @@ public class AdminCarRepairTest {
         printList(listFreePlace);
 
         //список заказов
-        ArrayList<Order> listOrderCreate = admin.getListOfOrders("create");
-        ArrayList<Order> listOrderStart = admin.getListOfOrders("start");
-        ArrayList<Order> listOrderComplete = admin.getListOfOrders("complete");
-        ArrayList<Order> listOrderCost = admin.getListOfOrders("cost");
+        ArrayList<Order> listOrderCreate = admin.getListOfOrders(SortType.CREATE);
+        ArrayList<Order> listOrderStart = admin.getListOfOrders(SortType.START);
+        ArrayList<Order> listOrderComplete = admin.getListOfOrders(SortType.COMPLETE);
+        ArrayList<Order> listOrderCost = admin.getListOfOrders(SortType.COST);
         System.out.println("Списки заказов: ");
         printList(listOrderCreate);
         printList(listOrderStart);
@@ -96,9 +96,9 @@ public class AdminCarRepairTest {
 
 
         //список аткивных заказов
-        ArrayList<Order> listActiveCreate = admin.getListOfActiveOrders("create");
-        ArrayList<Order> listActiveComplete = admin.getListOfActiveOrders("complete");
-        ArrayList<Order> listActiveCost = admin.getListOfActiveOrders("cort");
+        ArrayList<Order> listActiveCreate = admin.getListOfActiveOrders(SortType.CREATE);
+        ArrayList<Order> listActiveComplete = admin.getListOfActiveOrders(SortType.COMPLETE);
+        ArrayList<Order> listActiveCost = admin.getListOfActiveOrders(SortType.COST);
         System.out.println("Списки активных заказов: ");
         printList(listActiveCreate);
         printList(listActiveComplete);
@@ -116,8 +116,8 @@ public class AdminCarRepairTest {
 
         //Заказы за промежуток времени
         System.out.println("Заказы за промежуток времени: ");
-        ArrayList<Order> listOrdersForTime1 = admin.getOrdersInTime("cancel", createTime1, completeTime3, "");
-        ArrayList<Order> listOrdersForTime2 = admin.getOrdersInTime("active", createTime2, completeTime3, "complete");
+        ArrayList<Order> listOrdersForTime1 = admin.getOrdersInTime(StatusOrder.CANCEL, createTime1, completeTime3, SortType.COST);
+        ArrayList<Order> listOrdersForTime2 = admin.getOrdersInTime(StatusOrder.ACTIVE, createTime2, completeTime3, SortType.COMPLETE);
         printList(listOrdersForTime1);
         printList(listOrdersForTime2);
 
@@ -137,6 +137,6 @@ public class AdminCarRepairTest {
         System.out.println("End: " + completeTime1.getDayOfMonth() + "." + completeTime1.getHour());
         LocalDateTime foundFreeTime = admin.getNearestDate(startTime1);
         System.out.println("Ближайшее свободное время: " + foundFreeTime.getDayOfMonth() + "." + foundFreeTime.getHour());
-        
+
     }
 }
