@@ -1,15 +1,14 @@
-package com.oskin.task5;
-
+package com.oskin.task5.Controller;
+import com.oskin.task5.Model.*;
+import com.oskin.task5.View.CarRepairView;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class CarRepairController {
-    private CarRepair carRepair = CarRepair.getInstance();
     Scanner scanner = new Scanner(System.in);
     private static CarRepairController instance;
     private CarRepairController() {
     }
-
     public static CarRepairController getInstance() {
         if (instance == null) {
             instance = new CarRepairController();
@@ -39,12 +38,10 @@ public class CarRepairController {
         if(x == 1) return true;
         else return false;
     }
-
     public String inputName(String about){
         CarRepairView.getInstance().infAboutInput(about);
         return scanner.nextLine();
     }
-
     public LocalDateTime createTime() {
 
         CarRepairView.getInstance().infAboutInput("год");
@@ -85,7 +82,7 @@ public class CarRepairController {
             }
             System.out.println("Неправильный ввод");
         }
-        LocalDateTime time = LocalDateTime.of(year, month, day, month, 0);
+        LocalDateTime time = LocalDateTime.of(year, month, day, hour, 0);
         return time;
     }
 
@@ -107,13 +104,13 @@ public class CarRepairController {
 
     public void addMaster() {
         String name = inputName("имя");
-        carRepair.addMaster(name);
+        CarRepairMaster.getInstance().addMaster(name);
         CarRepairView.getInstance().infAboutAdd(name);
     }
 
     public void addPlace() {
         String name = inputName("имя");
-        carRepair.addPlace(name);
+        CarRepairGarage.getInstance().addPlace(name);
         CarRepairView.getInstance().infAboutAdd(name);
     }
 
@@ -123,7 +120,7 @@ public class CarRepairController {
         int cost = scanner.nextInt();
         scanner.nextLine();
         String namePlace = inputName("наименование места");
-        Place place = carRepair.findPlace(namePlace);
+        Place place = CarRepairGarage.getInstance().findPlace(namePlace);
         if (place == null) {
             System.out.println("Наименование места не найдено");
             return;
@@ -133,13 +130,13 @@ public class CarRepairController {
         CarRepairView.getInstance().infAboutInput("Конец выполнения заказа");
         LocalDateTime timeComplete = createTime();
 
-        carRepair.addOrder(name, cost, place, LocalDateTime.now(), timeStart, timeComplete);
+        CarRepairOrders.getInstance().addOrder(name, cost, place, LocalDateTime.now().withMinute(0), timeStart, timeComplete);
 
     }
 
     public void cancelOrder() {
         String name = inputName("имя");
-        boolean inf = carRepair.cancelOrder(name);
+        boolean inf = CarRepairOrders.getInstance().cancelOrder(name);
         if (inf) {
             System.out.println(name + " отменен");
         } else {
@@ -149,7 +146,7 @@ public class CarRepairController {
 
     public void completeOrder() {
         String name = inputName("имя");
-        boolean inf = carRepair.completeOrder(name);
+        boolean inf = CarRepairOrders.getInstance().completeOrder(name);
         if (inf) {
             System.out.println(name + " закрыт");
         } else {
@@ -165,9 +162,9 @@ public class CarRepairController {
         CarRepairView.getInstance().infAboutInput("на сколько часов сместить заказ");
         int hour = scanner.nextInt();
         scanner.nextLine();
-        boolean inf = carRepair.offsetDay(name, day);
+        boolean inf = CarRepairOrders.getInstance().offsetDay(name, day);
         if (inf) {
-            carRepair.offsetHour(name, hour);
+            CarRepairOrders.getInstance().offsetHour(name, hour);
             System.out.println("Время заказа "+ name + " смещено");
         } else {
             CarRepairView.getInstance().NoFound();
@@ -176,25 +173,25 @@ public class CarRepairController {
 
     public void deleteMaster() {
         String name = inputName("имя");
-        boolean inf = carRepair.deleteMaster(name);
+        boolean inf = CarRepairMaster.getInstance().deleteMaster(name);
         CarRepairView.getInstance().infAboutDelete(name, inf);
     }
     public void deleteOrder() {
         String name = inputName("имя");
-        boolean inf = carRepair.deleteOrder(name);
+        boolean inf = CarRepairOrders.getInstance().deleteOrder(name);
         CarRepairView.getInstance().infAboutDelete(name, inf);
     }
     public void deletePlace() {
         String name = inputName("имя");
-        boolean inf = carRepair.deletePlace(name);
+        boolean inf = CarRepairGarage.getInstance().deletePlace(name);
         CarRepairView.getInstance().infAboutDelete(name, inf);
     }
 
     public void setOrderToMaster(){
         String nameMaster = inputName("имя мастера");
         String nameOrder = inputName("название заказа");
-        boolean inf = carRepair.setOrderToMaster(nameMaster, nameOrder);
+        boolean inf = CarRepairMaster.getInstance().setOrderToMaster(nameMaster, nameOrder);
         if(inf) System.out.println("Заказ " + nameOrder +" добавлен к мастеру " + nameMaster);
+        else System.out.print("не найдено");
     }
-
 }

@@ -1,4 +1,4 @@
-package com.oskin.task5;
+package com.oskin.task5.Model;
 
 public interface Nameable {
 

@@ -1,4 +1,4 @@
-package com.oskin.task5;
+package com.oskin.task5.Model;
 
 import java.util.ArrayList;
 
@@ -35,4 +35,6 @@ public class Master implements Nameable {
     public int getCountOfOrders() {
         return namesOfOrder.size();
     }
+
+
 }

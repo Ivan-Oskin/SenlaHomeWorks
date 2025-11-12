@@ -1,15 +1,15 @@
-package com.oskin.task5;
+package com.oskin.task5.View;
+
+import com.oskin.task5.Controller.CarRepairController;
+import com.oskin.task5.Model.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class CarRepairView {
 
-    private CarRepair carRepair = CarRepair.getInstance();
     private static CarRepairView instance;
     private CarRepairView() {
-
     }
 
     public static CarRepairView getInstance() {
@@ -44,7 +44,7 @@ public class CarRepairView {
             System.out.println("Стоимость - "+order.getCost());
             System.out.println("Статус - "+order.getStatus());
             System.out.println("Место выполнения - "+order.getPlace().getName());
-            System.out.println("Время создания - "+order.getTimeStart());
+            System.out.println("Время создания - "+order.getTimeCreate());
             System.out.println("Время начала выполнения - "+order.getTimeStart());
             System.out.println("Время окночания выполнения - "+order.getTimeComplete());
             System.out.println("\n");
@@ -61,28 +61,28 @@ public class CarRepairView {
     }
 
     public void getListOrders(){
-        printOrders(carRepair.getListOfOrders(CarRepairController.getInstance().whatSortType()));
+        printOrders(CarRepairOrders.getInstance().getListOfOrders(CarRepairController.getInstance().whatSortType()));
     }
     public void getFreePlace(){
         LocalDateTime time = CarRepairController.getInstance().createTime();
-        printList(carRepair.getFreePlace(time));
+        printList(CarRepairGarage.getInstance().getFreePlace(time));
     }
 
     public void getMasters(){
-        printList(carRepair.getListOfMasters(CarRepairController.getInstance().SortAlphabet()));
+        printList(CarRepairMaster.getInstance().getListOfMasters(CarRepairController.getInstance().SortAlphabet()));
     }
 
     public void getCurrentOrders(){
-        printOrders(carRepair.getListOfActiveOrders(CarRepairController.getInstance().whatSortType()));
+        printOrders(CarRepairOrders.getInstance().getListOfActiveOrders(CarRepairController.getInstance().whatSortType()));
     }
 
     public void getOrderByMaster(){
         String name = CarRepairController.getInstance().inputName("Имя мастера");
-        printOrders(carRepair.getOrderByMaster(name));
+        printOrders(CarRepairOrders.getInstance().getOrderByMaster(name));
     }
     public void getMastersByOrder(){
         String name = CarRepairController.getInstance().inputName("Имя заказа");
-        printList(carRepair.getMastersByOrder(name));
+        printList(CarRepairMaster.getInstance().getMastersByOrder(name));
     }
     public void getOrdersInTime(){
         System.out.println("Введите начальное время");
@@ -91,15 +91,16 @@ public class CarRepairView {
         LocalDateTime endTime = CarRepairController.getInstance().createTime();
         StatusOrder status = CarRepairController.getInstance().whatStatus();
         SortType sortType = CarRepairController.getInstance().whatSortType();
-        printOrders(carRepair.getOrdersInTime(status, startTime, endTime, sortType));
+        printOrders(CarRepairOrders.getInstance().getOrdersInTime(status, startTime, endTime, sortType));
     }
     public void getCountInTime(){
         LocalDateTime time = CarRepairController.getInstance().createTime();
-        System.out.println("Количество свободных мест - "+carRepair.getCountFreeTime(time));
+        System.out.println("Количество свободных мест - "+CarRepair.getCountFreeTime(time));
     }
     public void getNearestDate(){
         LocalDateTime time = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-        System.out.println("Ближайщее свободное время: "+carRepair.getNearestDate(time));
+        System.out.println("Ближайщее свободное время: "+CarRepair.getNearestDate(time));
     }
+
 
 }
