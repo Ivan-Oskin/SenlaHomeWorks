@@ -1,6 +1,5 @@
 package com.oskin.task5;
 import com.oskin.task5.View.MainMenu;
-import java.util.Scanner;
 
 public class CarRepairApp {
     private static CarRepairApp instance;
