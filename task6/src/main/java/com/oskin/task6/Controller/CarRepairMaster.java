@@ -1,0 +1,124 @@
+package com.oskin.task6.Controller;
+
+import com.oskin.task6.Model.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+
+public class CarRepairMaster {
+    private static CarRepairMaster instance;
+
+    private CarRepairMaster() {
+
+    }
+
+    public static CarRepairMaster getInstance() {
+        if (instance == null) {
+            instance = new CarRepairMaster();
+        }
+        return instance;
+    }
+
+    private ArrayList<Master> masters = new ArrayList<>();
+
+    public void addMaster(int id, String name) {
+        Master master = new Master(id, name);
+        masters.add(master);
+    }
+
+    public void addMaster(int id, String name, ArrayList<String> listOfOrder) {
+        Master master = new Master(id, name, listOfOrder);
+        masters.add(master);
+    }
+
+    public boolean deleteMaster(String name) {
+        return CarRepair.delete(name, masters);
+    }
+
+    public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
+        switch (sortType) {
+            case ID:
+                masters.sort(Comparator.comparing(Master::getId));
+                break;
+            case ALPHABET:
+                masters.sort(Comparator.comparing(Master::getName));
+                break;
+            case BUSYNESS:
+                masters.sort(Comparator.comparing(Master::getCountOfOrders));
+                break;
+        }
+        return masters;
+    }
+
+    public boolean setOrderToMaster(String nameMaster, String nameOrder) {
+        ArrayList<Order> listOfOrders = CarRepairOrders.getInstance().getListOfOrders(SortTypeOrder.ID);
+        int i = CarRepair.findByName(nameMaster, masters);
+        int j = CarRepair.findByName(nameOrder, listOfOrders);
+        if (i >= 0 && j >= 0) {
+            Master master = masters.get(i);
+            master.addOrder(listOfOrders.get(j));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public ArrayList<Master> getMastersByOrder(String name) {
+        ArrayList<Master> newList = new ArrayList<>();
+        for (int i = 0; i < masters.size(); i++) {
+            Master master = masters.get(i);
+            if (master.getNamesOfOrder().contains(name)) {
+                newList.add(master);
+            }
+        }
+        return newList;
+    }
+
+    public void exportMaster() {
+        ArrayList<String> dataList = new ArrayList<>(masters.size() + 1);
+        dataList.add("ID,NAME,ORDERS\n");
+        for (Master master : getListOfMasters(SortTypeMaster.ID)) {
+            int id = master.getId();
+            String name = master.getName();
+            String orders = String.join(";", master.getNamesOfOrder());
+            if (orders.isEmpty()) orders = "none";
+            dataList.add(id + "," + name + "," + orders + "\n");
+        }
+        CarRepair.exportData(dataList, FileName.MASTER.getNAME());
+    }
+
+    public void importMaster() {
+        ArrayList<ArrayList<String>> data = CarRepair.importData(FileName.MASTER.getNAME());
+        if (!data.isEmpty()) {
+            for (ArrayList<String> line : data) {
+                if (line.size() != 3) {
+                    System.out.println("Неправильная таблица данных");
+                    return;
+                } else {
+                    try {
+                        int id = Integer.parseInt(line.get(0));
+                        String name = line.get(1);
+                        ArrayList<String> nameOrders = new ArrayList<>();
+                        if (!line.get(2).equals("none")) {
+                            nameOrders = new ArrayList<>(Arrays.asList(line.get(2).split(";")));
+                        }
+                        int findMaster = CarRepair.findById(id, masters);
+                        if (findMaster > -1) {
+                            if (!(masters.get(findMaster).getName().equals(name) && masters.get(findMaster).getNamesOfOrder().equals(nameOrders))) {
+                                masters.set(findMaster, new Master(id, name, nameOrders));
+                            } else {
+                                continue;
+                            }
+                        } else {
+                            addMaster(id, name, nameOrders);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("Неправильные данные");
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
