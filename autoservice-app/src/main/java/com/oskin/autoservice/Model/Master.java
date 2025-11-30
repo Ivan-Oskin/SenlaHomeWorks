@@ -7,6 +7,8 @@ public class Master implements Nameable {
     private String name;
     private ArrayList<String> namesOfOrder;
 
+    public Master(){
+    }
 
     public Master(int id, String name) {
         this.name = name;

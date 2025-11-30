@@ -53,6 +53,9 @@ public class Order implements Nameable {
         return this.id;
     }
 
+    public Order(){
+
+    }
 
     public Order(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete) {
         this.id = id;

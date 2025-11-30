@@ -5,7 +5,6 @@ public class Place implements Nameable {
     private int id;
 
     public Place(){
-
     }
 
     public Place(int id,String name) {

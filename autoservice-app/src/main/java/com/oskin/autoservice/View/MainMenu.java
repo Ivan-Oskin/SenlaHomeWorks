@@ -23,8 +23,10 @@ public class MainMenu {
     }
 
     public static void run(){
-        Configuration rule = Configuration.getInstance();
-        rule.loadConfiguration();
+        Configuration.getInstance().loadConfiguration();
+        CarRepairGarage.getInstance().loadGarage();
+        CarRepairMaster.getInstance().loadMaster();
+        CarRepairOrders.getInstance().loadOrder();
         builder.setTitle("Добавить данные");
         builder.addItem(1, "Добавить мастера",() -> CarRepairInput.getInstance().addMaster());
         builder.addItem(2, "Добавить место", () -> CarRepairInput.getInstance().addPlace());

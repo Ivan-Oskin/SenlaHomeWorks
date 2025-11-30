@@ -1,6 +1,12 @@
 package com.oskin.autoservice.Controller;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.autoservice.Model.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -240,6 +246,28 @@ public class CarRepairOrders {
 
     public void saveOrder(){
         WorkWithFile.serialization(orders, FileName.ORDER.getNAME()+".json");
+    }
+    public void loadOrder(){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        File file = new File(FileName.ORDER.getNAME()+".json");
+        if(file.exists()){
+            try{
+                orders = mapper.readValue(file, new TypeReference<ArrayList<Order>>() {});
+            }
+            catch (IOException e){
+                System.err.println("Произошла ошибка при работе с файлом");
+            }
+        }
+        else{
+            try {
+                file.createNewFile();
+            }
+            catch (IOException e){
+                System.err.println("произошла ошибка при создании файла");
+            }
+        }
     }
 }
 
