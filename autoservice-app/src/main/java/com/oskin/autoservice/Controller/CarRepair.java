@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class CarRepair {
-
     //Метод для поиска
 
     public static  <T extends Nameable> int findByName(String name, ArrayList<T> list) {
