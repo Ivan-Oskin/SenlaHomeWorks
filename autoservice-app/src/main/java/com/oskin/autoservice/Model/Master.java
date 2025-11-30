@@ -1,5 +1,7 @@
 package com.oskin.autoservice.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 
 public class Master implements Nameable {
@@ -25,8 +27,6 @@ public class Master implements Nameable {
         return this.name;
     }
 
-
-
     public int getId() {
         return this.id;
     }
@@ -45,6 +45,8 @@ public class Master implements Nameable {
         return namesOfOrder;
     }
 
+
+    @JsonIgnore
     public int getCountOfOrders() {
         return namesOfOrder.size();
     }
