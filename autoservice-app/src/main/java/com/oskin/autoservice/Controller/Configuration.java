@@ -1,8 +1,5 @@
 package com.oskin.autoservice.Controller;
-
 import com.oskin.autoservice.View.CarRepairInput;
-
-import java.awt.desktop.AppForegroundListener;
 import java.io.*;
 import java.util.Properties;
 
@@ -34,7 +31,20 @@ public class Configuration {
             orderDelete = Boolean.parseBoolean(properties.getProperty("order.delete"));
         }
         catch (IOException ex){
-            System.err.println("Произошла ошибка с файлом конфигурации");
+            System.err.println("Произошла ошибка с файлом конфигурации. Будет создан новый файл конфигурации");
+            CreateProperties();
+        }
+    }
+
+    private void CreateProperties(){
+        properties.setProperty("place.add", Boolean.toString(placeAdd));
+        properties.setProperty("place.delete", Boolean.toString(placeDelete));
+        properties.setProperty("order.offset", Boolean.toString(orderOffset));
+        properties.setProperty("order.delete", Boolean.toString(orderDelete));
+        try(FileOutputStream output = new FileOutputStream("configuration.properties")) {
+            properties.store(output, null);
+        } catch (IOException e){
+            System.err.println("Произошла ошибка при сохранении файла");
         }
     }
     public boolean getRulePlaceAdd(){
