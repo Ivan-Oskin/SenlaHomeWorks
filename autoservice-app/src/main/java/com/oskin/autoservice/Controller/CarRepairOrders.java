@@ -162,15 +162,15 @@ public class CarRepairOrders {
             String placeName = order.getPlace().getName();
             dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeName+"\n");
         }
-        CarRepair.whereExport(dataList, FileName.ORDER);
+        WorkWithFile.whereExport(dataList, FileName.ORDER);
     }
 
     public void importOrder(){
-        String nameFile = CarRepair.whereFromImport(FileName.ORDER);
+        String nameFile = WorkWithFile.whereFromImport(FileName.ORDER);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = CarRepair.importData(nameFile);
+        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
         if(!data.isEmpty()){
             for(ArrayList<String> line : data){
                 if(line.size() != 8){
@@ -236,6 +236,10 @@ public class CarRepairOrders {
                 }
             }
         }
+    }
+
+    public void saveOrder(){
+        WorkWithFile.serialization(orders, FileName.ORDER.getNAME()+".json");
     }
 }
 

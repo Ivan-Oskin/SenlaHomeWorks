@@ -64,15 +64,15 @@ public class CarRepairGarage {
             String name = garage.get(i).getName();
             dataList.add(id+","+name+"\n");
         }
-        CarRepair.whereExport(dataList, FileName.GARAGE);
+        WorkWithFile.whereExport(dataList, FileName.GARAGE);
     }
 
     public void importGarage(){
-        String nameFile = CarRepair.whereFromImport(FileName.GARAGE);
+        String nameFile = WorkWithFile.whereFromImport(FileName.GARAGE);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = CarRepair.importData(nameFile);
+        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
         if(!data.isEmpty()){
             for(ArrayList<String> line : data){
                 if(line.size() != 2){
@@ -101,5 +101,9 @@ public class CarRepairGarage {
                 }
             }
         }
+    }
+
+    public void saveGarage(){
+        WorkWithFile.serialization(garage, FileName.GARAGE.getNAME()+".json");
     }
 }

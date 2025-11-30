@@ -85,15 +85,15 @@ public class CarRepairMaster {
             if (orders.isEmpty()) orders = "none";
             dataList.add(id + "," + name + "," + orders + "\n");
         }
-        CarRepair.whereExport(dataList, FileName.MASTER);
+        WorkWithFile.whereExport(dataList, FileName.MASTER);
     }
 
     public void importMaster() {
-        String nameFile = CarRepair.whereFromImport(FileName.MASTER);
+        String nameFile = WorkWithFile.whereFromImport(FileName.MASTER);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = CarRepair.importData(nameFile);
+        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
         if (!data.isEmpty()) {
             for (ArrayList<String> line : data) {
                 if (line.size() != 3) {
@@ -124,5 +124,8 @@ public class CarRepairMaster {
                 }
             }
         }
+    }
+    public void saveMaster(){
+        WorkWithFile.serialization(masters, FileName.MASTER.getNAME()+".json");
     }
 }

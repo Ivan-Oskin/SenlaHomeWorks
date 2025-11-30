@@ -4,6 +4,10 @@ public class Place implements Nameable {
     private String name;
     private int id;
 
+    public Place(){
+
+    }
+
     public Place(int id,String name) {
 
         this.id = id;

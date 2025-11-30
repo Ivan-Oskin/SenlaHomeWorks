@@ -87,7 +87,12 @@ public class MainMenu {
             try{
                 x = scanner.nextInt();
                 scanner.nextLine();
-                if(x == 0) return;
+                if(x == 0){
+                    CarRepairGarage.getInstance().saveGarage();
+                    CarRepairMaster.getInstance().saveMaster();
+                    CarRepairOrders.getInstance().saveOrder();
+                    return;
+                }
             }
             catch (InputMismatchException e){
                 System.err.println("\nНадо ввести только цифру!!!\n");
