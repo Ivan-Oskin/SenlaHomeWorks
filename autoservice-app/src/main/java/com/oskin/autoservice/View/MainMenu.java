@@ -3,6 +3,7 @@ package com.oskin.autoservice.View;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
+import com.oskin.autoservice.Controller.Configuration;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -22,7 +23,10 @@ public class MainMenu {
     }
 
     public static void run(){
-
+        Configuration.getInstance().loadConfiguration();
+        CarRepairGarage.getInstance().loadGarage();
+        CarRepairMaster.getInstance().loadMaster();
+        CarRepairOrders.getInstance().loadOrder();
         builder.setTitle("Добавить данные");
         builder.addItem(1, "Добавить мастера",() -> CarRepairInput.getInstance().addMaster());
         builder.addItem(2, "Добавить место", () -> CarRepairInput.getInstance().addPlace());
@@ -33,6 +37,7 @@ public class MainMenu {
         builder.addItem(1, "Удалить мастера", () -> CarRepairInput.getInstance().deleteMaster());
         builder.addItem(2, "Удалить место", () -> CarRepairInput.getInstance().deletePlace());
         builder.addItem(3, "Удалить заказ", () -> CarRepairInput.getInstance().deleteOrder());
+
         navigator.addMenu(builder.build());
         builder.setTitle("Изменить данные");
         builder.addItem(1, "Сместить время выполнения закзазов", () -> CarRepairInput.getInstance().offsetTimeOrder());
@@ -72,6 +77,9 @@ public class MainMenu {
                 CarRepairOrders.getInstance().importOrder();
             });
         navigator.addMenu(builder.build());
+        builder.setTitle("Изменить конфигурацию");
+        builder.addItem(1, "Начать изменение конфигурации", () -> Configuration.getInstance().toggle());
+        navigator.addMenu(builder.build());
 
         Scanner scanner = new Scanner(System.in);
         while (true){
@@ -81,7 +89,12 @@ public class MainMenu {
             try{
                 x = scanner.nextInt();
                 scanner.nextLine();
-                if(x == 0) return;
+                if(x == 0){
+                    CarRepairGarage.getInstance().saveGarage();
+                    CarRepairMaster.getInstance().saveMaster();
+                    CarRepairOrders.getInstance().saveOrder();
+                    return;
+                }
             }
             catch (InputMismatchException e){
                 System.err.println("\nНадо ввести только цифру!!!\n");

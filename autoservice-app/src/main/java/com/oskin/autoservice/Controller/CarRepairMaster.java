@@ -1,7 +1,11 @@
 package com.oskin.autoservice.Controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.autoservice.Model.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -85,15 +89,15 @@ public class CarRepairMaster {
             if (orders.isEmpty()) orders = "none";
             dataList.add(id + "," + name + "," + orders + "\n");
         }
-        CarRepair.whereExport(dataList, FileName.MASTER);
+        WorkWithFile.whereExport(dataList, FileName.MASTER);
     }
 
     public void importMaster() {
-        String nameFile = CarRepair.whereFromImport(FileName.MASTER);
+        String nameFile = WorkWithFile.whereFromImport(FileName.MASTER);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = CarRepair.importData(nameFile);
+        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
         if (!data.isEmpty()) {
             for (ArrayList<String> line : data) {
                 if (line.size() != 3) {
@@ -122,6 +126,29 @@ public class CarRepairMaster {
                         return;
                     }
                 }
+            }
+        }
+    }
+    public void saveMaster(){
+        WorkWithFile.serialization(masters, FileName.MASTER.getNAME()+".json");
+    }
+    public void loadMaster(){
+        ObjectMapper mapper = new ObjectMapper();
+        File file = new File(FileName.MASTER.getNAME()+".json");
+        if(file.exists()){
+            try{
+                masters = mapper.readValue(file, new TypeReference<ArrayList<Master>>() {});
+            }
+            catch (IOException e){
+                System.err.println("Произошла ошибка при работе с файлом");
+            }
+        }
+        else{
+            try {
+                file.createNewFile();
+            }
+            catch (IOException e){
+                System.err.println("произошла ошибка при создании файла");
             }
         }
     }

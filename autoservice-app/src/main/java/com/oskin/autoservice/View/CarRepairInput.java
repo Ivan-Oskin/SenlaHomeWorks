@@ -2,6 +2,7 @@ package com.oskin.autoservice.View;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
+import com.oskin.autoservice.Controller.Configuration;
 import com.oskin.autoservice.Model.*;
 
 import java.time.LocalDateTime;
@@ -138,6 +139,10 @@ public class CarRepairInput {
     }
 
     public void addPlace() {
+        if(!Configuration.getInstance().getRulePlaceAdd()){
+            System.err.println("Запрещено");
+            return;
+        }
         String name = inputName("имя");
         ArrayList<Place> list = CarRepairGarage.getInstance().getListOfPlace();
         int id = !list.isEmpty()?list.get(list.size()-1).getId()+1:1;
@@ -199,6 +204,10 @@ public class CarRepairInput {
     }
 
     public void offsetTimeOrder() {
+        if(!Configuration.getInstance().getRuleOrderOffset()){
+            System.err.println("Запрещено");
+            return;
+        }
         String name = inputName("имя");
         CarRepairOutput.getInstance().infAboutInput("на сколько дней сместить заказ");
         int day = inputInt();
@@ -219,11 +228,19 @@ public class CarRepairInput {
         CarRepairOutput.getInstance().infAboutDelete(name, inf);
     }
     public void deleteOrder() {
+        if(!Configuration.getInstance().getRuleOrderDelete()){
+            System.err.println("Запрещено");
+            return;
+        }
         String name = inputName("имя");
         boolean inf = CarRepairOrders.getInstance().deleteOrder(name);
         CarRepairOutput.getInstance().infAboutDelete(name, inf);
     }
     public void deletePlace() {
+        if(!Configuration.getInstance().getRulePlaceDelete()){
+            System.err.println("Запрещено");
+            return;
+        }
         String name = inputName("имя");
         boolean inf = CarRepairGarage.getInstance().deletePlace(name);
         CarRepairOutput.getInstance().infAboutDelete(name, inf);

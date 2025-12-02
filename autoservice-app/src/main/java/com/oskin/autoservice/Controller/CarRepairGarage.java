@@ -1,7 +1,13 @@
 package com.oskin.autoservice.Controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.autoservice.Model.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -18,7 +24,7 @@ public class CarRepairGarage {
     }
 
 
-    private ArrayList<Place> garage = new ArrayList<>();
+    private static ArrayList<Place> garage = new ArrayList<>();
 
     public void addPlace(int id, String name) {
         Place place = new Place(id, name);
@@ -64,15 +70,15 @@ public class CarRepairGarage {
             String name = garage.get(i).getName();
             dataList.add(id+","+name+"\n");
         }
-        CarRepair.whereExport(dataList, FileName.GARAGE);
+        WorkWithFile.whereExport(dataList, FileName.GARAGE);
     }
 
     public void importGarage(){
-        String nameFile = CarRepair.whereFromImport(FileName.GARAGE);
+        String nameFile = WorkWithFile.whereFromImport(FileName.GARAGE);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = CarRepair.importData(nameFile);
+        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
         if(!data.isEmpty()){
             for(ArrayList<String> line : data){
                 if(line.size() != 2){
@@ -99,6 +105,30 @@ public class CarRepairGarage {
                         return;
                     }
                 }
+            }
+        }
+    }
+
+    public void saveGarage(){
+        WorkWithFile.serialization(garage, FileName.GARAGE.getNAME()+".json");
+    }
+    public void loadGarage(){
+        ObjectMapper mapper = new ObjectMapper();
+        File file = new File(FileName.GARAGE.getNAME()+".json");
+        if(file.exists()){
+            try{
+                garage = mapper.readValue(file, new TypeReference<ArrayList<Place>>() {});
+            }
+            catch (IOException e){
+                System.err.println("Произошла ошибка при работе с файлом");
+            }
+        }
+        else{
+            try {
+                file.createNewFile();
+            }
+            catch (IOException e){
+                System.err.println("произошла ошибка при создании файла");
             }
         }
     }

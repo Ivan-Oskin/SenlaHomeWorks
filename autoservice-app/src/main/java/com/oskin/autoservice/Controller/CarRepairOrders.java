@@ -1,6 +1,12 @@
 package com.oskin.autoservice.Controller;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.autoservice.Model.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -162,15 +168,15 @@ public class CarRepairOrders {
             String placeName = order.getPlace().getName();
             dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeName+"\n");
         }
-        CarRepair.whereExport(dataList, FileName.ORDER);
+        WorkWithFile.whereExport(dataList, FileName.ORDER);
     }
 
     public void importOrder(){
-        String nameFile = CarRepair.whereFromImport(FileName.ORDER);
+        String nameFile = WorkWithFile.whereFromImport(FileName.ORDER);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = CarRepair.importData(nameFile);
+        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
         if(!data.isEmpty()){
             for(ArrayList<String> line : data){
                 if(line.size() != 8){
@@ -234,6 +240,32 @@ public class CarRepairOrders {
                         addOrder(id, name, cost, place, create, start, complete);
                     }
                 }
+            }
+        }
+    }
+
+    public void saveOrder(){
+        WorkWithFile.serialization(orders, FileName.ORDER.getNAME()+".json");
+    }
+    public void loadOrder(){
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        File file = new File(FileName.ORDER.getNAME()+".json");
+        if(file.exists()){
+            try{
+                orders = mapper.readValue(file, new TypeReference<ArrayList<Order>>() {});
+            }
+            catch (IOException e){
+                System.err.println("Произошла ошибка при работе с файлом");
+            }
+        }
+        else{
+            try {
+                file.createNewFile();
+            }
+            catch (IOException e){
+                System.err.println("произошла ошибка при создании файла");
             }
         }
     }
