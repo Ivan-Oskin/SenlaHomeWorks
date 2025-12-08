@@ -172,7 +172,7 @@ public class CarRepairOrders {
     }
 
     public void importOrder(){
-        String nameFile = WorkWithFile.whereFromImport(FileName.ORDER);
+        String nameFile = WorkWithFile.whereFromImport("Order");
         if(nameFile.equals("???")){
             return;
         }

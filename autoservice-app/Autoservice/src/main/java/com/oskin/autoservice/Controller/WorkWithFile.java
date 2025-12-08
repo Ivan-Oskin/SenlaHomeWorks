@@ -77,9 +77,9 @@ public class WorkWithFile {
         }
         return data;
     }
-    public static String whereFromImport(FileName fileName){
-        System.out.println("Откуда импортировать данные "+fileName.getNAME()+"?\n" +
-                "1. "+fileName.getNAME()+".csv"+" 2. Другой файл формата .csv 0. Выход");
+    public static String whereFromImport(String fileName){
+        System.out.println("Откуда импортировать данные "+fileName+"?\n" +
+                "1. "+fileName+".csv"+" 2. Другой файл формата .csv 0. Выход");
         int input = 0;
         while (true){
             input = CarRepairInput.getInstance().inputInt();
@@ -87,7 +87,7 @@ public class WorkWithFile {
         }
         switch (input){
             case 1:{
-                return fileName.getNAME()+".csv";
+                return fileName+".csv";
             }
             case 2:
             {

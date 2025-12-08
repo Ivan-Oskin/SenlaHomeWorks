@@ -2,17 +2,19 @@ package com.oskin.autoservice.Controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.autoservice.Model.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import com.oskin.configuration.*;
+import com.oskin.configuration.Configuration.*;
 
 public class CarRepairGarage {
     private static CarRepairGarage instance;
+    @ConfigProperty
+    private String standartFileName;
 
     private CarRepairGarage(){
     }
@@ -70,11 +72,12 @@ public class CarRepairGarage {
             String name = garage.get(i).getName();
             dataList.add(id+","+name+"\n");
         }
+
         WorkWithFile.whereExport(dataList, FileName.GARAGE);
     }
 
     public void importGarage(){
-        String nameFile = WorkWithFile.whereFromImport(FileName.GARAGE);
+        String nameFile = WorkWithFile.whereFromImport(standartFileName);
         if(nameFile.equals("???")){
             return;
         }

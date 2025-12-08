@@ -93,7 +93,7 @@ public class CarRepairMaster {
     }
 
     public void importMaster() {
-        String nameFile = WorkWithFile.whereFromImport(FileName.MASTER);
+        String nameFile = WorkWithFile.whereFromImport("Master");
         if(nameFile.equals("???")){
             return;
         }

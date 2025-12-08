@@ -12,7 +12,7 @@ public class Configuration {
     private boolean orderOffset = true;
     private boolean orderDelete = true;
 
-    private Configuration(){
+    public Configuration(){
     }
 
     public static Configuration getInstance(){

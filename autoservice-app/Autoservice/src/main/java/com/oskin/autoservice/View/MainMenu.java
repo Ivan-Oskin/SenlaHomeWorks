@@ -3,7 +3,8 @@ package com.oskin.autoservice.View;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
-import com.oskin.autoservice.Controller.Configuration;
+import com.oskin.configuration.Configuration;
+import com.oskin.configuration.Configuration.*;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -23,7 +24,9 @@ public class MainMenu {
     }
 
     public static void run(){
-        Configuration.getInstance().loadConfiguration();
+        Configuration configuration = new Configuration();
+        configuration.configure(CarRepairGarage.getInstance());
+
         CarRepairGarage.getInstance().loadGarage();
         CarRepairMaster.getInstance().loadMaster();
         CarRepairOrders.getInstance().loadOrder();
@@ -77,9 +80,9 @@ public class MainMenu {
                 CarRepairOrders.getInstance().importOrder();
             });
         navigator.addMenu(builder.build());
-        builder.setTitle("Изменить конфигурацию");
+/*        builder.setTitle("Изменить конфигурацию");
         builder.addItem(1, "Начать изменение конфигурации", () -> Configuration.getInstance().toggle());
-        navigator.addMenu(builder.build());
+        navigator.addMenu(builder.build());*/
 
         Scanner scanner = new Scanner(System.in);
         while (true){
