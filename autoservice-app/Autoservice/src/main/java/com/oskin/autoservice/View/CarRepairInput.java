@@ -2,8 +2,8 @@ package com.oskin.autoservice.View;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
-import com.oskin.autoservice.Controller.Configuration;
 import com.oskin.autoservice.Model.*;
+import com.oskin.configuration.ConfigProperty;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +13,19 @@ import java.util.Scanner;
 public class CarRepairInput {
     Scanner scanner = new Scanner(System.in);
     private static CarRepairInput instance;
+
+    @ConfigProperty(type = boolean.class)
+    boolean ruleAddPlace;
+
+    @ConfigProperty(type = boolean.class)
+    boolean ruleDeletePlace;
+
+    @ConfigProperty(type = boolean.class)
+    boolean ruleDeleteOrder;
+
+    @ConfigProperty(type = boolean.class)
+    boolean ruleOffset;
+
     private CarRepairInput() {
     }
     public static CarRepairInput getInstance() {
@@ -139,7 +152,7 @@ public class CarRepairInput {
     }
 
     public void addPlace() {
-        if(!Configuration.getInstance().getRulePlaceAdd()){
+        if(!ruleAddPlace){
             System.err.println("Запрещено");
             return;
         }
@@ -204,7 +217,7 @@ public class CarRepairInput {
     }
 
     public void offsetTimeOrder() {
-        if(!Configuration.getInstance().getRuleOrderOffset()){
+        if(!ruleOffset){
             System.err.println("Запрещено");
             return;
         }
@@ -228,7 +241,7 @@ public class CarRepairInput {
         CarRepairOutput.getInstance().infAboutDelete(name, inf);
     }
     public void deleteOrder() {
-        if(!Configuration.getInstance().getRuleOrderDelete()){
+        if(!ruleDeleteOrder){
             System.err.println("Запрещено");
             return;
         }
@@ -237,7 +250,7 @@ public class CarRepairInput {
         CarRepairOutput.getInstance().infAboutDelete(name, inf);
     }
     public void deletePlace() {
-        if(!Configuration.getInstance().getRulePlaceDelete()){
+        if(!ruleDeletePlace){
             System.err.println("Запрещено");
             return;
         }
