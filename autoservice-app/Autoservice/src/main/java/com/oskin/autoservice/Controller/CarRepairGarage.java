@@ -73,7 +73,7 @@ public class CarRepairGarage {
             dataList.add(id+","+name+"\n");
         }
 
-        WorkWithFile.whereExport(dataList, FileName.GARAGE);
+        WorkWithFile.whereExport(dataList, standartFileName);
     }
 
     public void importGarage(){

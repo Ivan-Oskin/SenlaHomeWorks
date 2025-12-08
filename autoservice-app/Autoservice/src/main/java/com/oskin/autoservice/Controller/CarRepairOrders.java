@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.autoservice.Model.*;
+import com.oskin.configuration.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +15,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class CarRepairOrders {
-
     private static CarRepairOrders instance;
+    @ConfigProperty
+    private String standartFileName;
 
     private CarRepairOrders(){}
 
@@ -168,11 +170,11 @@ public class CarRepairOrders {
             String placeName = order.getPlace().getName();
             dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeName+"\n");
         }
-        WorkWithFile.whereExport(dataList, FileName.ORDER);
+        WorkWithFile.whereExport(dataList, standartFileName);
     }
 
     public void importOrder(){
-        String nameFile = WorkWithFile.whereFromImport("Order");
+        String nameFile = WorkWithFile.whereFromImport(standartFileName);
         if(nameFile.equals("???")){
             return;
         }

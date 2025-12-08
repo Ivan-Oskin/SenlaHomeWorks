@@ -3,6 +3,7 @@ package com.oskin.autoservice.Controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.autoservice.Model.*;
+import com.oskin.configuration.ConfigProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,9 @@ import java.util.Comparator;
 
 public class CarRepairMaster {
     private static CarRepairMaster instance;
+    @ConfigProperty
+    private String standartFileName;
+
 
     private CarRepairMaster() {
 
@@ -89,11 +93,11 @@ public class CarRepairMaster {
             if (orders.isEmpty()) orders = "none";
             dataList.add(id + "," + name + "," + orders + "\n");
         }
-        WorkWithFile.whereExport(dataList, FileName.MASTER);
+        WorkWithFile.whereExport(dataList, standartFileName);
     }
 
     public void importMaster() {
-        String nameFile = WorkWithFile.whereFromImport("Master");
+        String nameFile = WorkWithFile.whereFromImport(standartFileName);
         if(nameFile.equals("???")){
             return;
         }

@@ -26,6 +26,8 @@ public class MainMenu {
     public static void run(){
         Configuration configuration = new Configuration();
         configuration.configure(CarRepairGarage.getInstance());
+        configuration.configure(CarRepairMaster.getInstance());
+        configuration.configure(CarRepairOrders.getInstance());
 
         CarRepairGarage.getInstance().loadGarage();
         CarRepairMaster.getInstance().loadMaster();

@@ -3,7 +3,6 @@ package com.oskin.autoservice.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.oskin.autoservice.Model.FileName;
 import com.oskin.autoservice.Model.Nameable;
 import com.oskin.autoservice.View.CarRepairInput;
 
@@ -32,9 +31,9 @@ public class WorkWithFile {
 
     }
 
-    public static void whereExport(ArrayList<String> dataList, FileName nameObject){
-        System.out.println("Куда экспортировать данные "+nameObject.getNAME() +"?\n" +
-                "1. "+nameObject.getNAME()+".csv 2. Выбрать другой файл 0. Выход");
+    public static void whereExport(ArrayList<String> dataList, String nameObject){
+        System.out.println("Куда экспортировать данные "+nameObject +"?\n" +
+                "1. "+nameObject+" 2. Выбрать другой файл 0. Выход");
         int input = 0;
         while (true){
             input = CarRepairInput.getInstance().inputInt();
@@ -42,7 +41,7 @@ public class WorkWithFile {
         }
         switch (input){
             case 1:{
-                exportData(dataList, nameObject.getNAME());
+                exportData(dataList, nameObject);
                 System.out.println("Данные экспортированы");
                 break;
             }
@@ -79,7 +78,7 @@ public class WorkWithFile {
     }
     public static String whereFromImport(String fileName){
         System.out.println("Откуда импортировать данные "+fileName+"?\n" +
-                "1. "+fileName+".csv"+" 2. Другой файл формата .csv 0. Выход");
+                "1. "+fileName+" 2. Другой файл формата .csv 0. Выход");
         int input = 0;
         while (true){
             input = CarRepairInput.getInstance().inputInt();
@@ -87,7 +86,7 @@ public class WorkWithFile {
         }
         switch (input){
             case 1:{
-                return fileName+".csv";
+                return fileName;
             }
             case 2:
             {
