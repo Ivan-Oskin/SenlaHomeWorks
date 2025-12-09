@@ -17,7 +17,9 @@ import java.util.Comparator;
 public class CarRepairOrders {
     private static CarRepairOrders instance;
     @ConfigProperty
-    private String standartFileName;
+    private String standartFileCsvName;
+    @ConfigProperty
+    private String standartFileJsonName;
 
     private CarRepairOrders(){}
 
@@ -170,11 +172,11 @@ public class CarRepairOrders {
             String placeName = order.getPlace().getName();
             dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeName+"\n");
         }
-        WorkWithFile.whereExport(dataList, standartFileName);
+        WorkWithFile.whereExport(dataList, standartFileCsvName);
     }
 
     public void importOrder(){
-        String nameFile = WorkWithFile.whereFromImport(standartFileName);
+        String nameFile = WorkWithFile.whereFromImport(standartFileCsvName);
         if(nameFile.equals("???")){
             return;
         }
@@ -247,13 +249,13 @@ public class CarRepairOrders {
     }
 
     public void saveOrder(){
-        WorkWithFile.serialization(orders, FileName.ORDER.getNAME()+".json");
+        WorkWithFile.serialization(orders, standartFileJsonName);
     }
     public void loadOrder(){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        File file = new File(FileName.ORDER.getNAME()+".json");
+        File file = new File(standartFileJsonName);
         if(file.exists()){
             try{
                 orders = mapper.readValue(file, new TypeReference<ArrayList<Order>>() {});

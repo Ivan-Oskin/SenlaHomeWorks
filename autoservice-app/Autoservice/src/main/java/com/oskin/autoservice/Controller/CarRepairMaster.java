@@ -14,8 +14,9 @@ import java.util.Comparator;
 public class CarRepairMaster {
     private static CarRepairMaster instance;
     @ConfigProperty
-    private String standartFileName;
-
+    private String standartFileCsvName;
+    @ConfigProperty
+    private String standartFileJsonName;
 
     private CarRepairMaster() {
 
@@ -93,11 +94,11 @@ public class CarRepairMaster {
             if (orders.isEmpty()) orders = "none";
             dataList.add(id + "," + name + "," + orders + "\n");
         }
-        WorkWithFile.whereExport(dataList, standartFileName);
+        WorkWithFile.whereExport(dataList, standartFileCsvName);
     }
 
     public void importMaster() {
-        String nameFile = WorkWithFile.whereFromImport(standartFileName);
+        String nameFile = WorkWithFile.whereFromImport(standartFileCsvName);
         if(nameFile.equals("???")){
             return;
         }
@@ -134,11 +135,11 @@ public class CarRepairMaster {
         }
     }
     public void saveMaster(){
-        WorkWithFile.serialization(masters, FileName.MASTER.getNAME()+".json");
+        WorkWithFile.serialization(masters, standartFileJsonName);
     }
     public void loadMaster(){
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File(FileName.MASTER.getNAME()+".json");
+        File file = new File(standartFileJsonName);
         if(file.exists()){
             try{
                 masters = mapper.readValue(file, new TypeReference<ArrayList<Master>>() {});

@@ -14,8 +14,9 @@ import com.oskin.configuration.Configuration.*;
 public class CarRepairGarage {
     private static CarRepairGarage instance;
     @ConfigProperty
-    private String standartFileName;
-
+    private String standartFileCsvName;
+    @ConfigProperty
+    private String standartFileJsonName;
     private CarRepairGarage(){
     }
 
@@ -73,11 +74,11 @@ public class CarRepairGarage {
             dataList.add(id+","+name+"\n");
         }
 
-        WorkWithFile.whereExport(dataList, standartFileName);
+        WorkWithFile.whereExport(dataList, standartFileCsvName);
     }
 
     public void importGarage(){
-        String nameFile = WorkWithFile.whereFromImport(standartFileName);
+        String nameFile = WorkWithFile.whereFromImport(standartFileCsvName);
         if(nameFile.equals("???")){
             return;
         }
@@ -113,11 +114,11 @@ public class CarRepairGarage {
     }
 
     public void saveGarage(){
-        WorkWithFile.serialization(garage, FileName.GARAGE.getNAME()+".json");
+        WorkWithFile.serialization(garage, standartFileJsonName);
     }
     public void loadGarage(){
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File(FileName.GARAGE.getNAME()+".json");
+        File file = new File(standartFileJsonName);
         if(file.exists()){
             try{
                 garage = mapper.readValue(file, new TypeReference<ArrayList<Place>>() {});
