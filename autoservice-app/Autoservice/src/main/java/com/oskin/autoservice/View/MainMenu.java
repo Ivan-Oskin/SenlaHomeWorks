@@ -5,6 +5,7 @@ import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
 import com.oskin.configuration.Configuration;
 import com.oskin.configuration.Configuration.*;
+import com.oskin.DI.*;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -24,30 +25,31 @@ public class MainMenu {
     }
 
     public static void run(){
-        Configuration configuration = new Configuration();
-        configuration.configure(CarRepairGarage.getInstance());
-        configuration.configure(CarRepairMaster.getInstance());
-        configuration.configure(CarRepairOrders.getInstance());
-
-        CarRepairGarage.getInstance().loadGarage();
-        CarRepairMaster.getInstance().loadMaster();
-        CarRepairOrders.getInstance().loadOrder();
+        DIСontainer DI = DIСontainer.getInstance(new BuilderObject(), new Configuration());
+        CarRepairGarage carRepairGarage = DI.getDependecy(CarRepairGarage.class);
+        CarRepairMaster carRepairMaster = DI.getDependecy(CarRepairMaster.class);
+        CarRepairOrders carRepairOrders = DI.getDependecy(CarRepairOrders.class);
+        CarRepairInput carRepairInput = DI.getDependecy(CarRepairInput.class);
+        CarRepairOutput carRepairOutput = DI.getDependecy(CarRepairOutput.class);
+        carRepairGarage.loadGarage();
+        carRepairMaster.loadMaster();
+        carRepairOrders.loadOrder();
         builder.setTitle("Добавить данные");
-        builder.addItem(1, "Добавить мастера",() -> CarRepairInput.getInstance().addMaster());
-        builder.addItem(2, "Добавить место", () -> CarRepairInput.getInstance().addPlace());
-        builder.addItem(3, "Добавить заказ", ()-> CarRepairInput.getInstance().addOrder());
-        builder.addItem(4, "Добавить заказ мастеру", () -> CarRepairInput.getInstance().setOrderToMaster());
+        builder.addItem(1, "Добавить мастера",() -> carRepairInput.addMaster());
+        builder.addItem(2, "Добавить место", () -> carRepairInput.addPlace());
+        builder.addItem(3, "Добавить заказ", ()-> carRepairInput.addOrder());
+        builder.addItem(4, "Добавить заказ мастеру", () -> carRepairInput.setOrderToMaster());
         navigator.addMenu(builder.build());
         builder.setTitle("Удалить данные");
-        builder.addItem(1, "Удалить мастера", () -> CarRepairInput.getInstance().deleteMaster());
-        builder.addItem(2, "Удалить место", () -> CarRepairInput.getInstance().deletePlace());
-        builder.addItem(3, "Удалить заказ", () -> CarRepairInput.getInstance().deleteOrder());
+        builder.addItem(1, "Удалить мастера", () -> carRepairInput.deleteMaster());
+        builder.addItem(2, "Удалить место", () -> carRepairInput.deletePlace());
+        builder.addItem(3, "Удалить заказ", () -> carRepairInput.deleteOrder());
 
         navigator.addMenu(builder.build());
         builder.setTitle("Изменить данные");
-        builder.addItem(1, "Сместить время выполнения закзазов", () -> CarRepairInput.getInstance().offsetTimeOrder());
-        builder.addItem(2, "Завершить заказ", () -> CarRepairInput.getInstance().completeOrder());
-        builder.addItem(3, "Отменить заказ", () -> CarRepairInput.getInstance().cancelOrder());
+        builder.addItem(1, "Сместить время выполнения закзазов", () -> carRepairInput.offsetTimeOrder());
+        builder.addItem(2, "Завершить заказ", () -> carRepairInput.completeOrder());
+        builder.addItem(3, "Отменить заказ", () -> carRepairInput.cancelOrder());
         navigator.addMenu(builder.build());
         builder.setTitle("Получить данные");
         builder.addItem(1, "Свободные места", () -> CarRepairOutput.getInstance().getFreePlace());

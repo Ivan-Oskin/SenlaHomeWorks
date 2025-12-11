@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.Properties;
 
-public class Configuration {
+public class Configuration implements IConfiguration {
 
     public Configuration(){};
 
@@ -32,6 +32,7 @@ public class Configuration {
     public void configure(Object obj){
         for(Field field : obj.getClass().getDeclaredFields()){
             ConfigProperty config = field.getAnnotation(ConfigProperty.class);
+
             if(config != null){
                 injectProperty(config.configFileName());
                 String key = config.propertyName().isEmpty() ? obj.getClass().getSimpleName().toUpperCase() + "." +

@@ -10,4 +10,6 @@
     <name>Archetype - configuration</name>
     <groupId>com.oskin.configuration</groupId>
     <url>http://maven.apache.org</url>
+    <dependencies>
+    </dependencies>
 </project>
