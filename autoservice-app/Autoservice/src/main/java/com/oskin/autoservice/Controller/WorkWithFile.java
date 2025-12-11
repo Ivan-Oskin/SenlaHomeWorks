@@ -3,6 +3,8 @@ package com.oskin.autoservice.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.oskin.DI.Inject;
+import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Model.Nameable;
 import com.oskin.autoservice.View.CarRepairInput;
 
@@ -11,8 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+
+@Singleton
 public class WorkWithFile {
-    public static void exportData(ArrayList<String> dataString, String fileName){
+    @Inject
+    public CarRepairInput carRepairInput;
+    public void exportData(ArrayList<String> dataString, String fileName){
         String name;
         if(!fileName.endsWith(".csv")){
             name = fileName+".csv";
@@ -31,12 +37,12 @@ public class WorkWithFile {
 
     }
 
-    public static void whereExport(ArrayList<String> dataList, String nameObject){
+    public void whereExport(ArrayList<String> dataList, String nameObject){
         System.out.println("Куда экспортировать данные "+nameObject +"?\n" +
                 "1. "+nameObject+" 2. Выбрать другой файл 0. Выход");
         int input = 0;
         while (true){
-            input = CarRepairInput.getInstance().inputInt();
+            input = carRepairInput.inputInt();
             if(input >= 0 && input < 3) break;
         }
         switch (input){
@@ -61,7 +67,7 @@ public class WorkWithFile {
         }
     }
 
-    public static ArrayList<ArrayList<String>> importData(String fileName){
+    public ArrayList<ArrayList<String>> importData(String fileName){
         ArrayList<ArrayList<String>> data = new ArrayList<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             reader.readLine();
@@ -76,12 +82,12 @@ public class WorkWithFile {
         }
         return data;
     }
-    public static String whereFromImport(String fileName){
+    public String whereFromImport(String fileName){
         System.out.println("Откуда импортировать данные "+fileName+"?\n" +
                 "1. "+fileName+" 2. Другой файл формата .csv 0. Выход");
         int input = 0;
         while (true){
-            input = CarRepairInput.getInstance().inputInt();
+            input = carRepairInput.inputInt();
             if(input >= 0 && input < 3) break;
         }
         switch (input){
@@ -107,7 +113,7 @@ public class WorkWithFile {
         }
     }
 
-    public static <T extends Nameable> void serialization(ArrayList<T> array, String fileName){
+    public <T extends Nameable> void serialization(ArrayList<T> array, String fileName){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

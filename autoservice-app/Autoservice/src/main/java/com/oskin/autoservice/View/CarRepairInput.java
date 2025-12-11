@@ -1,13 +1,9 @@
 package com.oskin.autoservice.View;
+import com.oskin.DI.Inject;
 import com.oskin.DI.Singleton;
-import com.oskin.autoservice.Controller.CarRepairGarage;
-import com.oskin.autoservice.Controller.CarRepairMaster;
-import com.oskin.autoservice.Controller.CarRepairOrders;
 import com.oskin.autoservice.Model.*;
-import com.oskin.configuration.ConfigProperty;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -16,25 +12,10 @@ public class CarRepairInput {
     Scanner scanner = new Scanner(System.in);
     private static CarRepairInput instance;
 
-    @ConfigProperty(type = boolean.class)
-    boolean ruleAddPlace;
+    @Inject
+    CarRepairOutput carRepairOutput;
 
-    @ConfigProperty(type = boolean.class)
-    boolean ruleDeletePlace;
-
-    @ConfigProperty(type = boolean.class)
-    boolean ruleDeleteOrder;
-
-    @ConfigProperty(type = boolean.class)
-    boolean ruleOffset;
-
-    private CarRepairInput() {
-    }
-    public static CarRepairInput getInstance() {
-        if (instance == null) {
-            instance = new CarRepairInput();
-        }
-        return instance;
+    public CarRepairInput() {
     }
     public int inputInt(){
         int input = 0;
@@ -77,12 +58,12 @@ public class CarRepairInput {
         return SortTypeMaster.BUSYNESS;
     }
     public String inputName(String about){
-        CarRepairOutput.getInstance().infAboutInput(about);
+        carRepairOutput.infAboutInput(about);
         return scanner.nextLine();
     }
     public LocalDateTime createTime() {
 
-        CarRepairOutput.getInstance().infAboutInput("год");
+        carRepairOutput.infAboutInput("год");
         int year;
         int month;
         int day;
@@ -94,7 +75,7 @@ public class CarRepairInput {
                 if (year >= LocalDateTime.now().getYear() && year < 2030) break;
                 System.out.println("Неправильный ввод");
             }
-            CarRepairOutput.getInstance().infAboutInput("Месяц");
+            carRepairOutput.infAboutInput("Месяц");
             while (true) {
                 month = scanner.nextInt();
                 scanner.nextLine();
@@ -103,7 +84,7 @@ public class CarRepairInput {
                 }
                 System.out.println("Неправильный ввод");
             }
-            CarRepairOutput.getInstance().infAboutInput("День");
+            carRepairOutput.infAboutInput("День");
             while (true) {
                 day = scanner.nextInt();
                 scanner.nextLine();
@@ -112,7 +93,7 @@ public class CarRepairInput {
                 }
                 System.out.println("Неправильный ввод");
             }
-            CarRepairOutput.getInstance().infAboutInput("Часы");
+            carRepairOutput.infAboutInput("Часы");
             while (true) {
                 hour = scanner.nextInt();
                 scanner.nextLine();
@@ -143,129 +124,5 @@ public class CarRepairInput {
         if(x == 1) return StatusOrder.ACTIVE;
         if(x == 2) return StatusOrder.CLOSE;
         return StatusOrder.CANCEL;
-    }
-
-    public void addMaster() {
-        String name = inputName("имя");
-        ArrayList<Master> list = CarRepairMaster.getInstance().getListOfMasters(SortTypeMaster.ID);
-        int id = !list.isEmpty()?((list.get(list.size()-1).getId())+1):1;
-        CarRepairMaster.getInstance().addMaster(id ,name);
-        CarRepairOutput.getInstance().infAboutAdd(name);
-    }
-
-    public void addPlace() {
-        if(!ruleAddPlace){
-            System.err.println("Запрещено");
-            return;
-        }
-        String name = inputName("имя");
-        ArrayList<Place> list = CarRepairGarage.getInstance().getListOfPlace();
-        int id = !list.isEmpty()?list.get(list.size()-1).getId()+1:1;
-        CarRepairGarage.getInstance().addPlace(id, name);
-        CarRepairOutput.getInstance().infAboutAdd(name);
-    }
-
-    public void addOrder() {
-        String name = inputName("имя");
-        CarRepairOutput.getInstance().infAboutInput("стоимость");
-        int cost = 0;
-        while (cost<=0){
-            cost = inputInt();
-            if(cost <= 0) System.out.println("Введите число больше 0");
-        }
-        String namePlace = inputName("наименование места");
-        Place place = CarRepairGarage.getInstance().findPlace(namePlace);
-        if (place == null) {
-            System.out.println("Наименование места не найдено");
-            return;
-        }
-        LocalDateTime timeStart;
-        LocalDateTime timeComplete;
-        CarRepairOutput.getInstance().infAboutInput("Начало выполнения заказа: ");
-        timeStart = createTime();
-        if(timeStart == null){
-            System.out.println("Произошла ошибка при вводе данных");
-            return;
-        }
-        CarRepairOutput.getInstance().infAboutInput("Конец выполнения заказа");
-        timeComplete = createTime();
-        if(timeComplete == null){
-            System.out.println("Произошла ошибка при вводе данных");
-            return;
-        }
-        ArrayList<Order> list = CarRepairOrders.getInstance().getListOfOrders(SortTypeOrder.ID);
-        int id = !list.isEmpty()?list.get(list.size()-1).getId()+1:1;
-        CarRepairOrders.getInstance().addOrder(id, name, cost, place, LocalDateTime.now().withMinute(0), timeStart, timeComplete);
-    }
-
-    public void cancelOrder() {
-        String name = inputName("имя");
-        boolean inf = CarRepairOrders.getInstance().cancelOrder(name);
-        if (inf) {
-            System.out.println(name + " отменен");
-        } else {
-            System.out.println("Имя не найдено");
-        }
-    }
-
-    public void completeOrder() {
-        String name = inputName("имя");
-        boolean inf = CarRepairOrders.getInstance().completeOrder(name);
-        if (inf) {
-            System.out.println(name + " закрыт");
-        } else {
-            System.out.println("Имя не найдено");
-        }
-    }
-
-    public void offsetTimeOrder() {
-        if(!ruleOffset){
-            System.err.println("Запрещено");
-            return;
-        }
-        String name = inputName("имя");
-        CarRepairOutput.getInstance().infAboutInput("на сколько дней сместить заказ");
-        int day = inputInt();
-        CarRepairOutput.getInstance().infAboutInput("на сколько часов сместить заказ");
-        int hour = inputInt();
-        boolean inf = CarRepairOrders.getInstance().offsetDay(name, day);
-        if (inf) {
-            CarRepairOrders.getInstance().offsetHour(name, hour);
-            System.out.println("Время заказа "+ name + " смещено");
-        } else {
-            CarRepairOutput.getInstance().NoFound();
-        }
-    }
-
-    public void deleteMaster() {
-        String name = inputName("имя");
-        boolean inf = CarRepairMaster.getInstance().deleteMaster(name);
-        CarRepairOutput.getInstance().infAboutDelete(name, inf);
-    }
-    public void deleteOrder() {
-        if(!ruleDeleteOrder){
-            System.err.println("Запрещено");
-            return;
-        }
-        String name = inputName("имя");
-        boolean inf = CarRepairOrders.getInstance().deleteOrder(name);
-        CarRepairOutput.getInstance().infAboutDelete(name, inf);
-    }
-    public void deletePlace() {
-        if(!ruleDeletePlace){
-            System.err.println("Запрещено");
-            return;
-        }
-        String name = inputName("имя");
-        boolean inf = CarRepairGarage.getInstance().deletePlace(name);
-        CarRepairOutput.getInstance().infAboutDelete(name, inf);
-    }
-
-    public void setOrderToMaster(){
-        String nameMaster = inputName("имя мастера");
-        String nameOrder = inputName("название заказа");
-        boolean inf = CarRepairMaster.getInstance().setOrderToMaster(nameMaster, nameOrder);
-        if(inf) System.out.println("Заказ " + nameOrder +" добавлен к мастеру " + nameMaster);
-        else System.out.print("не найдено");
     }
 }

@@ -1,11 +1,15 @@
 package com.oskin.autoservice.View;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import com.oskin.DI.Inject;
+import com.oskin.DI.Singleton;
 
+import java.util.ArrayList;
+@Singleton
 public class Navigator {
     private Menu currentMenu;
     private ArrayList<Menu> menu = new ArrayList<>();
+    @Inject
+    CarRepairInput carRepairInput;
 
     public void addMenu(Menu menu){
         this.menu.add(menu);
@@ -30,7 +34,7 @@ public class Navigator {
             this.currentMenu = menu.get(index-1);
             int input;
             printMenu();
-            input = CarRepairInput.getInstance().inputInt();
+            input = carRepairInput.inputInt();
             if(input == 0) return;
             else this.currentMenu.executeOfNumber(input-1);
         }

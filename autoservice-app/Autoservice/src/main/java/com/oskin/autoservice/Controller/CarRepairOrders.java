@@ -3,6 +3,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.oskin.DI.Inject;
 import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Model.*;
 import com.oskin.configuration.*;
@@ -17,6 +18,10 @@ import java.util.Comparator;
 
 @Singleton
 public class CarRepairOrders {
+    @Inject
+    WorkWithFile workWithFile;
+    @Inject
+    CarRepair carRepair;
     private static CarRepairOrders instance;
     @ConfigProperty
     private String standartFileCsvName;
@@ -58,11 +63,11 @@ public class CarRepairOrders {
         orders.add(order);
     }
     public boolean deleteOrder(String name) {
-        return CarRepair.delete(name, orders);
+        return carRepair.delete(name, orders);
     }
 
     public boolean completeOrder(String name) {
-        int i = CarRepair.findByName(name, orders);
+        int i = carRepair.findByName(name, orders);
         if (i == -1) {
             return false;
         } else {
@@ -73,7 +78,7 @@ public class CarRepairOrders {
     }
 
     public boolean cancelOrder(String name) {
-        int i = CarRepair.findByName(name, orders);
+        int i = carRepair.findByName(name, orders);
         if (i == -1) {
             return false;
         } else {
@@ -142,7 +147,7 @@ public class CarRepairOrders {
     public ArrayList<Order> getOrderByMaster(String name) {
         ArrayList<Order> newList = new ArrayList<>();
         ArrayList<Master> listOfMasters = CarRepairMaster.getInstance().getListOfMasters(SortTypeMaster.ID);
-        int i = CarRepair.findByName(name, listOfMasters);
+        int i = carRepair.findByName(name, listOfMasters);
         if (i >= 0) {
             Master master = listOfMasters.get(i);
             ArrayList<String> names = master.getNamesOfOrder();
@@ -174,15 +179,15 @@ public class CarRepairOrders {
             String placeName = order.getPlace().getName();
             dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeName+"\n");
         }
-        WorkWithFile.whereExport(dataList, standartFileCsvName);
+        workWithFile.whereExport(dataList, standartFileCsvName);
     }
 
     public void importOrder(){
-        String nameFile = WorkWithFile.whereFromImport(standartFileCsvName);
+        String nameFile = workWithFile.whereFromImport(standartFileCsvName);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
+        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if(!data.isEmpty()){
             for(ArrayList<String> line : data){
                 if(line.size() != 8){
@@ -215,7 +220,7 @@ public class CarRepairOrders {
                         }
                         String namePlace = line.get(7);
                         ArrayList<Place> listPlace = CarRepairGarage.getInstance().getListOfPlace();
-                        int findPlace = CarRepair.findByName(namePlace, listPlace);
+                        int findPlace = carRepair.findByName(namePlace, listPlace);
                         if(findPlace > -1){
                             place = listPlace.get(findPlace);
                         }
@@ -238,7 +243,7 @@ public class CarRepairOrders {
                         System.err.println("произошла ошибка при парсинге времени заказа "+name);
                         continue;
                     }
-                    int findOrder = CarRepair.findById(id, orders);
+                    int findOrder = carRepair.findById(id, orders);
                     if(findOrder > -1){
                         orders.set(findOrder, new Order(id, name, cost, place, create, start, complete));
                     }
@@ -251,7 +256,7 @@ public class CarRepairOrders {
     }
 
     public void saveOrder(){
-        WorkWithFile.serialization(orders, standartFileJsonName);
+        workWithFile.serialization(orders, standartFileJsonName);
     }
     public void loadOrder(){
         ObjectMapper mapper = new ObjectMapper();

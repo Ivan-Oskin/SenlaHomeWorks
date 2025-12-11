@@ -1,18 +1,16 @@
 package com.oskin.autoservice.Controller;
-
+import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Model.*;
-import com.oskin.autoservice.View.CarRepairInput;
-
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
 
+
+@Singleton
 public class CarRepair {
     //Метод для поиска
 
-    public static  <T extends Nameable> int findByName(String name, ArrayList<T> list) {
+    public  <T extends Nameable> int findByName(String name, ArrayList<T> list) {
         int number = -1;
         for (int i = 0; i < list.size(); i++) {
             if (name.equals(list.get(i).getName())) {
@@ -22,7 +20,7 @@ public class CarRepair {
         }
         return number;
     }
-    public static  <T extends Nameable> int findById(int id, ArrayList<T> list) {
+    public  <T extends Nameable> int findById(int id, ArrayList<T> list) {
         int number = -1;
         for(T element : list){
             if(id == element.getId())
@@ -34,7 +32,7 @@ public class CarRepair {
 
     // Метод для удаления
 
-    public static  <T extends Nameable> boolean delete(String name, ArrayList<T> list) {
+    public  <T extends Nameable> boolean delete(String name, ArrayList<T> list) {
         int i = findByName(name, list);
         if (i == -1) {
             return false;
@@ -45,7 +43,7 @@ public class CarRepair {
     }
 
     //Количество свободных мест на любую дату
-    public static int getCountFreeTime(LocalDateTime date) {
+    public int getCountFreeTime(LocalDateTime date) {
         int countPlace = CarRepairGarage.getInstance().getFreePlace(date).size();
         if (countPlace == 0) return 0;
         int countMaster = CarRepairMaster.getInstance().getListOfMasters(SortTypeMaster.ID).size();
@@ -64,7 +62,7 @@ public class CarRepair {
         }
     }
 
-    public static LocalDateTime getNearestDate(LocalDateTime fromDate) {
+    public LocalDateTime getNearestDate(LocalDateTime fromDate) {
         LocalDateTime date = LocalDateTime.from(fromDate);
         if(CarRepairMaster.getInstance().getListOfMasters(SortTypeMaster.ID).isEmpty() ||
                 CarRepairOrders.getInstance().getListOfOrders(SortTypeOrder.ID).isEmpty()){

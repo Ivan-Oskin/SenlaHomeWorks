@@ -19,9 +19,8 @@ public class CarRepairApp {
     }
     public static void main(String[] args)
     {
-        DIСontainer.getInstance(new BuilderObject(), new Configuration(), new InjectObject());
-        System.out.println("Помещаем класс маин меню");
-        MainMenu mainMenu = DIСontainer.getDependecy(MainMenu.class);
+        DIСontainer DI = new DIСontainer(new BuilderObject(), new Configuration(), new InjectObject());
+        MainMenu mainMenu = DI.getDependecy(MainMenu.class);
         mainMenu.run();
     }
 }

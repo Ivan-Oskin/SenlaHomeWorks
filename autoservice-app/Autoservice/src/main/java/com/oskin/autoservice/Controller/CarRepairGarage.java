@@ -14,6 +14,10 @@ import com.oskin.DI.*;
 
 @Singleton
 public class CarRepairGarage {
+    @Inject
+    WorkWithFile workWithFile;
+    @Inject
+    CarRepair carRepair;
     private static CarRepairGarage instance;
     @ConfigProperty
     private String standartFileCsvName;
@@ -37,14 +41,14 @@ public class CarRepairGarage {
     }
 
     public boolean deletePlace(String name) {
-        return CarRepair.delete(name, garage);
+        return carRepair.delete(name, garage);
     }
 
     public ArrayList<Place> getListOfPlace() {
         return garage;
     }
     public Place findPlace(String name) {
-        int count = CarRepair.findByName(name, garage);
+        int count = carRepair.findByName(name, garage);
         if (count == -1) {
             return null;
         } else {
@@ -61,7 +65,7 @@ public class CarRepairGarage {
         ArrayList<Order> ordersByTime = CarRepairOrders.getInstance().getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
         for (int i = 0; i < ordersByTime.size(); i++) {
             if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
-               CarRepair.delete(ordersByTime.get(i).getPlace().getName(), newList);
+               carRepair.delete(ordersByTime.get(i).getPlace().getName(), newList);
             }
         }
         return newList;
@@ -76,15 +80,15 @@ public class CarRepairGarage {
             dataList.add(id+","+name+"\n");
         }
 
-        WorkWithFile.whereExport(dataList, standartFileCsvName);
+        workWithFile.whereExport(dataList, standartFileCsvName);
     }
 
     public void importGarage(){
-        String nameFile = WorkWithFile.whereFromImport(standartFileCsvName);
+        String nameFile = workWithFile.whereFromImport(standartFileCsvName);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
+        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if(!data.isEmpty()){
             for(ArrayList<String> line : data){
                 if(line.size() != 2){
@@ -95,7 +99,7 @@ public class CarRepairGarage {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        int findPlace = CarRepair.findById(id, garage);
+                        int findPlace = carRepair.findById(id, garage);
                         if(findPlace > -1){
                             if(!garage.get(findPlace).getName().equals(name)){
                                 garage.set(findPlace, new Place(id, name));
@@ -116,7 +120,7 @@ public class CarRepairGarage {
     }
 
     public void saveGarage(){
-        WorkWithFile.serialization(garage, standartFileJsonName);
+        workWithFile.serialization(garage, standartFileJsonName);
     }
     public void loadGarage(){
         ObjectMapper mapper = new ObjectMapper();

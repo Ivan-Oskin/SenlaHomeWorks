@@ -2,6 +2,7 @@ package com.oskin.autoservice.Controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oskin.DI.Inject;
 import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Model.*;
 import com.oskin.configuration.ConfigProperty;
@@ -15,6 +16,10 @@ import java.util.Comparator;
 
 @Singleton
 public class CarRepairMaster {
+    @Inject
+    WorkWithFile workWithFile;
+    @Inject
+    CarRepair carRepair;
     private static CarRepairMaster instance;
     @ConfigProperty
     private String standartFileCsvName;
@@ -45,7 +50,7 @@ public class CarRepairMaster {
     }
 
     public boolean deleteMaster(String name) {
-        return CarRepair.delete(name, masters);
+        return carRepair.delete(name, masters);
     }
 
     public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
@@ -65,8 +70,8 @@ public class CarRepairMaster {
 
     public boolean setOrderToMaster(String nameMaster, String nameOrder) {
         ArrayList<Order> listOfOrders = CarRepairOrders.getInstance().getListOfOrders(SortTypeOrder.ID);
-        int i = CarRepair.findByName(nameMaster, masters);
-        int j = CarRepair.findByName(nameOrder, listOfOrders);
+        int i = carRepair.findByName(nameMaster, masters);
+        int j = carRepair.findByName(nameOrder, listOfOrders);
         if (i >= 0 && j >= 0) {
             Master master = masters.get(i);
             master.addOrder(listOfOrders.get(j));
@@ -97,15 +102,15 @@ public class CarRepairMaster {
             if (orders.isEmpty()) orders = "none";
             dataList.add(id + "," + name + "," + orders + "\n");
         }
-        WorkWithFile.whereExport(dataList, standartFileCsvName);
+        workWithFile.whereExport(dataList, standartFileCsvName);
     }
 
     public void importMaster() {
-        String nameFile = WorkWithFile.whereFromImport(standartFileCsvName);
+        String nameFile = workWithFile.whereFromImport(standartFileCsvName);
         if(nameFile.equals("???")){
             return;
         }
-        ArrayList<ArrayList<String>> data = WorkWithFile.importData(nameFile);
+        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
             for (ArrayList<String> line : data) {
                 if (line.size() != 3) {
@@ -119,7 +124,7 @@ public class CarRepairMaster {
                         if (!line.get(2).equals("none")) {
                             nameOrders = new ArrayList<>(Arrays.asList(line.get(2).split(";")));
                         }
-                        int findMaster = CarRepair.findById(id, masters);
+                        int findMaster = carRepair.findById(id, masters);
                         if (findMaster > -1) {
                             if (!(masters.get(findMaster).getName().equals(name) && masters.get(findMaster).getNamesOfOrder().equals(nameOrders))) {
                                 masters.set(findMaster, new Master(id, name, nameOrders));
@@ -138,7 +143,7 @@ public class CarRepairMaster {
         }
     }
     public void saveMaster(){
-        WorkWithFile.serialization(masters, standartFileJsonName);
+        workWithFile.serialization(masters, standartFileJsonName);
     }
     public void loadMaster(){
         ObjectMapper mapper = new ObjectMapper();

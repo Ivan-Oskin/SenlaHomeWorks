@@ -1,8 +1,11 @@
 package com.oskin.autoservice.View;
 
+import com.oskin.DI.Singleton;
+
 import java.util.ArrayList;
 
-public class Builder {
+@Singleton
+public class BuilderMenu {
     private ArrayList<MenuItem> items = new ArrayList<>();
     private String title = "";
 
