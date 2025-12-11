@@ -3,7 +3,6 @@ package com.oskin.autoservice.View;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
-import com.oskin.configuration.Configuration;
 import com.oskin.configuration.Configuration.*;
 import com.oskin.DI.*;
 
@@ -15,6 +14,17 @@ public class MainMenu {
     private static Navigator navigator = new Navigator();
     private static MainMenu instance;
 
+    @Inject
+    CarRepairGarage carRepairGarage;
+    @Inject
+    CarRepairMaster carRepairMaster;
+    @Inject
+    CarRepairOrders carRepairOrders;
+    @Inject
+    CarRepairInput carRepairInput;
+    @Inject
+    CarRepairOutput carRepairOutput;
+
     private MainMenu(){}
 
     public static MainMenu getInstance(){
@@ -24,16 +34,11 @@ public class MainMenu {
         return instance;
     }
 
-    public static void run(){
-        DIСontainer DI = DIСontainer.getInstance(new BuilderObject(), new Configuration());
-        CarRepairGarage carRepairGarage = DI.getDependecy(CarRepairGarage.class);
-        CarRepairMaster carRepairMaster = DI.getDependecy(CarRepairMaster.class);
-        CarRepairOrders carRepairOrders = DI.getDependecy(CarRepairOrders.class);
-        CarRepairInput carRepairInput = DI.getDependecy(CarRepairInput.class);
-        CarRepairOutput carRepairOutput = DI.getDependecy(CarRepairOutput.class);
+    public void run(){
         carRepairGarage.loadGarage();
         carRepairMaster.loadMaster();
         carRepairOrders.loadOrder();
+
         builder.setTitle("Добавить данные");
         builder.addItem(1, "Добавить мастера",() -> carRepairInput.addMaster());
         builder.addItem(2, "Добавить место", () -> carRepairInput.addPlace());

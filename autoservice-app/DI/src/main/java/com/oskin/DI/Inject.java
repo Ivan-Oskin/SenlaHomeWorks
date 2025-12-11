@@ -1,4 +1,4 @@
-package com.oskin.configuration;
+package com.oskin.DI;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

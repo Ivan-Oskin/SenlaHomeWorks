@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Navigator {
-    private Scanner scanner = new Scanner(System.in);
     private Menu currentMenu;
     private ArrayList<Menu> menu = new ArrayList<>();
 
@@ -37,9 +36,4 @@ public class Navigator {
         }
         else System.out.println("Такой команды нет");
     }
-
-    public int GetCountMenu(){
-        return menu.size();
-    }
-
 }
