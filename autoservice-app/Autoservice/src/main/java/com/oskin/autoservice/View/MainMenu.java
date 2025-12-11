@@ -52,36 +52,36 @@ public class MainMenu {
         builder.addItem(3, "Отменить заказ", () -> carRepairInput.cancelOrder());
         navigator.addMenu(builder.build());
         builder.setTitle("Получить данные");
-        builder.addItem(1, "Свободные места", () -> CarRepairOutput.getInstance().getFreePlace());
-        builder.addItem(2, "Список заказов", () -> CarRepairOutput.getInstance().getListOrders());
-        builder.addItem(3, "Список мастеров", () -> CarRepairOutput.getInstance().getMasters());
-        builder.addItem(4, "Текущие заказы", () -> CarRepairOutput.getInstance().getCurrentOrders());
-        builder.addItem(5, "Заказы мастера", () -> CarRepairOutput.getInstance().getOrderByMaster());
-        builder.addItem(6, "Мастера, выполняющие заказ", () -> CarRepairOutput.getInstance().getMastersByOrder());
-        builder.addItem(7, "Заказы за определенный период", () -> CarRepairOutput.getInstance().getOrdersInTime());
-        builder.addItem(8, "Количество свободных мест", () -> CarRepairOutput.getInstance().getCountInTime());
-        builder.addItem(9, "Ближайшая свободна дата", () -> CarRepairOutput.getInstance().getNearestDate());
+        builder.addItem(1, "Свободные места", () -> carRepairOutput.getFreePlace());
+        builder.addItem(2, "Список заказов", () -> carRepairOutput.getListOrders());
+        builder.addItem(3, "Список мастеров", () -> carRepairOutput.getMasters());
+        builder.addItem(4, "Текущие заказы", () -> carRepairOutput.getCurrentOrders());
+        builder.addItem(5, "Заказы мастера", () -> carRepairOutput.getOrderByMaster());
+        builder.addItem(6, "Мастера, выполняющие заказ", () -> carRepairOutput.getMastersByOrder());
+        builder.addItem(7, "Заказы за определенный период", () -> carRepairOutput.getOrdersInTime());
+        builder.addItem(8, "Количество свободных мест", () -> carRepairOutput.getCountInTime());
+        builder.addItem(9, "Ближайшая свободна дата", () -> carRepairOutput.getNearestDate());
         navigator.addMenu(builder.build());
         builder.setTitle("Экспорт данных");
-        builder.addItem(1, "Экспортировать места", ()-> CarRepairGarage.getInstance().exportGarage());
-        builder.addItem(2, "Экспортировать мастеров", ()-> CarRepairMaster.getInstance().exportMaster());
-        builder.addItem(3, "Экспортировать заказы", ()-> CarRepairOrders.getInstance().exportOrder());
+        builder.addItem(1, "Экспортировать места", ()-> carRepairGarage.exportGarage());
+        builder.addItem(2, "Экспортировать мастеров", ()-> carRepairMaster.exportMaster());
+        builder.addItem(3, "Экспортировать заказы", ()-> carRepairOrders.exportOrder());
         builder.addItem(4, "Сделать экспорт всех сущностей",
             () -> {
-                CarRepairGarage.getInstance().exportGarage();
-                CarRepairMaster.getInstance().exportMaster();
-                CarRepairOrders.getInstance().exportOrder();
+                carRepairGarage.exportGarage();
+                carRepairMaster.exportMaster();
+                carRepairOrders.exportOrder();
             });
         navigator.addMenu(builder.build());
         builder.setTitle("Импорт данных");
-        builder.addItem(1, "Импорт мест", () -> CarRepairGarage.getInstance().importGarage());
-        builder.addItem(2, "Импорт мастеров", () -> CarRepairMaster.getInstance().importMaster());
-        builder.addItem(3, "Импорт заказов", () -> CarRepairOrders.getInstance().importOrder());
+        builder.addItem(1, "Импорт мест", () -> carRepairGarage.importGarage());
+        builder.addItem(2, "Импорт мастеров", () -> carRepairMaster.importMaster());
+        builder.addItem(3, "Импорт заказов", () -> carRepairOrders.importOrder());
         builder.addItem(4, "Сделать импорт всех сущностей",
             () -> {
-                CarRepairGarage.getInstance().importGarage();
-                CarRepairMaster.getInstance().importMaster();
-                CarRepairOrders.getInstance().importOrder();
+                carRepairGarage.importGarage();
+                carRepairMaster.importMaster();
+                carRepairOrders.importOrder();
             });
         navigator.addMenu(builder.build());
 /*        builder.setTitle("Изменить конфигурацию");
@@ -97,9 +97,9 @@ public class MainMenu {
                 x = scanner.nextInt();
                 scanner.nextLine();
                 if(x == 0){
-                    CarRepairGarage.getInstance().saveGarage();
-                    CarRepairMaster.getInstance().saveMaster();
-                    CarRepairOrders.getInstance().saveOrder();
+                    carRepairGarage.saveGarage();
+                    carRepairMaster.saveMaster();
+                    carRepairOrders.saveOrder();
                     return;
                 }
             }

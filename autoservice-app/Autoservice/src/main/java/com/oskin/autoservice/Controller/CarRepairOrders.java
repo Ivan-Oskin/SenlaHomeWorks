@@ -3,6 +3,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Model.*;
 import com.oskin.configuration.*;
 
@@ -14,6 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+@Singleton
 public class CarRepairOrders {
     private static CarRepairOrders instance;
     @ConfigProperty

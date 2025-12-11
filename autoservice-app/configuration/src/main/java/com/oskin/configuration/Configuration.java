@@ -41,8 +41,11 @@ public class Configuration implements IConfiguration {
                 if(value == null) return;
                 field.setAccessible(true);
                 try {
-                    field.set(obj, value);
-                    field.set(obj, value);
+                    if(config.type() == null){
+                        field.set(obj, value);
+                    }
+                    else
+                        field.set(obj, convert(value, config.type()));
                 } catch (java.lang.IllegalAccessException e){
                     System.err.println("Произошла ошибка при извлечения значения в поле из конфигурации");
                 }

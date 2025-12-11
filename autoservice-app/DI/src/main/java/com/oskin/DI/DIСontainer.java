@@ -33,6 +33,7 @@ public class DIСontainer {
         Singleton singleton = obj.getClass().getAnnotation(Singleton.class);
         if(singleton != null){
             container.put(obj.getClass(), obj);
+            System.out.println("Добавлен в контейнер");
         }
         return obj;
     }

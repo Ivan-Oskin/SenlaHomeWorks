@@ -1,5 +1,6 @@
 package com.oskin.autoservice.View;
 
+import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Controller.CarRepair;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+@Singleton
 public class CarRepairOutput {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
     private static CarRepairOutput instance;

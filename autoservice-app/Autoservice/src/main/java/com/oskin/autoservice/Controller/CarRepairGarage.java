@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import com.oskin.configuration.*;
 import com.oskin.configuration.Configuration.*;
+import com.oskin.DI.*;
 
+@Singleton
 public class CarRepairGarage {
     private static CarRepairGarage instance;
     @ConfigProperty

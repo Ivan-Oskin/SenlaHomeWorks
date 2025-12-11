@@ -1,4 +1,5 @@
 package com.oskin.autoservice.View;
+import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+@Singleton
 public class CarRepairInput {
     Scanner scanner = new Scanner(System.in);
     private static CarRepairInput instance;

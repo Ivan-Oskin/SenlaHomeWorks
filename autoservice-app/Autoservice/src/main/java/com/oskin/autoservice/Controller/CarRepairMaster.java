@@ -2,6 +2,7 @@ package com.oskin.autoservice.Controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oskin.DI.Singleton;
 import com.oskin.autoservice.Model.*;
 import com.oskin.configuration.ConfigProperty;
 
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+
+@Singleton
 public class CarRepairMaster {
     private static CarRepairMaster instance;
     @ConfigProperty
