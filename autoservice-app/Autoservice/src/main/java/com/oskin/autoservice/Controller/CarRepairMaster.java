@@ -2,10 +2,9 @@ package com.oskin.autoservice.Controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oskin.DI.Inject;
-import com.oskin.DI.Singleton;
+import com.oskin.Annotations.*;
 import com.oskin.autoservice.Model.*;
-import com.oskin.configuration.ConfigProperty;
+import com.oskin.config.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,11 +19,9 @@ public class CarRepairMaster {
     WorkWithFile workWithFile;
     @Inject
     CarRepair carRepair;
+    @Inject
+    Config config;
     private static CarRepairMaster instance;
-    @ConfigProperty
-    private String standartFileCsvName;
-    @ConfigProperty
-    private String standartFileJsonName;
 
     private CarRepairMaster() {
 
@@ -102,11 +99,11 @@ public class CarRepairMaster {
             if (orders.isEmpty()) orders = "none";
             dataList.add(id + "," + name + "," + orders + "\n");
         }
-        workWithFile.whereExport(dataList, standartFileCsvName);
+        workWithFile.whereExport(dataList, config.getStandartFileCsvMaster());
     }
 
     public void importMaster() {
-        String nameFile = workWithFile.whereFromImport(standartFileCsvName);
+        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvMaster());
         if(nameFile.equals("???")){
             return;
         }
@@ -143,11 +140,11 @@ public class CarRepairMaster {
         }
     }
     public void saveMaster(){
-        workWithFile.serialization(masters, standartFileJsonName);
+        workWithFile.serialization(masters, config.getStandartPathToData()+config.getStandartFileJsonMaster());
     }
     public void loadMaster(){
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File(standartFileJsonName);
+        File file = new File(config.getStandartPathToData()+config.getStandartFileJsonMaster());
         if(file.exists()){
             try{
                 masters = mapper.readValue(file, new TypeReference<ArrayList<Master>>() {});

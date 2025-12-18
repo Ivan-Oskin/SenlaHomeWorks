@@ -11,7 +11,7 @@
     <modules>
         <module>DI</module>
         <module>Autoservice</module>
-        <module>configuration</module>
+        <module>Annotations</module>
     </modules>
 
     <properties>

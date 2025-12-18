@@ -1,18 +1,14 @@
 package com.oskin.DI;
-
 import java.util.HashMap;
 import java.util.Map;
-import com.oskin.configuration.IConfiguration;
-
+import com.oskin.Annotations.*;
 public class DIСontainer {
     private static Map<Class, Object> container = new HashMap<>();
     private static DIСontainer instance;
-    private static IBuilder builder;
-    private static IInject inject;
-    private static IConfiguration config;
-    public DIСontainer(IBuilder builder, IConfiguration config, IInject inject){
+    private static BuilderObject builder;
+    private static InjectObject inject;
+    public DIСontainer(BuilderObject builder, InjectObject inject){
         this.builder = builder;
-        this.config = config;
         this.inject = inject;
     }
 
@@ -22,7 +18,6 @@ public class DIСontainer {
         }
 
         T obj = builder.create(type);
-        config.configure(obj);
         inject.inject(obj);
 
         Singleton singleton = obj.getClass().getAnnotation(Singleton.class);

@@ -1,6 +1,6 @@
 package com.oskin.autoservice.View;
 
-import com.oskin.DI.Singleton;
+import com.oskin.Annotations.*;
 
 import java.util.ArrayList;
 

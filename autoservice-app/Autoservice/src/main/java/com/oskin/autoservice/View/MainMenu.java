@@ -1,5 +1,5 @@
 package com.oskin.autoservice.View;
-
+import com.oskin.Annotations.*;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;

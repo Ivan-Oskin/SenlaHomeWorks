@@ -3,10 +3,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.oskin.DI.Inject;
-import com.oskin.DI.Singleton;
+import com.oskin.Annotations.*;
 import com.oskin.autoservice.Model.*;
-import com.oskin.configuration.*;
+import com.oskin.config.Config;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,11 +21,9 @@ public class CarRepairOrders {
     WorkWithFile workWithFile;
     @Inject
     CarRepair carRepair;
+    @Inject
+    Config config;
     private static CarRepairOrders instance;
-    @ConfigProperty
-    private String standartFileCsvName;
-    @ConfigProperty
-    private String standartFileJsonName;
 
     private CarRepairOrders(){}
 
@@ -179,11 +176,11 @@ public class CarRepairOrders {
             String placeName = order.getPlace().getName();
             dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeName+"\n");
         }
-        workWithFile.whereExport(dataList, standartFileCsvName);
+        workWithFile.whereExport(dataList, config.getStandartFileCsvOrders());
     }
 
     public void importOrder(){
-        String nameFile = workWithFile.whereFromImport(standartFileCsvName);
+        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvOrders());
         if(nameFile.equals("???")){
             return;
         }
@@ -256,13 +253,13 @@ public class CarRepairOrders {
     }
 
     public void saveOrder(){
-        workWithFile.serialization(orders, standartFileJsonName);
+        workWithFile.serialization(orders, config.getStandartPathToData()+config.getStandartFileJsonOrders());
     }
     public void loadOrder(){
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        File file = new File(standartFileJsonName);
+        File file = new File(config.getStandartPathToData()+config.getStandartFileJsonOrders());
         if(file.exists()){
             try{
                 orders = mapper.readValue(file, new TypeReference<ArrayList<Order>>() {});

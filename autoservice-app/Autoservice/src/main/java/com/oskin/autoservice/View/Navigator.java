@@ -1,8 +1,5 @@
 package com.oskin.autoservice.View;
-
-import com.oskin.DI.Inject;
-import com.oskin.DI.Singleton;
-
+import com.oskin.Annotations.*;
 import java.util.ArrayList;
 @Singleton
 public class Navigator {

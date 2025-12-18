@@ -3,14 +3,13 @@ package com.oskin.autoservice.Controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.autoservice.Model.*;
-
+import com.oskin.Annotations.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import com.oskin.configuration.*;
-import com.oskin.configuration.Configuration.*;
-import com.oskin.DI.*;
+
+import com.oskin.config.Config;
 
 @Singleton
 public class CarRepairGarage {
@@ -18,11 +17,9 @@ public class CarRepairGarage {
     WorkWithFile workWithFile;
     @Inject
     CarRepair carRepair;
+    @Inject
+    Config config;
     private static CarRepairGarage instance;
-    @ConfigProperty
-    private String standartFileCsvName;
-    @ConfigProperty
-    private String standartFileJsonName;
     private CarRepairGarage(){
     }
 
@@ -80,11 +77,11 @@ public class CarRepairGarage {
             dataList.add(id+","+name+"\n");
         }
 
-        workWithFile.whereExport(dataList, standartFileCsvName);
+        workWithFile.whereExport(dataList, config.getStandartFileCsvGarage());
     }
 
     public void importGarage(){
-        String nameFile = workWithFile.whereFromImport(standartFileCsvName);
+        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvGarage());
         if(nameFile.equals("???")){
             return;
         }
@@ -120,11 +117,11 @@ public class CarRepairGarage {
     }
 
     public void saveGarage(){
-        workWithFile.serialization(garage, standartFileJsonName);
+        workWithFile.serialization(garage, config.getStandartPathToData()+config.getStandartFileJsonGarage());
     }
     public void loadGarage(){
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File(standartFileJsonName);
+        File file = new File(config.getStandartPathToData()+config.getStandartFileJsonGarage());
         if(file.exists()){
             try{
                 garage = mapper.readValue(file, new TypeReference<ArrayList<Place>>() {});

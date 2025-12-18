@@ -5,8 +5,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.Constructor;
 import java.util.Set;
 
-public class BuilderObject implements IBuilder {
-    @Override
+public class BuilderObject{
     public <T> T create(Class<T> type){
         Class<T> impClass = type;
         if(type.isInterface()){

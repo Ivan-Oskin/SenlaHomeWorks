@@ -1,4 +1,4 @@
-package com.oskin.configuration;
+package com.oskin.Annotations;
 
 
 import java.lang.annotation.ElementType;

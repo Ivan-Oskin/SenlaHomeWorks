@@ -1,6 +1,6 @@
 package com.oskin.autoservice.View;
 
-import com.oskin.DI.Singleton;
+import com.oskin.Annotations.*;
 import com.oskin.autoservice.Model.*;
 
 import java.time.format.DateTimeFormatter;

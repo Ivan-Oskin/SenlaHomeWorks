@@ -1,12 +1,8 @@
 package com.oskin.DI;
-
-import com.oskin.configuration.Configuration;
-
 import java.lang.reflect.Field;
-import java.util.Dictionary;
+import com.oskin.Annotations.*;
 
-public class InjectObject implements IInject {
-    @Override
+public class InjectObject {
     public void inject(Object obj) {
         for (Field field : obj.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(Inject.class)) {

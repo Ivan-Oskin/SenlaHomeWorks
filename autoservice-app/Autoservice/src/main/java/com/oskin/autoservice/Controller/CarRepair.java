@@ -1,5 +1,5 @@
 package com.oskin.autoservice.Controller;
-import com.oskin.DI.Singleton;
+import com.oskin.Annotations.*;
 import com.oskin.autoservice.Model.*;
 import java.io.*;
 import java.time.LocalDateTime;

@@ -1,20 +1,16 @@
-package com.oskin.configuration;
-
-import javax.swing.table.TableRowSorter;
-import java.io.FileInputStream;
+package com.oskin.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.Locale;
 import java.util.Properties;
-
-public class Configuration implements IConfiguration {
+import com.oskin.Annotations.ConfigProperty;
+public class Configuration {
 
     public Configuration(){};
 
     private Properties properties = new Properties();
     private void injectProperty(String path){
-        try(InputStream stream = new FileInputStream(path)){
+        try(InputStream stream = getClass().getClassLoader().getResourceAsStream(path)){
             properties.load(stream);
         } catch (IOException e){
             System.err.println("Произошла ошибка с файлом Property");

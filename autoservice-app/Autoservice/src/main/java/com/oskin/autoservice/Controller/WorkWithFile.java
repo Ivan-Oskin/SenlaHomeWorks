@@ -3,12 +3,14 @@ package com.oskin.autoservice.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.oskin.DI.Inject;
-import com.oskin.DI.Singleton;
+import com.oskin.Annotations.*;
 import com.oskin.autoservice.Model.Nameable;
 import com.oskin.autoservice.View.CarRepairInput;
+import com.oskin.config.Config;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -17,8 +19,10 @@ import java.util.Scanner;
 @Singleton
 public class WorkWithFile {
     @Inject
-    public CarRepairInput carRepairInput;
-    public void exportData(ArrayList<String> dataString, String fileName){
+    private CarRepairInput carRepairInput;
+    @Inject
+    private Config config;
+    public void exportData(ArrayList<String> dataString, String fileName, boolean isStandart){
         String name;
         if(!fileName.endsWith(".csv")){
             name = fileName+".csv";
@@ -26,7 +30,15 @@ public class WorkWithFile {
         else {
             name = fileName;
         }
-        try(FileWriter writer = new FileWriter(name)){
+        File file;
+        if(isStandart){
+            Path path = Paths.get(config.getStandartPathToData()+name);
+            file = path.toFile();
+        }
+        else {
+            file = new File(name);
+        }
+        try(FileWriter writer = new FileWriter(file)){
             for(String line : dataString){
                 writer.append(line);
             }
@@ -47,7 +59,7 @@ public class WorkWithFile {
         }
         switch (input){
             case 1:{
-                exportData(dataList, nameObject);
+                exportData(dataList, nameObject, true);
                 System.out.println("Данные экспортированы");
                 break;
             }
@@ -56,7 +68,7 @@ public class WorkWithFile {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Введите имя файла");
                 String nameFile = scanner.nextLine();
-                exportData(dataList, nameFile);
+                exportData(dataList, nameFile, false);
                 System.out.println("Данные экспортированы");
                 break;
             }
@@ -92,7 +104,7 @@ public class WorkWithFile {
         }
         switch (input){
             case 1:{
-                return fileName;
+                return config.getStandartPathToData()+fileName;
             }
             case 2:
             {

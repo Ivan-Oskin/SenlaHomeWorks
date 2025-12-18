@@ -1,13 +1,12 @@
 package com.oskin.autoservice.View;
 
-import com.oskin.DI.Inject;
-import com.oskin.DI.Singleton;
+import com.oskin.Annotations.*;
 import com.oskin.autoservice.Controller.CarRepair;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
 import com.oskin.autoservice.Model.*;
-import com.oskin.configuration.ConfigProperty;
+import com.oskin.config.Config;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,18 +27,8 @@ public class CarRepairViewFunctions {
     CarRepairInput carRepairInput;
     @Inject
     CarRepair carRepair;
-
-    @ConfigProperty(type = boolean.class)
-    boolean ruleAddPlace;
-
-    @ConfigProperty(type = boolean.class)
-    boolean ruleDeletePlace;
-
-    @ConfigProperty(type = boolean.class)
-    boolean ruleDeleteOrder;
-
-    @ConfigProperty(type = boolean.class)
-    boolean ruleOffset;
+    @Inject
+    Config config;
 
     public void getListOrders(){
         carRepairOutput.printOrders(carRepairOrders.getListOfOrders(carRepairInput.whatSortTypeOrder()));
@@ -113,7 +102,7 @@ public class CarRepairViewFunctions {
     }
 
     public void addPlace() {
-        if(!ruleAddPlace){
+        if(!config.getRuleAddPlace()){
             System.err.println("Запрещено");
             return;
         }
@@ -178,7 +167,7 @@ public class CarRepairViewFunctions {
     }
 
     public void offsetTimeOrder() {
-        if(!ruleOffset){
+        if(!config.getRuleOffset()){
             System.err.println("Запрещено");
             return;
         }
@@ -202,7 +191,7 @@ public class CarRepairViewFunctions {
         carRepairOutput.infAboutDelete(name, inf);
     }
     public void deleteOrder() {
-        if(!ruleDeleteOrder){
+        if(!config.getRuleDeleteOrder()){
             System.err.println("Запрещено");
             return;
         }
@@ -211,7 +200,7 @@ public class CarRepairViewFunctions {
         carRepairOutput.infAboutDelete(name, inf);
     }
     public void deletePlace() {
-        if(!ruleDeletePlace){
+        if(!config.getRuleDeletePlace()){
             System.err.println("Запрещено");
             return;
         }
