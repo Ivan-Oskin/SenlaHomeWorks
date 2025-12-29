@@ -1,0 +1,1 @@
+Select model, speed, ram from pc where price < 500.00::money; 

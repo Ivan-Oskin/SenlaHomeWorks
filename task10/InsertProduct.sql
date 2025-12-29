@@ -7,4 +7,5 @@ INSERT INTO product (maker, model, type) VALUES
 ('C', 'Printer-3003', 'Printer'),
 ('D', 'PC-1004', 'PC'),
 ('E', 'Laptop-2005', 'Laptop'),
+('E', 'PC-1005', 'PC'),
 ('E', 'Printer-3005', 'Printer');
