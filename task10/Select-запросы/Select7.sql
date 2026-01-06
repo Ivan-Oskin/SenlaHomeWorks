@@ -1,1 +1,0 @@
-select model from product where maker = 'B';
