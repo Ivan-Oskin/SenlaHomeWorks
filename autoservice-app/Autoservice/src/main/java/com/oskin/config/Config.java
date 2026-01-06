@@ -26,6 +26,13 @@ public class Config {
     boolean ruleOffset;
     @ConfigProperty(propertyName = "standart.path.to.data")
     String standartPathToData;
+    @ConfigProperty(propertyName = "url.bd")
+    String urlBd;
+    @ConfigProperty(propertyName = "user.bd")
+    String userBd;
+    @ConfigProperty(propertyName = "password.bd")
+    String passwordBd;
+
     public Config(){
         Configuration configuration = new Configuration();
         configuration.configure(this);
@@ -62,5 +69,7 @@ public class Config {
         return this.ruleOffset;
     }
     public String getStandartPathToData(){return this.standartPathToData;}
-
+    public String getUrlBd(){return this.urlBd;}
+    public String getUserBd(){return this.userBd;}
+    public String getPasswordBd(){return this.passwordBd;}
 }
