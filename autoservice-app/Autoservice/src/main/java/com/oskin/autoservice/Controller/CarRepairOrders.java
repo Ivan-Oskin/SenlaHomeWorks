@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.Annotations.*;
+import com.oskin.autoservice.DAO.OrderDB;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 
@@ -23,6 +24,8 @@ public class CarRepairOrders {
     CarRepair carRepair;
     @Inject
     Config config;
+    @Inject
+    OrderDB orderDB;
     private static CarRepairOrders instance;
 
     private CarRepairOrders(){}
@@ -112,15 +115,15 @@ public class CarRepairOrders {
     }
 
     public ArrayList<Order> getListOfOrders(SortTypeOrder sortType) {
-        ArrayList<Order> newList = new ArrayList<>(orders);
+        ArrayList<Order> newList = orderDB.selectOrder();
         sortOrders(newList, sortType);
         return newList;
     }
 
     public ArrayList<Order> getListOfActiveOrders(SortTypeOrder sortType) {
+        ArrayList<Order> orders = orderDB.selectOrder();
         ArrayList<Order> newList = new ArrayList<>();
-        for (int i = 0; i < orders.size(); i++) {
-            Order order = orders.get(i);
+        for (Order order : orders) {
             if (order.getStatus().equals(StatusOrder.ACTIVE)) {
                 newList.add(order);
             }
@@ -130,9 +133,9 @@ public class CarRepairOrders {
     }
 
     public ArrayList<Order> getOrdersInTime(StatusOrder status, LocalDateTime startDate, LocalDateTime endDate, SortTypeOrder sortType) {
+        ArrayList<Order> orders = orderDB.selectOrder();
         ArrayList<Order> newList = new ArrayList<>();
-        for (int i = 0; i < orders.size(); i++) {
-            Order order = (Order) orders.get(i);
+        for (Order order : orders) {
             if (order.getTimeStart().compareTo(endDate) <= 0 && order.getTimeComplete().compareTo(startDate) >= 0 && order.getStatus().equals(status)) {
                 newList.add(order);
             }

@@ -71,7 +71,7 @@ public class CarRepairInput {
             while (true) {
                 year = scanner.nextInt();
                 scanner.nextLine();
-                if (year >= LocalDateTime.now().getYear() && year < 2030) break;
+                if (year >= LocalDateTime.now().getYear()-5 && year < 2030) break;
                 System.out.println("Неправильный ввод");
             }
             carRepairOutput.infAboutInput("Месяц");

@@ -67,6 +67,16 @@ public class Order implements Nameable {
         this.status = StatusOrder.ACTIVE;
         this.place = place;
     }
+    public Order(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete, StatusOrder status) {
+        this.id = id;
+        this.name = name;
+        this.cost = cost;
+        this.timeCreate = timeCreate;
+        this.timeStart = timeStart;
+        this.timeComplete = timeComplete;
+        this.status = StatusOrder.ACTIVE;
+        this.place = place;
+    }
 
     public void changeDay(int day) {
         this.timeStart = timeStart.plusDays(day);
