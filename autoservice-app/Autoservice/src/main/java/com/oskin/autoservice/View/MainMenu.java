@@ -4,6 +4,7 @@ import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
 import com.oskin.DI.*;
+import com.oskin.autoservice.DAO.ConnectionDB;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -24,10 +25,13 @@ public class MainMenu {
     CarRepairOrders carRepairOrders;
     @Inject
     CarRepairViewFunctions carRepairViewFunctions;
+    @Inject
+    ConnectionDB connectionDB;
 
     public MainMenu(){}
 
     public void run(){
+        connectionDB.Connect();
         carRepairGarage.loadGarage();
         carRepairMaster.loadMaster();
         carRepairOrders.loadOrder();
