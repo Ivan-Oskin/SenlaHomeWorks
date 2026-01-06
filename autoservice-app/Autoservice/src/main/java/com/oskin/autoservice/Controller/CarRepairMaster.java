@@ -3,6 +3,7 @@ package com.oskin.autoservice.Controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.Annotations.*;
+import com.oskin.autoservice.DAO.PlaceBD;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 
@@ -21,6 +22,8 @@ public class CarRepairMaster {
     CarRepair carRepair;
     @Inject
     Config config;
+    @Inject
+    PlaceBD placeBD;
     private static CarRepairMaster instance;
 
     private CarRepairMaster() {

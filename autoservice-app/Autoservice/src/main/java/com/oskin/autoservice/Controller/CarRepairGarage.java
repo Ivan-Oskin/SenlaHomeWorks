@@ -1,11 +1,9 @@
 package com.oskin.autoservice.Controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oskin.autoservice.DAO.PlaceBD;
 import com.oskin.autoservice.Model.*;
 import com.oskin.Annotations.*;
-import java.io.File;
-import java.io.IOException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -19,6 +17,8 @@ public class CarRepairGarage {
     CarRepair carRepair;
     @Inject
     Config config;
+    @Inject
+    PlaceBD placeBD;
     private static CarRepairGarage instance;
     private CarRepairGarage(){
     }
@@ -29,34 +29,29 @@ public class CarRepairGarage {
         return instance;
     }
 
-
-    private static ArrayList<Place> garage = new ArrayList<>();
-
     public void addPlace(int id, String name) {
         Place place = new Place(id, name);
-        garage.add(place);
+        placeBD.addPlaceInDB(place);
     }
 
     public boolean deletePlace(String name) {
-        return carRepair.delete(name, garage);
+        return placeBD.deletePlaceInDB(name);
     }
 
     public ArrayList<Place> getListOfPlace() {
-        return garage;
+        return placeBD.selectPlace();
     }
     public Place findPlace(String name) {
-        int count = carRepair.findByName(name, garage);
+        ArrayList<Place> places = placeBD.selectPlace();
+        int count = carRepair.findByName(name, places);
         if (count == -1) {
             return null;
         } else {
-            return garage.get(count);
+            return places.get(count);
         }
     }
-
-
-
     public ArrayList<Place> getFreePlace(LocalDateTime date) {
-        ArrayList<Place> newList = new ArrayList<Place>(garage);
+        ArrayList<Place> newList = new ArrayList<Place>(getListOfPlace());
         LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
         ArrayList<Order> ordersByTime = CarRepairOrders.getInstance().getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
@@ -69,24 +64,27 @@ public class CarRepairGarage {
     }
 
     public void exportGarage(){
-        ArrayList<String> dataList = new ArrayList<>(garage.size()+1);
+        ArrayList<Place> places = placeBD.selectPlace();
+        int size = places.size();
+        ArrayList<String> dataList = new ArrayList<>(size+1);
         dataList.add("ID,NAME\n");
-        for(int i = 0; i<garage.size(); i++){
-            int id = garage.get(i).getId();
-            String name = garage.get(i).getName();
+        for(int i = 0; i<size; i++){
+            int id = places.get(i).getId();
+            String name = places.get(i).getName();
             dataList.add(id+","+name+"\n");
         }
-
         workWithFile.whereExport(dataList, config.getStandartFileCsvGarage());
     }
-
     public void importGarage(){
+        boolean next = placeBD.DeleteAll();
+        if(!next) return;
         String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvGarage());
         if(nameFile.equals("???")){
             return;
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if(!data.isEmpty()){
+            ArrayList<Place> places = getListOfPlace();
             for(ArrayList<String> line : data){
                 if(line.size() != 2){
                     System.out.println("Неправильная таблица данных");
@@ -96,13 +94,9 @@ public class CarRepairGarage {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        int findPlace = carRepair.findById(id, garage);
-                        if(findPlace > -1){
-                            if(!garage.get(findPlace).getName().equals(name)){
-                                garage.set(findPlace, new Place(id, name));
-                            }else{
-                                continue;
-                            }
+                        int findPlace = carRepair.findById(id, places);
+                        if(findPlace > -1 && !places.get(findPlace).getName().equals(name)){
+                            placeBD.deletePlaceInDB(id);
                         }
                         else {
                             addPlace(id, name);
@@ -116,7 +110,7 @@ public class CarRepairGarage {
         }
     }
 
-    public void saveGarage(){
+    /*public void saveGarage(){
         workWithFile.serialization(garage, config.getStandartPathToData()+config.getStandartFileJsonGarage());
     }
     public void loadGarage(){
@@ -138,5 +132,5 @@ public class CarRepairGarage {
                 System.err.println("произошла ошибка при создании файла");
             }
         }
-    }
+    }*/
 }

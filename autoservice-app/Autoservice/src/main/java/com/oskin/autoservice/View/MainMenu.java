@@ -3,8 +3,8 @@ import com.oskin.Annotations.*;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
-import com.oskin.DI.*;
 import com.oskin.autoservice.DAO.ConnectionDB;
+import com.oskin.autoservice.DAO.PlaceBD;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -27,12 +27,14 @@ public class MainMenu {
     CarRepairViewFunctions carRepairViewFunctions;
     @Inject
     ConnectionDB connectionDB;
+    @Inject
+    PlaceBD data;
 
     public MainMenu(){}
 
     public void run(){
         connectionDB.Connect();
-        carRepairGarage.loadGarage();
+        //carRepairGarage.loadGarage();
         carRepairMaster.loadMaster();
         carRepairOrders.loadOrder();
 
@@ -95,7 +97,7 @@ public class MainMenu {
                 x = scanner.nextInt();
                 scanner.nextLine();
                 if(x == 0){
-                    carRepairGarage.saveGarage();
+                    //carRepairGarage.saveGarage();
                     carRepairMaster.saveMaster();
                     carRepairOrders.saveOrder();
                     return;
