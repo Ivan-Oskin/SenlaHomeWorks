@@ -12,6 +12,8 @@ import java.util.Scanner;
 public class PlaceBD {
     @Inject
     ConnectionDB connectionDB;
+    @Inject
+    FunctionsDB functionsDB;
     public ArrayList<Place> selectPlace(){
         ArrayList<Place> places = new ArrayList<>();
         try(Statement statement = connectionDB.getConnection().createStatement()) {
@@ -37,51 +39,9 @@ public class PlaceBD {
         }
     }
     public boolean deletePlaceInDB(String name){
-        String sql = "DELETE FROM Places WHERE name = ?;";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setString(1, name);
-            int result = statement.executeUpdate();
-            if(result > 0){
-                return true;
-            }
-        } catch (java.sql.SQLException e){
-            e.printStackTrace();
-        }
-        return false;
+        return functionsDB.deleteInDB(name, NameTables.PLACE);
     }
     public boolean deletePlaceInDB(int id){
-        String sql = "DELETE FROM Places WHERE id = ?;";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, id);
-            int result = statement.executeUpdate();
-            if(result > 0){
-                return true;
-            }
-        } catch (java.sql.SQLException e){
-            e.printStackTrace();
-        }
-        return false;
+        return functionsDB.deleteInDB(id, NameTables.PLACE);
     }
-
-    public boolean DeleteAll(){
-        Scanner scanner = new Scanner(System.in);
-        while (true){
-            System.out.println("Вы уверены, это действие приведет к удалению ВСЕХ данных.\nY/N");
-            String line =  scanner.nextLine();
-            if(line.toLowerCase().equals("y")){
-                try(Statement statement = connectionDB.getConnection().createStatement()) {
-                    statement.executeUpdate("DELETE FROM Places");
-                    return true;
-                } catch (java.sql.SQLException e){
-                    e.printStackTrace();
-                }
-                return false;
-            }
-            else if(line.toLowerCase().equals("n")){
-                return false;
-            }
-        }
-
-    }
-
 }

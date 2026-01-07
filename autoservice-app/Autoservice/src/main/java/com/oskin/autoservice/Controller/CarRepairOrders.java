@@ -19,13 +19,14 @@ import java.util.Comparator;
 @Singleton
 public class CarRepairOrders {
     @Inject
+    OrderDB orderDB;
+    @Inject
     WorkWithFile workWithFile;
     @Inject
     CarRepair carRepair;
     @Inject
     Config config;
-    @Inject
-    OrderDB orderDB;
+
     private static CarRepairOrders instance;
 
     private CarRepairOrders(){}
@@ -60,58 +61,46 @@ public class CarRepairOrders {
 
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete);
-        orders.add(order);
+        orderDB.addOrderInDB(order);
     }
     public boolean deleteOrder(String name) {
-        return carRepair.delete(name, orders);
+        return orderDB.deleteOrderInDB(name);
     }
-
     public boolean completeOrder(String name) {
-        int i = carRepair.findByName(name, orders);
-        if (i == -1) {
-            return false;
-        } else {
-            Order order =  orders.get(i);
-            order.close();
-            return true;
-        }
+        return orderDB.ChangeStatusInDb(name, StatusOrder.CLOSE);
     }
-
     public boolean cancelOrder(String name) {
-        int i = carRepair.findByName(name, orders);
-        if (i == -1) {
+        return orderDB.ChangeStatusInDb(name, StatusOrder.CANCEL);
+    }
+    /*private boolean offset(String name, int count, boolean isDay) {
+    boolean flag = false;
+    orders.sort(Comparator.comparing(Order::getTimeStart));
+    for (int i = 0; i < orders.size(); i++) {
+        Order order = orders.get(i);
+        if (name.equals(orders.get(i).getName())) {
+            flag = true;
+        }
+        if (flag) {
+            if (isDay) order.changeDay(count);
+            else order.changeHour(count);
+        }
+    }
+    return flag;
+}*/
+    public boolean offset(String name, int countDay, int countHour) {
+        Order order = orderDB.findOrderInDB(name);
+        if(order == null){
             return false;
-        } else {
-            Order order = orders.get(i);
-            order.cancel();
-            return true;
         }
-    }
-
-    private boolean offset(String name, int count, boolean isDay) {
-        boolean flag = false;
-        orders.sort(Comparator.comparing(Order::getTimeStart));
-        for (int i = 0; i < orders.size(); i++) {
-            Order order = orders.get(i);
-            if (name.equals(orders.get(i).getName())) {
-
-                flag = true;
-            }
-            if (flag) {
-                if (isDay) order.changeDay(count);
-                else order.changeHour(count);
-            }
+        else {
+            LocalDateTime startTime = order.getTimeStart();
+            LocalDateTime completeTime = order.getTimeComplete();
+            LocalDateTime ChangeStartTime = startTime.plusDays(countDay);
+            LocalDateTime ChangeCompleteTime = completeTime.plusDays(countDay);
+            startTime = ChangeStartTime.plusHours(countHour);
+            completeTime = ChangeCompleteTime.plusHours(countHour);
+            return orderDB.offsetInDb(name, startTime,completeTime);
         }
-        return flag;
-    }
-
-    public boolean offsetDay(String name, int countDay) {
-        return offset(name, countDay, true);
-
-    }
-
-    public boolean offsetHour(String name, int countHour) {
-        return offset(name, countHour, false);
     }
 
     public ArrayList<Order> getListOfOrders(SortTypeOrder sortType) {
@@ -131,7 +120,6 @@ public class CarRepairOrders {
         sortOrders(newList, sortType);
         return newList;
     }
-
     public ArrayList<Order> getOrdersInTime(StatusOrder status, LocalDateTime startDate, LocalDateTime endDate, SortTypeOrder sortType) {
         ArrayList<Order> orders = orderDB.selectOrder();
         ArrayList<Order> newList = new ArrayList<>();
@@ -162,10 +150,11 @@ public class CarRepairOrders {
     }
 
     public void exportOrder(){
+        ArrayList<Order> orders = getListOfOrders(SortTypeOrder.ID);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
         ArrayList<String> dataList = new ArrayList<>(orders.size()+1);
         dataList.add("ID,NAME,COST,STATUS,CREATE_TIME,START_TIME,COMPLETE_TIME,PLACE\n");
-        for(Order order : getListOfOrders(SortTypeOrder.ID)){
+        for(Order order : orders){
             int id = order.getId();
             String name = order.getName();
             int cost = order.getCost();
@@ -182,80 +171,7 @@ public class CarRepairOrders {
         workWithFile.whereExport(dataList, config.getStandartFileCsvOrders());
     }
 
-    public void importOrder(){
-        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvOrders());
-        if(nameFile.equals("???")){
-            return;
-        }
-        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
-        if(!data.isEmpty()){
-            for(ArrayList<String> line : data){
-                if(line.size() != 8){
-                    System.out.println("Неправильная таблица данных");
-                    return;
-                }
-                else {
-                    int id;
-                    String name;
-                    int cost;
-                    StatusOrder status = null;
-                    LocalDateTime create;
-                    LocalDateTime start;
-                    LocalDateTime complete;
-                    Place place;
-                    try {
-                        id = Integer.parseInt(line.get(0));
-                        name = line.get(1);
-                        cost = Integer.parseInt(line.get(2));
-                        String statusString = line.get(3);
-                        for(StatusOrder statusOrder : StatusOrder.values()){
-                            if(statusOrder.getSTATUS().equals(statusString)){
-                                status = statusOrder;
-                                break;
-                            }
-                        }
-                        if(status == null){
-                            System.err.println("Неправильные данные в заказе "+name);
-                            continue;
-                        }
-                        String namePlace = line.get(7);
-                        ArrayList<Place> listPlace = CarRepairGarage.getInstance().getListOfPlace();
-                        int findPlace = carRepair.findByName(namePlace, listPlace);
-                        if(findPlace > -1){
-                            place = listPlace.get(findPlace);
-                        }
-                        else {
-                            System.out.println("место "+namePlace+" Не найдено.");
-                            System.out.println("Заказ "+name + " не будет добавлен");
-                            continue;
-                        }
-                    } catch (NumberFormatException e){
-                        System.err.println("Неправильные данные");
-                        return;
-                    }
-                    try {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
-                        create = LocalDateTime.parse(line.get(4), formatter);
-                        start = LocalDateTime.parse(line.get(5), formatter);
-                        complete = LocalDateTime.parse(line.get(6), formatter);
-                    }
-                    catch (DateTimeParseException e){
-                        System.err.println("произошла ошибка при парсинге времени заказа "+name);
-                        continue;
-                    }
-                    int findOrder = carRepair.findById(id, orders);
-                    if(findOrder > -1){
-                        orders.set(findOrder, new Order(id, name, cost, place, create, start, complete));
-                    }
-                    else{
-                        addOrder(id, name, cost, place, create, start, complete);
-                    }
-                }
-            }
-        }
-    }
-
-    public void saveOrder(){
+   /* public void saveOrder(){
         workWithFile.serialization(orders, config.getStandartPathToData()+config.getStandartFileJsonOrders());
     }
     public void loadOrder(){
@@ -279,7 +195,7 @@ public class CarRepairOrders {
                 System.err.println("произошла ошибка при создании файла");
             }
         }
-    }
+    }*/
 }
 
 

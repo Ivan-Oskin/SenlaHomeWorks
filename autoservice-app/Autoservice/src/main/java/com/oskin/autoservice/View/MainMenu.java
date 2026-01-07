@@ -3,6 +3,7 @@ import com.oskin.Annotations.*;
 import com.oskin.autoservice.Controller.CarRepairGarage;
 import com.oskin.autoservice.Controller.CarRepairMaster;
 import com.oskin.autoservice.Controller.CarRepairOrders;
+import com.oskin.autoservice.Controller.ImportDates;
 import com.oskin.autoservice.DAO.ConnectionDB;
 import com.oskin.autoservice.DAO.PlaceBD;
 
@@ -29,6 +30,8 @@ public class MainMenu {
     ConnectionDB connectionDB;
     @Inject
     PlaceBD data;
+    @Inject
+    ImportDates importDates;
 
     public MainMenu(){}
 
@@ -36,7 +39,7 @@ public class MainMenu {
         connectionDB.Connect();
         //carRepairGarage.loadGarage();
         carRepairMaster.loadMaster();
-        carRepairOrders.loadOrder();
+        //carRepairOrders.loadOrder();
 
         builderMenu.setTitle("Добавить данные");
         builderMenu.addItem(1, "Добавить мастера",() -> carRepairViewFunctions.addMaster());
@@ -78,14 +81,14 @@ public class MainMenu {
             });
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Импорт данных");
-        builderMenu.addItem(1, "Импорт мест", () -> carRepairGarage.importGarage());
+        builderMenu.addItem(1, "Импорт мест", () -> importDates.importGarage());
         builderMenu.addItem(2, "Импорт мастеров", () -> carRepairMaster.importMaster());
-        builderMenu.addItem(3, "Импорт заказов", () -> carRepairOrders.importOrder());
+        builderMenu.addItem(3, "Импорт заказов", () -> importDates.importOrder());
         builderMenu.addItem(4, "Сделать импорт всех сущностей",
             () -> {
-                carRepairGarage.importGarage();
+                importDates.importGarage();
                 carRepairMaster.importMaster();
-                carRepairOrders.importOrder();
+                importDates.importOrder();
             });
         navigator.addMenu(builderMenu.build());
         Scanner scanner = new Scanner(System.in);
@@ -99,7 +102,7 @@ public class MainMenu {
                 if(x == 0){
                     //carRepairGarage.saveGarage();
                     carRepairMaster.saveMaster();
-                    carRepairOrders.saveOrder();
+                    //carRepairOrders.saveOrder();
                     return;
                 }
             }

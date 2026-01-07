@@ -1,7 +1,6 @@
 package com.oskin.autoservice.View;
 import com.oskin.Annotations.*;
 import com.oskin.autoservice.Model.*;
-
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
 import java.util.Scanner;

@@ -19,6 +19,8 @@ public class CarRepairGarage {
     Config config;
     @Inject
     PlaceBD placeBD;
+    @Inject
+    CarRepairOrders carRepairOrders;
     private static CarRepairGarage instance;
     private CarRepairGarage(){
     }
@@ -54,7 +56,7 @@ public class CarRepairGarage {
         ArrayList<Place> newList = new ArrayList<Place>(getListOfPlace());
         LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
-        ArrayList<Order> ordersByTime = CarRepairOrders.getInstance().getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
+        ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
         for (int i = 0; i < ordersByTime.size(); i++) {
             if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
                carRepair.delete(ordersByTime.get(i).getPlace().getName(), newList);
@@ -74,40 +76,6 @@ public class CarRepairGarage {
             dataList.add(id+","+name+"\n");
         }
         workWithFile.whereExport(dataList, config.getStandartFileCsvGarage());
-    }
-    public void importGarage(){
-        boolean next = placeBD.DeleteAll();
-        if(!next) return;
-        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvGarage());
-        if(nameFile.equals("???")){
-            return;
-        }
-        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
-        if(!data.isEmpty()){
-            ArrayList<Place> places = getListOfPlace();
-            for(ArrayList<String> line : data){
-                if(line.size() != 2){
-                    System.out.println("Неправильная таблица данных");
-                    return;
-                }
-                else {
-                    try {
-                        int id = Integer.parseInt(line.get(0));
-                        String name = line.get(1);
-                        int findPlace = carRepair.findById(id, places);
-                        if(findPlace > -1 && !places.get(findPlace).getName().equals(name)){
-                            placeBD.deletePlaceInDB(id);
-                        }
-                        else {
-                            addPlace(id, name);
-                        }
-                    } catch (NumberFormatException e){
-                        System.err.println("Неправильные данные");
-                        return;
-                    }
-                }
-            }
-        }
     }
 
     /*public void saveGarage(){

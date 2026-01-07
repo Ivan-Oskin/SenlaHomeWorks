@@ -74,17 +74,7 @@ public class Order implements Nameable {
         this.timeCreate = timeCreate;
         this.timeStart = timeStart;
         this.timeComplete = timeComplete;
-        this.status = StatusOrder.ACTIVE;
+        this.status = status;
         this.place = place;
-    }
-
-    public void changeDay(int day) {
-        this.timeStart = timeStart.plusDays(day);
-        this.timeComplete = timeComplete.plusDays(day);
-    }
-
-    public void changeHour(int hour) {
-        this.timeStart = timeStart.plusHours(hour);
-        this.timeComplete = timeComplete.plusHours(hour);
     }
 }

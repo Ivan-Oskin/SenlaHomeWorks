@@ -176,12 +176,11 @@ public class CarRepairViewFunctions {
         int day = carRepairInput.inputInt();
         carRepairOutput.infAboutInput("на сколько часов сместить заказ");
         int hour = carRepairInput.inputInt();
-        boolean inf = carRepairOrders.offsetDay(name, day);
-        if (inf) {
-            carRepairOrders.offsetHour(name, hour);
-            System.out.println("Время заказа "+ name + " смещено");
-        } else {
-            carRepairOutput.NoFound();
+        boolean inf = carRepairOrders.offset(name, day, hour);
+        if(inf){
+            System.out.println(name +" - время выполнения смещено");
+        }else {
+            System.out.println(name + " - не удалось смести время");
         }
     }
 
