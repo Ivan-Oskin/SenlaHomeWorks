@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class PlaceBD {
     @Inject
@@ -43,5 +42,33 @@ public class PlaceBD {
     }
     public boolean deletePlaceInDB(int id){
         return functionsDB.deleteInDB(id, NameTables.PLACE);
+    }
+    public Place findPlaceInDb(int id){
+        String sql = "SELECT * FROM Places WHERE id = ?";
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            statement.setInt(1, id);
+            ResultSet set = statement.executeQuery();
+            while (set.next()){
+                String name = set.getString("name");
+                return new Place(id, name);
+            }
+        } catch (java.sql.SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public Place findPlaceInDb(String name){
+        String sql = "SELECT * FROM Places WHERE name = ?";
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            statement.setString(1, name);
+            ResultSet set = statement.executeQuery();
+            while (set.next()){
+                int id = set.getInt("id");
+                return new Place(id, name);
+            }
+        } catch (java.sql.SQLException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

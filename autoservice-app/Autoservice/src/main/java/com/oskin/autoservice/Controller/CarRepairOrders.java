@@ -16,8 +16,6 @@ public class CarRepairOrders {
     @Inject
     WorkWithFile workWithFile;
     @Inject
-    CarRepair carRepair;
-    @Inject
     Config config;
     @Inject
     MasterDB masterDB;

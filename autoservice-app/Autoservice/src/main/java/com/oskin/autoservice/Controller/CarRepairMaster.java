@@ -1,14 +1,10 @@
 package com.oskin.autoservice.Controller;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.Annotations.*;
 import com.oskin.autoservice.DAO.MasterDB;
 import com.oskin.autoservice.DAO.OrderDB;
 import com.oskin.autoservice.DAO.OrdersByMasterDb;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -18,15 +14,11 @@ public class CarRepairMaster {
     @Inject
     WorkWithFile workWithFile;
     @Inject
-    CarRepair carRepair;
-    @Inject
     Config config;
     @Inject
     MasterDB masterDB;
     @Inject
     OrdersByMasterDb ordersByMasterDb;
-    @Inject
-    CarRepairOrders carRepairOrders;
     @Inject
     OrderDB orderDB;
     private static CarRepairMaster instance;
@@ -74,13 +66,14 @@ public class CarRepairMaster {
         Master master = masterDB.findMasterInDb(nameMaster);
         Order order = orderDB.findOrderInDB(nameOrder);
         if (master != null &&  order != null) {
-            int maxId = ordersByMasterDb.getMaxIdLink();
-            int idLink = maxId!=-1?maxId+1:1;
-            ordersByMasterDb.addOrdersByMasterInDB(idLink, master.getId(), order.getId());
-            return true;
-        } else {
-            return false;
+            if (!master.getIdOfOrder().contains(order.getId())) {
+                int maxId = ordersByMasterDb.getMaxIdLink();
+                int idLink = maxId != -1 ? maxId + 1 : 1;
+                ordersByMasterDb.addOrdersByMasterInDB(idLink, master.getId(), order.getId());
+                return true;
+            }
         }
+        return false;
     }
     public ArrayList<Master> getMastersByOrder(String name) {
         ArrayList<Master> newList = new ArrayList<>();

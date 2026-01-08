@@ -1,7 +1,6 @@
 package com.oskin.autoservice.DAO;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.Order;
 
 import java.sql.PreparedStatement;

@@ -11,13 +11,13 @@ public class CarRepairGarage {
     @Inject
     WorkWithFile workWithFile;
     @Inject
-    CarRepair carRepair;
-    @Inject
     Config config;
     @Inject
     PlaceBD placeBD;
     @Inject
     CarRepairOrders carRepairOrders;
+    @Inject
+    CarRepairFunctions carRepairFunctions;
     private static CarRepairGarage instance;
     private CarRepairGarage(){
     }
@@ -41,13 +41,8 @@ public class CarRepairGarage {
         return placeBD.selectPlace();
     }
     public Place findPlace(String name) {
-        ArrayList<Place> places = placeBD.selectPlace();
-        int count = carRepair.findByName(name, places);
-        if (count == -1) {
-            return null;
-        } else {
-            return places.get(count);
-        }
+        return placeBD.findPlaceInDb(name);
+
     }
     public ArrayList<Place> getFreePlace(LocalDateTime date) {
         ArrayList<Place> newList = new ArrayList<Place>(getListOfPlace());
@@ -56,7 +51,7 @@ public class CarRepairGarage {
         ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
         for (int i = 0; i < ordersByTime.size(); i++) {
             if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
-               carRepair.delete(ordersByTime.get(i).getPlace().getName(), newList);
+               carRepairFunctions.delete(ordersByTime.get(i).getPlace().getName(), newList);
             }
         }
         return newList;

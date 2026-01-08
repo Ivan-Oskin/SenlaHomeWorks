@@ -1,7 +1,7 @@
 package com.oskin.autoservice.DAO;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Controller.CarRepair;
+import com.oskin.autoservice.Controller.CarRepairFunctions;
 import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.Place;
 import com.oskin.autoservice.Model.StatusOrder;
@@ -12,7 +12,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class OrderDB {
     @Inject
@@ -20,7 +19,7 @@ public class OrderDB {
     @Inject
     PlaceBD placeBD;
     @Inject
-    CarRepair carRepair;
+    CarRepairFunctions carRepairFunctions;
     @Inject
     FunctionsDB functionsDB;
     public ArrayList<Order> selectOrder(){
@@ -43,7 +42,7 @@ public class OrderDB {
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
                 ArrayList<Place> places = placeBD.selectPlace();
-                int num = carRepair.findById(place_id, places);
+                int num = carRepairFunctions.findById(place_id, places);
                 if(num > -1){
                     orders.add(new Order(id, name, cost, places.get(num), createTime, startTime, completeTime, status));
                 }
@@ -77,7 +76,7 @@ public class OrderDB {
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
                 ArrayList<Place> places = placeBD.selectPlace();
-                int num = carRepair.findById(place_id, places);
+                int num = carRepairFunctions.findById(place_id, places);
                 if(num > -1){
                     return new Order(id, name, cost, places.get(num), createTime, startTime, completeTime, status);
                 }
@@ -108,7 +107,7 @@ public class OrderDB {
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
                 ArrayList<Place> places = placeBD.selectPlace();
-                int num = carRepair.findById(place_id, places);
+                int num = carRepairFunctions.findById(place_id, places);
                 if(num > -1){
                     return new Order(idOrder, name, cost, places.get(num), createTime, startTime, completeTime, status);
                 }

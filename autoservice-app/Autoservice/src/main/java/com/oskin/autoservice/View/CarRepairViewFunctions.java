@@ -1,13 +1,9 @@
 package com.oskin.autoservice.View;
 
 import com.oskin.Annotations.*;
-import com.oskin.autoservice.Controller.CarRepair;
-import com.oskin.autoservice.Controller.CarRepairGarage;
-import com.oskin.autoservice.Controller.CarRepairMaster;
-import com.oskin.autoservice.Controller.CarRepairOrders;
+import com.oskin.autoservice.Controller.*;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,9 +22,11 @@ public class CarRepairViewFunctions {
     @Inject
     CarRepairInput carRepairInput;
     @Inject
-    CarRepair carRepair;
+    CarRepairFunctions carRepairFunctions;
     @Inject
     Config config;
+    @Inject
+    CarRepairDate carRepairDate;
 
     public void getListOrders(){
         carRepairOutput.printOrders(carRepairOrders.getListOfOrders(carRepairInput.whatSortTypeOrder()));
@@ -81,11 +79,11 @@ public class CarRepairViewFunctions {
             System.out.println("произошла ошибка при вводе данных");
             return;
         }
-        System.out.println("Количество свободных мест - "+ carRepair.getCountFreeTime(time));
+        System.out.println("Количество свободных мест - "+ carRepairDate.getCountFreeTime(time));
     }
     public void getNearestDate(){
         LocalDateTime time = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime nearestDate = carRepair.getNearestDate(time);
+        LocalDateTime nearestDate = carRepairDate.getNearestDate(time);
         if(nearestDate == null){
             System.out.println("Ошибка! Отсуствует список мастеров или заказов");
             return;
@@ -198,6 +196,7 @@ public class CarRepairViewFunctions {
         boolean inf = carRepairOrders.deleteOrder(name);
         carRepairOutput.infAboutDelete(name, inf);
     }
+
     public void deletePlace() {
         if(!config.getRuleDeletePlace()){
             System.err.println("Запрещено");
@@ -213,7 +212,6 @@ public class CarRepairViewFunctions {
         String nameOrder = carRepairInput.inputName("название заказа");
         boolean inf = carRepairMaster.setOrderToMaster(nameMaster, nameOrder);
         if(inf) System.out.println("Заказ " + nameOrder +" добавлен к мастеру " + nameMaster);
-        else System.out.print("не найдено");
+        else System.out.println("не получилось добавить заказ мастеру ");
     }
-
 }

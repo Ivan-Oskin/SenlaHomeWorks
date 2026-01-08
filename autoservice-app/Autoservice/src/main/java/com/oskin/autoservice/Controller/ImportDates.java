@@ -1,10 +1,8 @@
 package com.oskin.autoservice.Controller;
-
 import com.oskin.Annotations.Inject;
 import com.oskin.autoservice.DAO.*;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -21,7 +19,7 @@ public class ImportDates {
     @Inject
     Config config;
     @Inject
-    CarRepair carRepair;
+    CarRepairFunctions carRepairFunctions;
     @Inject
     OrderDB orderDB;
     @Inject
@@ -32,8 +30,6 @@ public class ImportDates {
     MasterDB masterDB;
     @Inject
     PlaceBD placeBD;
-    @Inject
-    OrdersByMasterDb ordersByMasterDb;
 
     public boolean DeleteAllAgree(){
         Scanner scanner = new Scanner(System.in);
@@ -90,7 +86,7 @@ public class ImportDates {
                         }
                         String namePlace = line.get(7);
                         ArrayList<Place> listPlace = carRepairGarage.getListOfPlace();
-                        int findPlace = carRepair.findByName(namePlace, listPlace);
+                        int findPlace = carRepairFunctions.findByName(namePlace, listPlace);
                         if(findPlace > -1){
                             place = listPlace.get(findPlace);
                         }
@@ -113,7 +109,7 @@ public class ImportDates {
                         System.err.println("произошла ошибка при парсинге времени заказа "+name);
                         continue;
                     }
-                    int findOrder = carRepair.findById(id, orders);
+                    int findOrder = carRepairFunctions.findById(id, orders);
                     if(findOrder > -1){
                         orderDB.deleteOrderInDB(id);
                         carRepairOrders.addOrder(id, name, cost, place, create, start, complete);
@@ -144,7 +140,7 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        int findPlace = carRepair.findById(id, places);
+                        int findPlace = carRepairFunctions.findById(id, places);
                         if(findPlace > -1){
                             placeBD.deletePlaceInDB(id);
                             carRepairGarage.addPlace(id, name);
@@ -187,7 +183,7 @@ public class ImportDates {
                                 idOrders.add(Integer.parseInt(idOrder));
                             }
                         }
-                        int findMaster = carRepair.findById(id, masters);
+                        int findMaster = carRepairFunctions.findById(id, masters);
                         if (findMaster > -1) {
                             masterDB.deleteMasterInDB(id);
                             carRepairMaster.addMaster(id, name, idOrders);

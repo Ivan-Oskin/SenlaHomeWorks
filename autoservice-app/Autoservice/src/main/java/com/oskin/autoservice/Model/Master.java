@@ -1,6 +1,4 @@
 package com.oskin.autoservice.Model;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 
 public class Master implements Nameable {

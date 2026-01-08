@@ -57,7 +57,9 @@ public class MasterDB {
             ResultSet set = statement.executeQuery();
             while (set.next()){
                 int id = set.getInt("id");
-                return new Master(id, name);
+                Master master = new Master(id, name);
+                master.addArrayOrdersId(ordersByMasterDb.selectIdOrdersByMaster(id));
+                return master;
             }
         } catch (java.sql.SQLException e){
             e.printStackTrace();
@@ -71,7 +73,9 @@ public class MasterDB {
             ResultSet set = statement.executeQuery();
             while (set.next()){
                 String name = set.getString("name");
-                return new Master(id, name);
+                Master master = new Master(id, name);
+                master.addArrayOrdersId(ordersByMasterDb.selectIdOrdersByMaster(id));
+                return master;
             }
         } catch (java.sql.SQLException e){
             e.printStackTrace();

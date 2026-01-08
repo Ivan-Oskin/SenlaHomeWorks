@@ -3,8 +3,6 @@ package com.oskin.autoservice.DAO;
 import com.oskin.Annotations.Inject;
 
 import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.Scanner;
 
 public class FunctionsDB {
     @Inject

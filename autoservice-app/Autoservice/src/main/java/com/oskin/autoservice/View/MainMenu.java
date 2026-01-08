@@ -29,8 +29,6 @@ public class MainMenu {
     @Inject
     ConnectionDB connectionDB;
     @Inject
-    PlaceBD data;
-    @Inject
     ImportDates importDates;
 
     public MainMenu(){}
