@@ -37,10 +37,6 @@ public class MainMenu {
 
     public void run(){
         connectionDB.Connect();
-        //carRepairGarage.loadGarage();
-        carRepairMaster.loadMaster();
-        //carRepairOrders.loadOrder();
-
         builderMenu.setTitle("Добавить данные");
         builderMenu.addItem(1, "Добавить мастера",() -> carRepairViewFunctions.addMaster());
         builderMenu.addItem(2, "Добавить место", () -> carRepairViewFunctions.addPlace());
@@ -82,12 +78,12 @@ public class MainMenu {
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Импорт данных");
         builderMenu.addItem(1, "Импорт мест", () -> importDates.importGarage());
-        builderMenu.addItem(2, "Импорт мастеров", () -> carRepairMaster.importMaster());
+        builderMenu.addItem(2, "Импорт мастеров", () -> importDates.importMaster());
         builderMenu.addItem(3, "Импорт заказов", () -> importDates.importOrder());
         builderMenu.addItem(4, "Сделать импорт всех сущностей",
             () -> {
                 importDates.importGarage();
-                carRepairMaster.importMaster();
+                importDates.importMaster();
                 importDates.importOrder();
             });
         navigator.addMenu(builderMenu.build());
@@ -100,9 +96,6 @@ public class MainMenu {
                 x = scanner.nextInt();
                 scanner.nextLine();
                 if(x == 0){
-                    //carRepairGarage.saveGarage();
-                    carRepairMaster.saveMaster();
-                    //carRepairOrders.saveOrder();
                     return;
                 }
             }

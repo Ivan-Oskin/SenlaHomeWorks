@@ -1,20 +1,15 @@
 package com.oskin.autoservice.Controller;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.DAO.FunctionsDB;
-import com.oskin.autoservice.DAO.NameTables;
-import com.oskin.autoservice.DAO.OrderDB;
-import com.oskin.autoservice.DAO.PlaceBD;
-import com.oskin.autoservice.Model.Order;
-import com.oskin.autoservice.Model.Place;
-import com.oskin.autoservice.Model.SortTypeOrder;
-import com.oskin.autoservice.Model.StatusOrder;
+import com.oskin.autoservice.DAO.*;
+import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ImportDates {
@@ -34,9 +29,11 @@ public class ImportDates {
     @Inject
     CarRepairMaster carRepairMaster;
     @Inject
+    MasterDB masterDB;
+    @Inject
     PlaceBD placeBD;
     @Inject
-    FunctionsDB functionsDB;
+    OrdersByMasterDb ordersByMasterDb;
 
     public boolean DeleteAllAgree(){
         Scanner scanner = new Scanner(System.in);
@@ -156,6 +153,48 @@ public class ImportDates {
                             carRepairGarage.addPlace(id, name);
                         }
                     } catch (NumberFormatException e){
+                        System.err.println("Неправильные данные");
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void importMaster() {
+        boolean next = DeleteAllAgree();
+        if(!next) return;
+        ArrayList<Master> masters = carRepairMaster.getListOfMasters(SortTypeMaster.ID);
+        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvMaster());
+        if(nameFile.equals("???")){
+            return;
+        }
+        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
+        if (!data.isEmpty()) {
+            for (ArrayList<String> line : data) {
+                if (line.size() != 3) {
+                    System.out.println("Неправильная таблица данных");
+                    return;
+                } else {
+                    try {
+                        int id = Integer.parseInt(line.get(0));
+                        String name = line.get(1);
+                        ArrayList<String> strIdOrders = new ArrayList<>();
+                        ArrayList<Integer> idOrders = new ArrayList<>();
+                        if (!line.get(2).equals("none")) {
+                            strIdOrders = new ArrayList<>(Arrays.asList(line.get(2).split(";")));
+                            for(String idOrder : strIdOrders){
+                                idOrders.add(Integer.parseInt(idOrder));
+                            }
+                        }
+                        int findMaster = carRepair.findById(id, masters);
+                        if (findMaster > -1) {
+                            masterDB.deleteMasterInDB(id);
+                            carRepairMaster.addMaster(id, name, idOrders);
+                        } else {
+                            carRepairMaster.addMaster(id, name, idOrders);
+                        }
+                    } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");
                         return;
                     }

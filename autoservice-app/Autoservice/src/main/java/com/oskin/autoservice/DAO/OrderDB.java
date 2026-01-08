@@ -118,7 +118,6 @@ public class OrderDB {
         }
         return null;
     }
-
     public boolean deleteOrderInDB(String name){
         return functionsDB.deleteInDB(name, NameTables.ORDER);
     }

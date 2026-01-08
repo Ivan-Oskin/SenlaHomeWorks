@@ -20,8 +20,6 @@ public class CarRepairOrders {
     @Inject
     Config config;
     @Inject
-    CarRepairMaster carRepairMaster;
-    @Inject
     MasterDB masterDB;
 
     private static CarRepairOrders instance;

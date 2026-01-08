@@ -3,12 +3,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.Annotations.*;
 import com.oskin.autoservice.DAO.MasterDB;
+import com.oskin.autoservice.DAO.OrderDB;
+import com.oskin.autoservice.DAO.OrdersByMasterDb;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 
 
@@ -22,36 +23,38 @@ public class CarRepairMaster {
     Config config;
     @Inject
     MasterDB masterDB;
+    @Inject
+    OrdersByMasterDb ordersByMasterDb;
+    @Inject
+    CarRepairOrders carRepairOrders;
+    @Inject
+    OrderDB orderDB;
     private static CarRepairMaster instance;
-
     private CarRepairMaster() {
 
     }
-
     public static CarRepairMaster getInstance() {
         if (instance == null) {
             instance = new CarRepairMaster();
         }
         return instance;
     }
-
-    private ArrayList<Master> masters = new ArrayList<>();
-
     public void addMaster(int id, String name) {
         Master master = new Master(id, name);
-        masters.add(master);
+        masterDB.addMasterInDB(master);
     }
-
-    public void addMaster(int id, String name, ArrayList<String> listOfOrder) {
+    public void addMaster(int id, String name, ArrayList<Integer> listOfOrderId) {
         Master master = new Master(id, name);
-        master.addArrayOrdersName(listOfOrder);
-        masters.add(master);
+        masterDB.addMasterInDB(master);
+        for(int idOrder : listOfOrderId){
+            int maxId = ordersByMasterDb.getMaxIdLink();
+            int idLink = maxId!=-1?maxId+1:1;
+            ordersByMasterDb.addOrdersByMasterInDB(idLink, id, idOrder);
+        }
     }
-
     public boolean deleteMaster(String name) {
-        return carRepair.delete(name, masters);
+        return masterDB.deleteMasterInDB(name);
     }
-
     public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
         ArrayList<Master> masters = masterDB.SelectMasters();
         switch (sortType) {
@@ -67,104 +70,43 @@ public class CarRepairMaster {
         }
         return masters;
     }
-
     public boolean setOrderToMaster(String nameMaster, String nameOrder) {
-        ArrayList<Order> listOfOrders = CarRepairOrders.getInstance().getListOfOrders(SortTypeOrder.ID);
-        int i = carRepair.findByName(nameMaster, masters);
-        int j = carRepair.findByName(nameOrder, listOfOrders);
-        if (i >= 0 && j >= 0) {
-            Master master = masters.get(i);
-            master.addOrder(listOfOrders.get(j));
+        Master master = masterDB.findMasterInDb(nameMaster);
+        Order order = orderDB.findOrderInDB(nameOrder);
+        if (master != null &&  order != null) {
+            int maxId = ordersByMasterDb.getMaxIdLink();
+            int idLink = maxId!=-1?maxId+1:1;
+            ordersByMasterDb.addOrdersByMasterInDB(idLink, master.getId(), order.getId());
             return true;
         } else {
             return false;
         }
     }
-
     public ArrayList<Master> getMastersByOrder(String name) {
         ArrayList<Master> newList = new ArrayList<>();
-        for (int i = 0; i < masters.size(); i++) {
-            Master master = masters.get(i);
-            if (master.getNamesOfOrder().contains(name)) {
-                newList.add(master);
-            }
+        ArrayList<Integer> masterId = ordersByMasterDb.getMastersByOrderInDB(name);
+        for(int id : masterId){
+            Master master = masterDB.findMasterInDb(id);
+            newList.add(master);
         }
         return newList;
     }
-
     public void exportMaster() {
+        ArrayList<Master> masters = getListOfMasters(SortTypeMaster.ID);
         ArrayList<String> dataList = new ArrayList<>(masters.size() + 1);
         dataList.add("ID,NAME,ORDERS\n");
-        for (Master master : getListOfMasters(SortTypeMaster.ID)) {
+        for (Master master : masters) {
             int id = master.getId();
             String name = master.getName();
-            String orders = String.join(";", master.getNamesOfOrder());
+            ArrayList<String> idOrdersString = new ArrayList<>();
+            for(int idOrder : master.getIdOfOrder()){
+                String StrIdOrder = String.valueOf(idOrder);
+                idOrdersString.add(StrIdOrder);
+            }
+            String orders = String.join(";", idOrdersString);
             if (orders.isEmpty()) orders = "none";
             dataList.add(id + "," + name + "," + orders + "\n");
         }
         workWithFile.whereExport(dataList, config.getStandartFileCsvMaster());
-    }
-
-    public void importMaster() {
-        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvMaster());
-        if(nameFile.equals("???")){
-            return;
-        }
-        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
-        if (!data.isEmpty()) {
-            for (ArrayList<String> line : data) {
-                if (line.size() != 3) {
-                    System.out.println("Неправильная таблица данных");
-                    return;
-                } else {
-                    try {
-                        int id = Integer.parseInt(line.get(0));
-                        String name = line.get(1);
-                        ArrayList<String> nameOrders = new ArrayList<>();
-                        if (!line.get(2).equals("none")) {
-                            nameOrders = new ArrayList<>(Arrays.asList(line.get(2).split(";")));
-                        }
-                        int findMaster = carRepair.findById(id, masters);
-                        if (findMaster > -1) {
-                            if (!(masters.get(findMaster).getName().equals(name) && masters.get(findMaster).getNamesOfOrder().equals(nameOrders))) {
-                                Master master = new Master(id, name);
-                                master.addArrayOrdersName(nameOrders);
-                                masters.set(findMaster, master);
-                            } else {
-                                continue;
-                            }
-                        } else {
-                            addMaster(id, name, nameOrders);
-                        }
-                    } catch (NumberFormatException e) {
-                        System.err.println("Неправильные данные");
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    public void saveMaster(){
-        workWithFile.serialization(masters, config.getStandartPathToData()+config.getStandartFileJsonMaster());
-    }
-    public void loadMaster(){
-        ObjectMapper mapper = new ObjectMapper();
-        File file = new File(config.getStandartPathToData()+config.getStandartFileJsonMaster());
-        if(file.exists()){
-            try{
-                masters = mapper.readValue(file, new TypeReference<ArrayList<Master>>() {});
-            }
-            catch (IOException e){
-                System.err.println("Произошла ошибка при работе с файлом");
-            }
-        }
-        else{
-            try {
-                file.createNewFile();
-            }
-            catch (IOException e){
-                System.err.println("произошла ошибка при создании файла");
-            }
-        }
     }
 }
