@@ -1,18 +1,11 @@
 package com.oskin.autoservice.Controller;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.Annotations.*;
+import com.oskin.autoservice.DAO.MasterDB;
 import com.oskin.autoservice.DAO.OrderDB;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
-
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -26,6 +19,10 @@ public class CarRepairOrders {
     CarRepair carRepair;
     @Inject
     Config config;
+    @Inject
+    CarRepairMaster carRepairMaster;
+    @Inject
+    MasterDB masterDB;
 
     private static CarRepairOrders instance;
 
@@ -37,9 +34,6 @@ public class CarRepairOrders {
         }
         return instance;
     }
-
-    private ArrayList<Order> orders = new ArrayList<>();
-
     private static void sortOrders(ArrayList<Order> list, SortTypeOrder sortType) {
         switch (sortType) {
             case CREATE:
@@ -72,21 +66,6 @@ public class CarRepairOrders {
     public boolean cancelOrder(String name) {
         return orderDB.ChangeStatusInDb(name, StatusOrder.CANCEL);
     }
-    /*private boolean offset(String name, int count, boolean isDay) {
-    boolean flag = false;
-    orders.sort(Comparator.comparing(Order::getTimeStart));
-    for (int i = 0; i < orders.size(); i++) {
-        Order order = orders.get(i);
-        if (name.equals(orders.get(i).getName())) {
-            flag = true;
-        }
-        if (flag) {
-            if (isDay) order.changeDay(count);
-            else order.changeHour(count);
-        }
-    }
-    return flag;
-}*/
     public boolean offset(String name, int countDay, int countHour) {
         Order order = orderDB.findOrderInDB(name);
         if(order == null){
@@ -133,20 +112,14 @@ public class CarRepairOrders {
     }
 
     public ArrayList<Order> getOrderByMaster(String name) {
-        ArrayList<Order> newList = new ArrayList<>();
-        ArrayList<Master> listOfMasters = CarRepairMaster.getInstance().getListOfMasters(SortTypeMaster.ID);
-        int i = carRepair.findByName(name, listOfMasters);
-        if (i >= 0) {
-            Master master = listOfMasters.get(i);
-            ArrayList<String> names = master.getNamesOfOrder();
-            for (int j = 0; j < orders.size(); j++) {
-                if (names.contains(orders.get(j).getName())) {
-                    newList.add(orders.get(j));
-                }
+        Master master = masterDB.SelectMasterByName(name);
+        ArrayList<Order> Orders = new ArrayList<>();
+        if (master != null) {
+            for(int OrderId : master.getIdOfOrder()){
+                Orders.add(orderDB.findOrderInDB(OrderId));
             }
         }
-        return newList;
-
+        return Orders;
     }
 
     public void exportOrder(){
@@ -170,32 +143,6 @@ public class CarRepairOrders {
         }
         workWithFile.whereExport(dataList, config.getStandartFileCsvOrders());
     }
-
-   /* public void saveOrder(){
-        workWithFile.serialization(orders, config.getStandartPathToData()+config.getStandartFileJsonOrders());
-    }
-    public void loadOrder(){
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        File file = new File(config.getStandartPathToData()+config.getStandartFileJsonOrders());
-        if(file.exists()){
-            try{
-                orders = mapper.readValue(file, new TypeReference<ArrayList<Order>>() {});
-            }
-            catch (IOException e){
-                System.err.println("Произошла ошибка при работе с файлом");
-            }
-        }
-        else{
-            try {
-                file.createNewFile();
-            }
-            catch (IOException e){
-                System.err.println("произошла ошибка при создании файла");
-            }
-        }
-    }*/
 }
 
 

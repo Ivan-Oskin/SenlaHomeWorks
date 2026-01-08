@@ -1,12 +1,9 @@
 package com.oskin.autoservice.Controller;
-
 import com.oskin.autoservice.DAO.PlaceBD;
 import com.oskin.autoservice.Model.*;
 import com.oskin.Annotations.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import com.oskin.config.Config;
 
 @Singleton
@@ -77,28 +74,4 @@ public class CarRepairGarage {
         }
         workWithFile.whereExport(dataList, config.getStandartFileCsvGarage());
     }
-
-    /*public void saveGarage(){
-        workWithFile.serialization(garage, config.getStandartPathToData()+config.getStandartFileJsonGarage());
-    }
-    public void loadGarage(){
-        ObjectMapper mapper = new ObjectMapper();
-        File file = new File(config.getStandartPathToData()+config.getStandartFileJsonGarage());
-        if(file.exists()){
-            try{
-                garage = mapper.readValue(file, new TypeReference<ArrayList<Place>>() {});
-            }
-            catch (IOException e){
-                System.err.println("Произошла ошибка при работе с файлом");
-            }
-        }
-        else{
-            try {
-                file.createNewFile();
-            }
-            catch (IOException e){
-                System.err.println("произошла ошибка при создании файла");
-            }
-        }
-    }*/
 }

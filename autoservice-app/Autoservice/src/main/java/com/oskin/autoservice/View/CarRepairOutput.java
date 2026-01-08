@@ -1,6 +1,7 @@
 package com.oskin.autoservice.View;
 
 import com.oskin.Annotations.*;
+import com.oskin.autoservice.DAO.OrderDB;
 import com.oskin.autoservice.Model.*;
 
 import java.time.format.DateTimeFormatter;
@@ -8,6 +9,9 @@ import java.util.ArrayList;
 
 @Singleton
 public class CarRepairOutput {
+    @Inject
+    OrderDB orderDB;
+
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
     public CarRepairOutput() {
@@ -41,6 +45,19 @@ public class CarRepairOutput {
             System.out.println("Время начала выполнения - "+order.getTimeStart().format(formatter));
             System.out.println("Время окночания выполнения - "+order.getTimeComplete().format(formatter));
             System.out.println("\n");
+        }
+    }
+
+    public void printMasters(ArrayList<Master> masters){
+        for (Master master : masters){
+            System.out.println(master.getId() + " " + master.getName());
+            if(master.getCountOfOrdersId() > 0){
+                System.out.println("Заказы:");
+                for(int idOrder : master.getIdOfOrder()){
+                    System.out.println(orderDB.findOrderInDB(idOrder).getName());
+                }
+                System.out.println();
+            }
         }
     }
 

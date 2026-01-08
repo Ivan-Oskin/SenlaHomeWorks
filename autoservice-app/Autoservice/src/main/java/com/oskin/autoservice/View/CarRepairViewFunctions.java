@@ -43,7 +43,7 @@ public class CarRepairViewFunctions {
     }
 
     public void getMasters(){
-        carRepairOutput.printList(carRepairMaster.getListOfMasters(carRepairInput.whatSortTypeMaster()));
+        carRepairOutput.printMasters(carRepairMaster.getListOfMasters(carRepairInput.whatSortTypeMaster()));
     }
 
     public void getCurrentOrders(){

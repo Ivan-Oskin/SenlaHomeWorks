@@ -1,12 +1,10 @@
 package com.oskin.autoservice.Controller;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.Annotations.*;
-import com.oskin.autoservice.DAO.PlaceBD;
+import com.oskin.autoservice.DAO.MasterDB;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +21,7 @@ public class CarRepairMaster {
     @Inject
     Config config;
     @Inject
-    PlaceBD placeBD;
+    MasterDB masterDB;
     private static CarRepairMaster instance;
 
     private CarRepairMaster() {
@@ -45,7 +43,8 @@ public class CarRepairMaster {
     }
 
     public void addMaster(int id, String name, ArrayList<String> listOfOrder) {
-        Master master = new Master(id, name, listOfOrder);
+        Master master = new Master(id, name);
+        master.addArrayOrdersName(listOfOrder);
         masters.add(master);
     }
 
@@ -54,6 +53,7 @@ public class CarRepairMaster {
     }
 
     public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
+        ArrayList<Master> masters = masterDB.SelectMasters();
         switch (sortType) {
             case ID:
                 masters.sort(Comparator.comparing(Master::getId));
@@ -62,7 +62,7 @@ public class CarRepairMaster {
                 masters.sort(Comparator.comparing(Master::getName));
                 break;
             case BUSYNESS:
-                masters.sort(Comparator.comparing(Master::getCountOfOrders));
+                masters.sort(Comparator.comparing(Master::getCountOfOrdersId));
                 break;
         }
         return masters;
@@ -127,7 +127,9 @@ public class CarRepairMaster {
                         int findMaster = carRepair.findById(id, masters);
                         if (findMaster > -1) {
                             if (!(masters.get(findMaster).getName().equals(name) && masters.get(findMaster).getNamesOfOrder().equals(nameOrders))) {
-                                masters.set(findMaster, new Master(id, name, nameOrders));
+                                Master master = new Master(id, name);
+                                master.addArrayOrdersName(nameOrders);
+                                masters.set(findMaster, master);
                             } else {
                                 continue;
                             }

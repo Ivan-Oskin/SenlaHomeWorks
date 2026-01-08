@@ -88,6 +88,37 @@ public class OrderDB {
         return null;
     }
 
+    public Order findOrderInDB(int idOrder){
+        String sql = "SELECT * FROM Orders WHERE id = ?";
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            statement.setInt(1, idOrder);
+            ResultSet set = statement.executeQuery();
+            while (set.next()){
+                String name = set.getString("name");
+                StatusOrder status = StatusOrder.ACTIVE;
+                for(StatusOrder statusOrder : StatusOrder.values()){
+                    if(set.getString("status").equals(statusOrder.getSTATUS())){
+                        status = statusOrder;
+                        break;
+                    }
+                }
+                LocalDateTime createTime = set.getTimestamp("timeCreate").toLocalDateTime();
+                LocalDateTime startTime = set.getTimestamp("timeStart").toLocalDateTime();
+                LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
+                int cost = set.getInt("cost");
+                int place_id = set.getInt("place_id");
+                ArrayList<Place> places = placeBD.selectPlace();
+                int num = carRepair.findById(place_id, places);
+                if(num > -1){
+                    return new Order(idOrder, name, cost, places.get(num), createTime, startTime, completeTime, status);
+                }
+            }
+        } catch (java.sql.SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean deleteOrderInDB(String name){
         return functionsDB.deleteInDB(name, NameTables.ORDER);
     }
