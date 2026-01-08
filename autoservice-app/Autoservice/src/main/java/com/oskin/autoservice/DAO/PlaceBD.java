@@ -1,18 +1,23 @@
 package com.oskin.autoservice.DAO;
 
 import com.oskin.Annotations.Inject;
+import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.Place;
+import com.oskin.autoservice.View.CarRepairInput;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class PlaceBD {
     @Inject
     ConnectionDB connectionDB;
     @Inject
     FunctionsDB functionsDB;
+    Scanner scanner = new Scanner(System.in);
     public ArrayList<Place> selectPlace(){
         ArrayList<Place> places = new ArrayList<>();
         try(Statement statement = connectionDB.getConnection().createStatement()) {
@@ -38,7 +43,8 @@ public class PlaceBD {
         }
     }
     public boolean deletePlaceInDB(String name){
-        return functionsDB.deleteInDB(name, NameTables.PLACE);
+        Place place = findPlaceInDb(name);
+        return functionsDB.deleteInDB(place.getId(), NameTables.PLACE);
     }
     public boolean deletePlaceInDB(int id){
         return functionsDB.deleteInDB(id, NameTables.PLACE);
@@ -62,9 +68,34 @@ public class PlaceBD {
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, name);
             ResultSet set = statement.executeQuery();
+            ArrayList<Place> places = new ArrayList<>();
             while (set.next()){
                 int id = set.getInt("id");
-                return new Place(id, name);
+                places.add(new Place(id, name));
+            }
+            if(places.size() > 1){
+                while (true){
+                    System.out.println("Было найдено несколько записей. Выберите какую запись выбрать: ");
+                    int count = 1;
+                    for(Place place : places){
+                        System.out.println(count + ": id:" +  place.getId() + " name: "+place.getName());
+                        count++;
+                    }
+                    int x = 0;
+                    try{
+                        x = scanner.nextInt();
+                        scanner.nextLine();
+                    }
+                    catch (InputMismatchException e){
+                        scanner.nextLine();
+                    }
+                    if(x > 0 && x < places.size()+1){
+                        return places.get(x-1);
+                    }
+                    else {
+                        System.out.println("Неправильный ввод");
+                    }
+                }
             }
         } catch (java.sql.SQLException e){
             e.printStackTrace();

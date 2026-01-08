@@ -11,7 +11,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class OrderDB {
     @Inject
@@ -22,6 +25,7 @@ public class OrderDB {
     CarRepairFunctions carRepairFunctions;
     @Inject
     FunctionsDB functionsDB;
+    Scanner scanner = new Scanner(System.in);
     public ArrayList<Order> selectOrder(){
         ArrayList<Order> orders = new ArrayList<>();
         try(Statement statement = connectionDB.getConnection().createStatement()) {
@@ -61,6 +65,7 @@ public class OrderDB {
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, name);
             ResultSet set = statement.executeQuery();
+            ArrayList<Order> orders = new ArrayList<>();
             while (set.next()){
                 int id = set.getInt("id");
                 StatusOrder status = StatusOrder.ACTIVE;
@@ -75,10 +80,34 @@ public class OrderDB {
                 LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
-                ArrayList<Place> places = placeBD.selectPlace();
-                int num = carRepairFunctions.findById(place_id, places);
-                if(num > -1){
-                    return new Order(id, name, cost, places.get(num), createTime, startTime, completeTime, status);
+                Place place = placeBD.findPlaceInDb(place_id);
+                if(place != null){
+                     orders.add(new Order(id, name, cost, place, createTime, startTime, completeTime, status));
+                }
+            }
+            if(orders.size() > 1){
+                while (true){
+                    System.out.println("Было найдено несколько записей. Выберите какую запись выбрать: ");
+                    int count = 1;
+                    for(Order order : orders){
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+                        System.out.println(count + ": id:" +  order.getId() + " name: "+order.getName() + " Create Time: "+order.getTimeCreate().format(formatter));
+                        count++;
+                    }
+                    int x = 0;
+                    try{
+                        x = scanner.nextInt();
+                        scanner.nextLine();
+                    }
+                    catch (InputMismatchException e){
+                        scanner.nextLine();
+                    }
+                    if(x > 0 && x < orders.size()+1){
+                        return orders.get(x-1);
+                    }
+                    else {
+                        System.out.println("Неправильный ввод");
+                    }
                 }
             }
         } catch (java.sql.SQLException e){
@@ -118,7 +147,8 @@ public class OrderDB {
         return null;
     }
     public boolean deleteOrderInDB(String name){
-        return functionsDB.deleteInDB(name, NameTables.ORDER);
+        Order order = findOrderInDB(name);
+        return functionsDB.deleteInDB(order.getId(), NameTables.ORDER);
     }
     public boolean deleteOrderInDB(int id){
         return functionsDB.deleteInDB(id, NameTables.ORDER);

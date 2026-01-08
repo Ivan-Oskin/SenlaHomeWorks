@@ -2,6 +2,8 @@ package com.oskin.autoservice.DAO;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.autoservice.Model.Master;
+import com.oskin.autoservice.View.CarRepairInput;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -14,6 +16,8 @@ public class MasterDB {
     FunctionsDB functionsDB;
     @Inject
     OrdersByMasterDb ordersByMasterDb;
+    @Inject
+    CarRepairInput carRepairInput;
 
     public ArrayList<Master> SelectMasters(){
         ArrayList<Master> masters = new ArrayList<>();
@@ -53,13 +57,31 @@ public class MasterDB {
     public Master findMasterInDb(String name){
         String sql = "SELECT * FROM Masters WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            ArrayList<Master> masters = new ArrayList<>();
             statement.setString(1, name);
             ResultSet set = statement.executeQuery();
             while (set.next()){
                 int id = set.getInt("id");
                 Master master = new Master(id, name);
                 master.addArrayOrdersId(ordersByMasterDb.selectIdOrdersByMaster(id));
-                return master;
+                masters.add(master);
+            }
+            if(masters.size() > 1){
+                while (true){
+                    System.out.println("Было найдено несколько записей. Выберите какую запись выбрать: ");
+                    int count = 1;
+                    for(Master master : masters){
+                        System.out.println(count + ": id:" +  master.getId() + " name: "+master.getName());
+                        count++;
+                    }
+                    int x = carRepairInput.inputInt() - 1;
+                    if(x > -1 && x < masters.size()){
+                        return masters.get(x);
+                    }
+                    else {
+                        System.out.println("Неправильный ввод");
+                    }
+                }
             }
         } catch (java.sql.SQLException e){
             e.printStackTrace();
@@ -85,12 +107,16 @@ public class MasterDB {
 
     public boolean deleteMasterInDB(String name){
         Master master = findMasterInDb(name);
-        int id = master.getId();
-        boolean inf = functionsDB.deleteInDB(name, NameTables.MASTER);
-        if(inf){
-            ordersByMasterDb.deleteLinkInDB(id);
+        if(master == null){
+            return false;
+        } else {
+            int id = master.getId();
+            boolean inf = functionsDB.deleteInDB(id, NameTables.MASTER);
+            if(inf){
+                ordersByMasterDb.deleteLinkInDB(id);
+            }
+            return inf;
         }
-        return inf;
     }
     public boolean deleteMasterInDB(int id){
         boolean inf = functionsDB.deleteInDB(id, NameTables.MASTER);

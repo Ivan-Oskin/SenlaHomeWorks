@@ -134,8 +134,8 @@ public class CarRepairOrders {
             String start = startTime.format(formatter);
             LocalDateTime completeTime = order.getTimeComplete();
             String complete = completeTime.format(formatter);
-            String placeName = order.getPlace().getName();
-            dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeName+"\n");
+            int placeId = order.getPlace().getId();
+            dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeId+"\n");
         }
         workWithFile.whereExport(dataList, config.getStandartFileCsvOrders());
     }

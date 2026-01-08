@@ -84,15 +84,11 @@ public class ImportDates {
                             System.err.println("Неправильные данные в заказе "+name);
                             continue;
                         }
-                        String namePlace = line.get(7);
-                        ArrayList<Place> listPlace = carRepairGarage.getListOfPlace();
-                        int findPlace = carRepairFunctions.findByName(namePlace, listPlace);
-                        if(findPlace > -1){
-                            place = listPlace.get(findPlace);
-                        }
-                        else {
-                            System.out.println("место "+namePlace+" Не найдено.");
-                            System.out.println("Заказ "+name + " не будет добавлен");
+                        int PlaceId = Integer.parseInt(line.get(7));
+                        place = placeBD.findPlaceInDb(PlaceId);
+                        if(place == null){
+                            System.out.println("место с id "+PlaceId+" Не найдено.");
+                            System.out.println("Заказ "+name + "не будет добавлен");
                             continue;
                         }
                     } catch (NumberFormatException e){
