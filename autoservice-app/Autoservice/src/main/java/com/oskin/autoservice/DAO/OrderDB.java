@@ -59,7 +59,6 @@ public class OrderDB {
         }
         return orders;
     }
-
     public Order findOrderInDB(String name){
         String sql = "SELECT * FROM Orders WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
@@ -109,13 +108,14 @@ public class OrderDB {
                         System.out.println("Неправильный ввод");
                     }
                 }
+            }else if(orders.size() == 1) {
+                return orders.get(0);
             }
         } catch (java.sql.SQLException e){
             e.printStackTrace();
         }
         return null;
     }
-
     public Order findOrderInDB(int idOrder){
         String sql = "SELECT * FROM Orders WHERE id = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
@@ -166,7 +166,9 @@ public class OrderDB {
             statement.setInt(7, order.getCost());
             statement.setInt(8, order.getPlace().getId());
             statement.executeUpdate();
+            functionsDB.commit();
         } catch (java.sql.SQLException e){
+            functionsDB.rollback();
             e.printStackTrace();
         }
     }
@@ -177,8 +179,12 @@ public class OrderDB {
             statement.setString(2, name);
             int change = statement.executeUpdate();
             System.out.println(change);
-            if(change > 0) return true;
+            if(change > 0) {
+                functionsDB.commit();
+                return true;
+            }
         } catch (java.sql.SQLException e){
+            functionsDB.rollback();
             e.printStackTrace();
         }
         return false;
@@ -190,8 +196,13 @@ public class OrderDB {
             statement.setTimestamp(2, Timestamp.valueOf(timeComplete));
             statement.setString(3, name);
             int inf = statement.executeUpdate();
-            if(inf > 0) return true;
+            System.out.println(inf);
+            if(inf > 0) {
+                functionsDB.commit();
+                return true;
+            }
         } catch (java.sql.SQLException e){
+            functionsDB.rollback();
             e.printStackTrace();
         }
         return false;

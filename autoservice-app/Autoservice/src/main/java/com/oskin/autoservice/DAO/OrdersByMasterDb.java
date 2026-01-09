@@ -13,6 +13,8 @@ public class OrdersByMasterDb {
     ConnectionDB connectionDB;
     @Inject
     OrderDB orderDB;
+    @Inject
+    FunctionsDB functionsDB;
     public void addOrdersByMasterInDB(int id, int idMaster, int idOrder){
         String sql = "INSERT INTO OrdersByMaster (id, master_id, order_id) VALUES (?, ?, ?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
@@ -20,11 +22,12 @@ public class OrdersByMasterDb {
             statement.setInt(2, idMaster);
             statement.setInt(3, idOrder);
             statement.executeUpdate();
+            functionsDB.commit();
         } catch (java.sql.SQLException e){
+            functionsDB.rollback();
             e.printStackTrace();
         }
     }
-
     public int getMaxIdLink(){
         int result = -1;
         try(Statement statement = connectionDB.getConnection().createStatement()){
@@ -55,7 +58,9 @@ public class OrdersByMasterDb {
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id_master);
             statement.executeUpdate();
+            functionsDB.commit();
         } catch (java.sql.SQLException e){
+            functionsDB.rollback();
             e.printStackTrace();
         }
     }

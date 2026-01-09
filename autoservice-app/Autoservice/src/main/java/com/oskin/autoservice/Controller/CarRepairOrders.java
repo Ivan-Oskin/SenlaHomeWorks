@@ -65,6 +65,7 @@ public class CarRepairOrders {
     public boolean offset(String name, int countDay, int countHour) {
         Order order = orderDB.findOrderInDB(name);
         if(order == null){
+            System.out.println("не находит");
             return false;
         }
         else {
@@ -108,7 +109,7 @@ public class CarRepairOrders {
     }
 
     public ArrayList<Order> getOrderByMaster(String name) {
-        Master master = masterDB.SelectMasterByName(name);
+        Master master = masterDB.findMasterInDb(name);
         ArrayList<Order> Orders = new ArrayList<>();
         if (master != null) {
             for(int OrderId : master.getIdOfOrder()){

@@ -25,6 +25,7 @@ public class ConnectionDB {
         if(connection == null){
             try {
                 connection = DriverManager.getConnection(config.getUrlBd(),config.getUserBd(),config.getPasswordBd());
+                connection.setAutoCommit(false);
             } catch (java.sql.SQLException e){
                 System.out.println("Произошла ошибка при подключении к базе данных");
             }

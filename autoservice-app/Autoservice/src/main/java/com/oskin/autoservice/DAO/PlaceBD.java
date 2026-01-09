@@ -38,7 +38,9 @@ public class PlaceBD {
             statement.setInt(1, place.getId());
             statement.setString(2, place.getName());
             statement.executeUpdate();
+            functionsDB.commit();
         } catch (java.sql.SQLException e){
+            functionsDB.rollback();
             e.printStackTrace();
         }
     }
@@ -96,7 +98,9 @@ public class PlaceBD {
                         System.out.println("Неправильный ввод");
                     }
                 }
-            }
+            } else if(places.size() == 1) {
+                return places.get(0);
+                }
         } catch (java.sql.SQLException e){
             e.printStackTrace();
         }

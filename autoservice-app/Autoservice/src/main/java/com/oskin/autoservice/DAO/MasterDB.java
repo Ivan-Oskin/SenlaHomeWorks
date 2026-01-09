@@ -35,25 +35,6 @@ public class MasterDB {
         }
         return masters;
     }
-
-    public Master SelectMasterByName(String name){
-        String sql = "SELECT * FROM Masters WHERE name = ?";
-        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)){
-            statement.setString(1, name);
-            ResultSet setMaster = statement.executeQuery();
-            while (setMaster.next()){
-                int id = setMaster.getInt("id");
-                String nameMaster  = setMaster.getString("name");
-                Master master = new Master(id, nameMaster);
-                master.addArrayOrdersId(ordersByMasterDb.selectIdOrdersByMaster(id));
-                return master;
-            }
-        } catch (java.sql.SQLException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public Master findMasterInDb(String name){
         String sql = "SELECT * FROM Masters WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
@@ -82,6 +63,8 @@ public class MasterDB {
                         System.out.println("Неправильный ввод");
                     }
                 }
+            }else if(masters.size() == 1) {
+                return masters.get(0);
             }
         } catch (java.sql.SQLException e){
             e.printStackTrace();
@@ -104,7 +87,6 @@ public class MasterDB {
         }
         return null;
     }
-
     public boolean deleteMasterInDB(String name){
         Master master = findMasterInDb(name);
         if(master == null){
@@ -131,7 +113,9 @@ public class MasterDB {
             statement.setInt(1, master.getId());
             statement.setString(2, master.getName());
             statement.executeUpdate();
+            functionsDB.commit();
         } catch (java.sql.SQLException e){
+            functionsDB.rollback();
             e.printStackTrace();
         }
     }
