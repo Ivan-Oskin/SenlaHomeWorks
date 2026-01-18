@@ -65,6 +65,6 @@ public class CarRepairGarage {
             String name = places.get(i).getName();
             dataList.add(id+","+name+"\n");
         }
-        workWithFile.whereExport(dataList, config.getStandartFileCsvGarage());
+        workWithFile.whereExport(dataList, config.getStandardFileCsvGarage());
     }
 }

@@ -26,7 +26,7 @@ public class WorkWithFile {
         }
         File file;
         if(isStandart){
-            Path path = Paths.get(config.getStandartPathToData()+name);
+            Path path = Paths.get(config.getStandardPathToData()+name);
             file = path.toFile();
         }
         else {
@@ -97,7 +97,7 @@ public class WorkWithFile {
         }
         switch (input){
             case 1:{
-                return config.getStandartPathToData()+fileName;
+                return config.getStandardPathToData()+fileName;
             }
             case 2:
             {

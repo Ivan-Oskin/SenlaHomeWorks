@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -29,6 +28,8 @@ public class ImportDates {
     MasterDB masterDB;
     @Inject
     PlaceBD placeBD;
+    @Inject
+    OrdersByMasterDb ordersByMasterDb;
 
     public int inputInt(){
         Scanner scanner = new Scanner(System.in);
@@ -55,7 +56,7 @@ public class ImportDates {
 
     public void importOrder(){
         boolean replace = ReplaceAgree();
-        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvOrders());
+        String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvOrders());
         if(nameFile.equals("???")){
             return;
         }
@@ -125,7 +126,7 @@ public class ImportDates {
     }
     public void importGarage(){
         boolean replace = ReplaceAgree();
-        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvGarage());
+        String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvGarage());
         if(nameFile.equals("???")){
             return;
         }
@@ -159,36 +160,63 @@ public class ImportDates {
 
     public void importMaster() {
         boolean replace = ReplaceAgree();
-        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvMaster());
+        String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvMaster());
         if(nameFile.equals("???")){
             return;
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
             for (ArrayList<String> line : data) {
-                if (line.size() != 3) {
+                if (line.size() != 2) {
                     System.out.println("Неправильная таблица данных");
                     return;
                 } else {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        ArrayList<String> strIdOrders = new ArrayList<>();
-                        ArrayList<Integer> idOrders = new ArrayList<>();
-                        if (!line.get(2).equals("none")) {
-                            strIdOrders = new ArrayList<>(Arrays.asList(line.get(2).split(";")));
-                            for(String idOrder : strIdOrders){
-                                idOrders.add(Integer.parseInt(idOrder));
-                            }
-                        }
                         Master master = masterDB.findMasterInDb(id);
                         if (master != null && replace) {
                             masterDB.deleteMasterInDB(id);
-                            carRepairMaster.addMaster(id, name, idOrders);
+                            carRepairMaster.addMaster(id, name);
                         } else if(master == null) {
-                            carRepairMaster.addMaster(id, name, idOrders);
+                            carRepairMaster.addMaster(id, name);
                         }
                     } catch (NumberFormatException e) {
+                        System.err.println("Неправильные данные");
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void importOrderMaster(){
+        boolean replace = ReplaceAgree();
+        String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvOrderMaster());
+        if(nameFile.equals("???")){
+            return;
+        }
+        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
+        if(!data.isEmpty()){
+            for(ArrayList<String> line : data){
+                if(line.size() != 3){
+                    System.out.println("Неправильная таблица данных");
+                    return;
+                }
+                else {
+                    try {
+                        int id = Integer.parseInt(line.get(0));
+                        int master_id = Integer.parseInt(line.get(1));
+                        int order_id = Integer.parseInt(line.get(2));
+                        OrderMaster orderMaster = ordersByMasterDb.findOrderMasterInDb(id);
+                        if(orderMaster != null && replace){
+                            ordersByMasterDb.deleteLinkInDB(id);
+                            ordersByMasterDb.addOrdersByMasterInDB(id,master_id, order_id);
+                        }
+                        else if(orderMaster == null) {
+                            ordersByMasterDb.addOrdersByMasterInDB(id, master_id, order_id);
+                        }
+                    } catch (NumberFormatException e){
                         System.err.println("Неправильные данные");
                         return;
                     }

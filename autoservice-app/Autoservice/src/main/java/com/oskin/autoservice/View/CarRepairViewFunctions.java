@@ -25,6 +25,8 @@ public class CarRepairViewFunctions {
     Config config;
     @Inject
     CarRepairDate carRepairDate;
+    @Inject
+    CarRepairOrderMaster carRepairOrderMaster;
 
     public void getListOrders(){
         carRepairOutput.printOrders(carRepairOrders.getListOfOrders(carRepairInput.whatSortTypeOrder()));
@@ -208,7 +210,7 @@ public class CarRepairViewFunctions {
     public void setOrderToMaster(){
         String nameMaster = carRepairInput.inputName("имя мастера");
         String nameOrder = carRepairInput.inputName("название заказа");
-        boolean inf = carRepairMaster.setOrderToMaster(nameMaster, nameOrder);
+        boolean inf = carRepairOrderMaster.setOrderMaster(nameMaster, nameOrder);
         if(inf) System.out.println("Заказ " + nameOrder +" добавлен к мастеру " + nameMaster);
         else System.out.println("не получилось добавить заказ мастеру ");
     }

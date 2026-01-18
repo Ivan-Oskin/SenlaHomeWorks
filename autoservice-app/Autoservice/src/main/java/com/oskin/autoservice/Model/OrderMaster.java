@@ -11,5 +11,16 @@ public class OrderMaster {
         this.order = order;
     }
 
+    public Order getOrder(){
+        return this.order;
+    }
+
+    public Master getMaster(){
+        return this.master;
+    }
+
+    public int getId(){
+        return this.id;
+    }
 
 }

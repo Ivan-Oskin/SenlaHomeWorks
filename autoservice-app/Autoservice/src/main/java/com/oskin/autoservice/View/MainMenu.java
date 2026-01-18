@@ -1,9 +1,6 @@
 package com.oskin.autoservice.View;
 import com.oskin.Annotations.*;
-import com.oskin.autoservice.Controller.CarRepairGarage;
-import com.oskin.autoservice.Controller.CarRepairMaster;
-import com.oskin.autoservice.Controller.CarRepairOrders;
-import com.oskin.autoservice.Controller.ImportDates;
+import com.oskin.autoservice.Controller.*;
 import com.oskin.autoservice.DAO.ConnectionDB;
 import com.oskin.autoservice.DAO.PlaceBD;
 
@@ -30,6 +27,8 @@ public class MainMenu {
     ConnectionDB connectionDB;
     @Inject
     ImportDates importDates;
+    @Inject
+    CarRepairOrderMaster carRepairOrderMaster;
 
     public MainMenu(){}
 
@@ -67,22 +66,26 @@ public class MainMenu {
         builderMenu.addItem(1, "Экспортировать места", ()-> carRepairGarage.exportGarage());
         builderMenu.addItem(2, "Экспортировать мастеров", ()-> carRepairMaster.exportMaster());
         builderMenu.addItem(3, "Экспортировать заказы", ()-> carRepairOrders.exportOrder());
-        builderMenu.addItem(4, "Сделать экспорт всех сущностей",
+        builderMenu.addItem(4, "Экспортировать связи заказов и мастеров", ()-> carRepairOrderMaster.exportOrderMaster());
+        builderMenu.addItem(5, "Сделать экспорт всех сущностей",
             () -> {
                 carRepairGarage.exportGarage();
                 carRepairMaster.exportMaster();
                 carRepairOrders.exportOrder();
+                carRepairOrderMaster.exportOrderMaster();
             });
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Импорт данных");
         builderMenu.addItem(1, "Импорт мест", () -> importDates.importGarage());
         builderMenu.addItem(2, "Импорт мастеров", () -> importDates.importMaster());
         builderMenu.addItem(3, "Импорт заказов", () -> importDates.importOrder());
-        builderMenu.addItem(4, "Сделать импорт всех сущностей",
+        builderMenu.addItem(4, "Импорт связи заказов и мастеров", () -> importDates.importOrderMaster());
+        builderMenu.addItem(5, "Сделать импорт всех сущностей",
             () -> {
                 importDates.importGarage();
                 importDates.importMaster();
                 importDates.importOrder();
+                importDates.importOrderMaster();
             });
         navigator.addMenu(builderMenu.build());
         Scanner scanner = new Scanner(System.in);

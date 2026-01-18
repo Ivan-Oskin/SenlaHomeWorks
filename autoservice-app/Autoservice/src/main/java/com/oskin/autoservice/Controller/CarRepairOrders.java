@@ -2,6 +2,7 @@ package com.oskin.autoservice.Controller;
 import com.oskin.Annotations.*;
 import com.oskin.autoservice.DAO.MasterDB;
 import com.oskin.autoservice.DAO.OrderDB;
+import com.oskin.autoservice.DAO.OrdersByMasterDb;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 import java.time.LocalDateTime;
@@ -19,6 +20,10 @@ public class CarRepairOrders {
     Config config;
     @Inject
     MasterDB masterDB;
+    @Inject
+    OrdersByMasterDb ordersByMasterDb;
+    @Inject
+    CarRepairOrderMaster carRepairOrderMaster;
 
     private static CarRepairOrders instance;
 
@@ -88,13 +93,11 @@ public class CarRepairOrders {
 
     public ArrayList<Order> getOrderByMaster(String name) {
         Master master = masterDB.findMasterInDb(name);
-        ArrayList<Order> Orders = new ArrayList<>();
         if (master != null) {
-            for(int OrderId : master.getIdOfOrder()){
-                Orders.add(orderDB.findOrderInDB(OrderId));
-            }
+            ArrayList<OrderMaster> orderMasters = ordersByMasterDb.getOrdersByMasterInDB(master.getId());
+            return carRepairOrderMaster.getOrderFromOrderMaster(orderMasters);
         }
-        return Orders;
+        return new ArrayList<>();
     }
 
     public void exportOrder(){
@@ -116,7 +119,7 @@ public class CarRepairOrders {
             int placeId = order.getPlace().getId();
             dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeId+"\n");
         }
-        workWithFile.whereExport(dataList, config.getStandartFileCsvOrders());
+        workWithFile.whereExport(dataList, config.getStandardFileCsvOrders());
     }
 }
 
