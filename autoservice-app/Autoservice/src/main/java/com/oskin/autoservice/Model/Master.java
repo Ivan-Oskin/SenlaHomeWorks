@@ -1,7 +1,7 @@
 package com.oskin.autoservice.Model;
 import java.util.ArrayList;
 
-public class Master implements Nameable {
+public class Master {
     private int id;
     private String name;
     private ArrayList<Integer> idOfOrders;

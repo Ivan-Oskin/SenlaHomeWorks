@@ -16,8 +16,6 @@ public class CarRepairGarage {
     PlaceBD placeBD;
     @Inject
     CarRepairOrders carRepairOrders;
-    @Inject
-    CarRepairFunctions carRepairFunctions;
     private static CarRepairGarage instance;
     private CarRepairGarage(){
     }
@@ -49,9 +47,9 @@ public class CarRepairGarage {
         LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
         ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
-        for (int i = 0; i < ordersByTime.size(); i++) {
-            if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
-               carRepairFunctions.delete(ordersByTime.get(i).getPlace().getName(), newList);
+        for (Order order : ordersByTime) {
+            if (order.getTimeStart().compareTo(date) <= 0 && order.getTimeComplete().compareTo(date) >= 0) {
+               newList.removeIf(place -> place.getId() == order.getPlace().getId());
             }
         }
         return newList;

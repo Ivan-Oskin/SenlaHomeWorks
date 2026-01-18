@@ -1,14 +1,13 @@
 package com.oskin.autoservice.DAO;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Controller.CarRepairFunctions;
 import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.Place;
+import com.oskin.autoservice.Model.SortTypeOrder;
 import com.oskin.autoservice.Model.StatusOrder;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,14 +21,14 @@ public class OrderDB {
     @Inject
     PlaceBD placeBD;
     @Inject
-    CarRepairFunctions carRepairFunctions;
-    @Inject
     FunctionsDB functionsDB;
     Scanner scanner = new Scanner(System.in);
-    public ArrayList<Order> selectOrder(){
+    public ArrayList<Order> selectOrder(SortTypeOrder sortTypeOrder){
         ArrayList<Order> orders = new ArrayList<>();
-        try(Statement statement = connectionDB.getConnection().createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT * FROM orders");
+        String sql = "SELECT * FROM orders ORDER BY ?";
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            statement.setString(1, sortTypeOrder.getStringSortType());
+            ResultSet set = statement.executeQuery();
             while (set.next()){
                 int id = set.getInt("id");
                 String name = set.getString("name");
@@ -45,10 +44,9 @@ public class OrderDB {
                 LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
-                ArrayList<Place> places = placeBD.selectPlace();
-                int num = carRepairFunctions.findById(place_id, places);
-                if(num > -1){
-                    orders.add(new Order(id, name, cost, places.get(num), createTime, startTime, completeTime, status));
+                Place place = placeBD.findPlaceInDb(place_id);
+                if(place != null){
+                    orders.add(new Order(id, name, cost, place, createTime, startTime, completeTime, status));
                 }
                 else{
                     System.out.println("Место с id "+place_id+" не найдено. Заказ "+name+" некоректен");
@@ -135,10 +133,9 @@ public class OrderDB {
                 LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
-                ArrayList<Place> places = placeBD.selectPlace();
-                int num = carRepairFunctions.findById(place_id, places);
-                if(num > -1){
-                    return new Order(idOrder, name, cost, places.get(num), createTime, startTime, completeTime, status);
+                Place place = placeBD.findPlaceInDb(place_id);
+                if(place != null){
+                    return new Order(idOrder, name, cost, place, createTime, startTime, completeTime, status);
                 }
             }
         } catch (java.sql.SQLException e){

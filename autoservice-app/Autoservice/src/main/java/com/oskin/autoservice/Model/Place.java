@@ -1,6 +1,6 @@
 package com.oskin.autoservice.Model;
 
-public class Place implements Nameable {
+public class Place {
     private String name;
     private int id;
 

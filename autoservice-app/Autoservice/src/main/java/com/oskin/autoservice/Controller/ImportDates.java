@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ImportDates {
@@ -19,8 +20,6 @@ public class ImportDates {
     @Inject
     Config config;
     @Inject
-    CarRepairFunctions carRepairFunctions;
-    @Inject
     OrderDB orderDB;
     @Inject
     CarRepairGarage carRepairGarage;
@@ -31,24 +30,31 @@ public class ImportDates {
     @Inject
     PlaceBD placeBD;
 
-    public boolean DeleteAllAgree(){
+    public int inputInt(){
         Scanner scanner = new Scanner(System.in);
+        int input = 0;
+        try{
+            input = scanner.nextInt();
+            scanner.nextLine();
+        }
+        catch (InputMismatchException e){
+            scanner.nextLine();
+            System.err.println("\nНадо ввести только цифру!!!\n");
+        }
+        return input;
+    }
+
+    public boolean ReplaceAgree(){
         while (true){
-            System.out.println("Вы уверены, это действие приведет к перезаписи данных при совпадении.\nY/N");
-            String line =  scanner.nextLine();
-            if(line.toLowerCase().equals("y")){
-                return true;
-            }
-            else if(line.toLowerCase().equals("n")){
-                return false;
-            }
+            System.out.println("Что делать при совпадении?.\n 1 - Заменить существующее \n 2 - Оставить существующее");
+            int x = inputInt();
+            if(x == 1) return true;
+            else if(x == 2) return false;
         }
     }
 
     public void importOrder(){
-        boolean next = DeleteAllAgree();
-        if(!next) return;
-        ArrayList<Order> orders = carRepairOrders.getListOfOrders(SortTypeOrder.ID);
+        boolean replace = ReplaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvOrders());
         if(nameFile.equals("???")){
             return;
@@ -105,12 +111,12 @@ public class ImportDates {
                         System.err.println("произошла ошибка при парсинге времени заказа "+name);
                         continue;
                     }
-                    int findOrder = carRepairFunctions.findById(id, orders);
-                    if(findOrder > -1){
+                    Order order = orderDB.findOrderInDB(id);
+                    if(order != null && replace){
                         orderDB.deleteOrderInDB(id);
                         carRepairOrders.addOrder(id, name, cost, place, create, start, complete);
                     }
-                    else{
+                    else if(order == null){
                         carRepairOrders.addOrder(id, name, cost, place, create, start, complete);
                     }
                 }
@@ -118,15 +124,13 @@ public class ImportDates {
         }
     }
     public void importGarage(){
-        boolean next = DeleteAllAgree();
-        if(!next) return;
+        boolean replace = ReplaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvGarage());
         if(nameFile.equals("???")){
             return;
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if(!data.isEmpty()){
-            ArrayList<Place> places = carRepairGarage.getListOfPlace();
             for(ArrayList<String> line : data){
                 if(line.size() != 2){
                     System.out.println("Неправильная таблица данных");
@@ -136,12 +140,12 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        int findPlace = carRepairFunctions.findById(id, places);
-                        if(findPlace > -1){
+                        Place place = placeBD.findPlaceInDb(id);
+                        if(place != null && replace){
                             placeBD.deletePlaceInDB(id);
                             carRepairGarage.addPlace(id, name);
                         }
-                        else {
+                        else if(place == null) {
                             carRepairGarage.addPlace(id, name);
                         }
                     } catch (NumberFormatException e){
@@ -154,9 +158,7 @@ public class ImportDates {
     }
 
     public void importMaster() {
-        boolean next = DeleteAllAgree();
-        if(!next) return;
-        ArrayList<Master> masters = carRepairMaster.getListOfMasters(SortTypeMaster.ID);
+        boolean replace = ReplaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvMaster());
         if(nameFile.equals("???")){
             return;
@@ -179,11 +181,11 @@ public class ImportDates {
                                 idOrders.add(Integer.parseInt(idOrder));
                             }
                         }
-                        int findMaster = carRepairFunctions.findById(id, masters);
-                        if (findMaster > -1) {
+                        Master master = masterDB.findMasterInDb(id);
+                        if (master != null && replace) {
                             masterDB.deleteMasterInDB(id);
                             carRepairMaster.addMaster(id, name, idOrders);
-                        } else {
+                        } else if(master == null) {
                             carRepairMaster.addMaster(id, name, idOrders);
                         }
                     } catch (NumberFormatException e) {

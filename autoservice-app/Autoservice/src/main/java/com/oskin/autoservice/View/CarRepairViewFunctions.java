@@ -22,8 +22,6 @@ public class CarRepairViewFunctions {
     @Inject
     CarRepairInput carRepairInput;
     @Inject
-    CarRepairFunctions carRepairFunctions;
-    @Inject
     Config config;
     @Inject
     CarRepairDate carRepairDate;
@@ -37,11 +35,11 @@ public class CarRepairViewFunctions {
             System.out.println("произошла ошибка при вводе данных");
             return;
         }
-        carRepairOutput.printList(carRepairGarage.getFreePlace(time));
+        carRepairOutput.printPlace(carRepairGarage.getFreePlace(time));
     }
 
     public void getMasters(){
-        carRepairOutput.printMasters(carRepairMaster.getListOfMasters(carRepairInput.whatSortTypeMaster()));
+        carRepairOutput.printMasters(carRepairMaster.getListOfMasters(carRepairInput.whatSortTypeMaster()), true);
     }
 
     public void getCurrentOrders(){
@@ -54,7 +52,7 @@ public class CarRepairViewFunctions {
     }
     public void getMastersByOrder(){
         String name = carRepairInput.inputName("Имя заказа");
-        carRepairOutput.printList(carRepairMaster.getMastersByOrder(name));
+        carRepairOutput.printMasters(carRepairMaster.getMastersByOrder(name), false);
     }
     public void getOrdersInTime(){
         System.out.println("Введите начальное время");

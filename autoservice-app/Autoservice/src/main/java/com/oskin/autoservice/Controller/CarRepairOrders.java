@@ -30,25 +30,6 @@ public class CarRepairOrders {
         }
         return instance;
     }
-    private static void sortOrders(ArrayList<Order> list, SortTypeOrder sortType) {
-        switch (sortType) {
-            case CREATE:
-                list.sort(Comparator.comparing(Order::getTimeCreate));
-                break;
-            case START:
-                list.sort(Comparator.comparing(Order::getTimeStart));
-                break;
-            case COMPLETE:
-                list.sort(Comparator.comparing(Order::getTimeComplete));
-                break;
-            case COST:
-                list.sort(Comparator.comparing(Order::getCost));
-                break;
-            case ID:
-                list.sort(Comparator.comparing(Order::getId));
-        }
-    }
-
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete);
         orderDB.addOrderInDB(order);
@@ -80,31 +61,28 @@ public class CarRepairOrders {
     }
 
     public ArrayList<Order> getListOfOrders(SortTypeOrder sortType) {
-        ArrayList<Order> newList = orderDB.selectOrder();
-        sortOrders(newList, sortType);
+        ArrayList<Order> newList = orderDB.selectOrder(sortType);
         return newList;
     }
 
     public ArrayList<Order> getListOfActiveOrders(SortTypeOrder sortType) {
-        ArrayList<Order> orders = orderDB.selectOrder();
+        ArrayList<Order> orders = orderDB.selectOrder(sortType);
         ArrayList<Order> newList = new ArrayList<>();
         for (Order order : orders) {
             if (order.getStatus().equals(StatusOrder.ACTIVE)) {
                 newList.add(order);
             }
         }
-        sortOrders(newList, sortType);
         return newList;
     }
     public ArrayList<Order> getOrdersInTime(StatusOrder status, LocalDateTime startDate, LocalDateTime endDate, SortTypeOrder sortType) {
-        ArrayList<Order> orders = orderDB.selectOrder();
+        ArrayList<Order> orders = orderDB.selectOrder(sortType);
         ArrayList<Order> newList = new ArrayList<>();
         for (Order order : orders) {
             if (order.getTimeStart().compareTo(endDate) <= 0 && order.getTimeComplete().compareTo(startDate) >= 0 && order.getStatus().equals(status)) {
                 newList.add(order);
             }
         }
-        sortOrders(newList, sortType);
         return newList;
     }
 

@@ -2,7 +2,7 @@ package com.oskin.autoservice.Model;
 
 import java.time.LocalDateTime;
 
-public class Order implements Nameable {
+public class Order {
     private int id;
     private String name;
     private StatusOrder status;
