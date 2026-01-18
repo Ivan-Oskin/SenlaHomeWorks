@@ -1,10 +1,10 @@
 package com.oskin.autoservice.DAO;
 
 public enum NameTables {
-    ORDER("Orders"),
-    PLACE("Places"),
-    MASTER("Masters"),
-    ORDERS_BY_MASTER("OrdersByMaster");
+    ORDER("orders"),
+    PLACE("places"),
+    MASTER("masters"),
+    ORDERS_BY_MASTER("order_master");
 
     private final String NAME_TABLE;
 

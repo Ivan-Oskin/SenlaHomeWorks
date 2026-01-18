@@ -3,17 +3,16 @@ package com.oskin.autoservice.DAO;
 import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;
 import com.oskin.config.Config;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 @Singleton
-public class ConnectionDB {
+public final class ConnectionDB {
     @Inject
     Config config;
     private static ConnectionDB instance;
     private Connection connection;
-    private ConnectionDB() {};
+    private ConnectionDB() {}
     public static ConnectionDB GetInstance(){
         if(instance == null){
             instance = new ConnectionDB();

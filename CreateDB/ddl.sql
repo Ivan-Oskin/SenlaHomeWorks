@@ -1,14 +1,14 @@
-CREATE TABLE Places (
+CREATE TABLE places (
     id INT PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Masters (
+CREATE TABLE masters (
     id INT PRIMARY KEY,
     name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE Orders (
+CREATE TABLE orders (
     id INT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE Orders (
 );
 
 
-CREATE TABLE OrdersByMaster (
+CREATE TABLE order_master (
     id INT PRIMARY KEY,
     master_id INT,
     order_id INT

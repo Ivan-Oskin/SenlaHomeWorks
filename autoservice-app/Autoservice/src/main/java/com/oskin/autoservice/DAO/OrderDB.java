@@ -29,7 +29,7 @@ public class OrderDB {
     public ArrayList<Order> selectOrder(){
         ArrayList<Order> orders = new ArrayList<>();
         try(Statement statement = connectionDB.getConnection().createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT * FROM Orders");
+            ResultSet set = statement.executeQuery("SELECT * FROM orders");
             while (set.next()){
                 int id = set.getInt("id");
                 String name = set.getString("name");
@@ -60,7 +60,7 @@ public class OrderDB {
         return orders;
     }
     public Order findOrderInDB(String name){
-        String sql = "SELECT * FROM Orders WHERE name = ?";
+        String sql = "SELECT * FROM orders WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, name);
             ResultSet set = statement.executeQuery();
@@ -117,7 +117,7 @@ public class OrderDB {
         return null;
     }
     public Order findOrderInDB(int idOrder){
-        String sql = "SELECT * FROM Orders WHERE id = ?";
+        String sql = "SELECT * FROM orders WHERE id = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, idOrder);
             ResultSet set = statement.executeQuery();
@@ -155,7 +155,7 @@ public class OrderDB {
     }
 
     public void addOrderInDB(Order order){
-        String sql = "INSERT INTO Orders (id, name, status, timeCreate, timeStart, timeComplete, cost, place_id) VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO orders (id, name, status, timeCreate, timeStart, timeComplete, cost, place_id) VALUES (?,?,?,?,?,?,?,?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, order.getId());
             statement.setString(2, order.getName());
@@ -173,7 +173,7 @@ public class OrderDB {
         }
     }
     public boolean ChangeStatusInDb(String name, StatusOrder statusOrder) {
-        String sql = "UPDATE Orders SET status = ? WHERE name = ?;";
+        String sql = "UPDATE orders SET status = ? WHERE name = ?;";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)){
             statement.setString(1, statusOrder.getSTATUS());
             statement.setString(2, name);
@@ -190,7 +190,7 @@ public class OrderDB {
         return false;
     }
     public boolean offsetInDb(String name, LocalDateTime timeStart, LocalDateTime timeComplete) {
-        String sql = "UPDATE Orders SET timeStart = ?, timeComplete = ? WHERE name = ?";
+        String sql = "UPDATE orders SET timeStart = ?, timeComplete = ? WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)){
             statement.setTimestamp(1, Timestamp.valueOf(timeStart));
             statement.setTimestamp(2, Timestamp.valueOf(timeComplete));

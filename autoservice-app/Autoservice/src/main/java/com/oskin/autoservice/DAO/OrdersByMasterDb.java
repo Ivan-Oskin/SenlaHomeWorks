@@ -16,7 +16,7 @@ public class OrdersByMasterDb {
     @Inject
     FunctionsDB functionsDB;
     public void addOrdersByMasterInDB(int id, int idMaster, int idOrder){
-        String sql = "INSERT INTO OrdersByMaster (id, master_id, order_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO order_master (id, master_id, order_id) VALUES (?, ?, ?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id);
             statement.setInt(2, idMaster);
@@ -31,7 +31,7 @@ public class OrdersByMasterDb {
     public int getMaxIdLink(){
         int result = -1;
         try(Statement statement = connectionDB.getConnection().createStatement()){
-            ResultSet set = statement.executeQuery("SELECT id FROM OrdersByMaster ORDER BY id DESC LIMIT 1");
+            ResultSet set = statement.executeQuery("SELECT id FROM order_master ORDER BY id DESC LIMIT 1");
             while (set.next()){
                 result = set.getInt("id");
             }
@@ -44,7 +44,7 @@ public class OrdersByMasterDb {
     public ArrayList<Integer> selectIdOrdersByMaster(int idMaster){
         ArrayList<Integer> idOrders = new ArrayList<>();
         try(Statement statement = connectionDB.getConnection().createStatement()){
-            ResultSet setOrdersByMaster = statement.executeQuery("SELECT * FROM OrdersByMaster WHERE master_id = " + idMaster);
+            ResultSet setOrdersByMaster = statement.executeQuery("SELECT * FROM order_master WHERE master_id = " + idMaster);
             while (setOrdersByMaster.next()){
                 idOrders.add(setOrdersByMaster.getInt("order_id"));
             }
@@ -54,7 +54,7 @@ public class OrdersByMasterDb {
         return idOrders;
     }
     public void deleteLinkInDB(int id_master){
-        String sql = "DELETE FROM OrdersByMaster WHERE master_id = ?;";
+        String sql = "DELETE FROM order_master WHERE master_id = ?;";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id_master);
             statement.executeUpdate();
@@ -67,7 +67,7 @@ public class OrdersByMasterDb {
     public ArrayList<Integer> getMastersByOrderInDB(String name) {
         Order order = orderDB.findOrderInDB(name);
         ArrayList<Integer> mastersId = new ArrayList<>();
-        String sql = "SELECT master_id FROM OrdersByMaster WHERE order_id = ? ";
+        String sql = "SELECT master_id FROM order_master WHERE order_id = ? ";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             if(order != null){
                 statement.setInt(1, order.getId());

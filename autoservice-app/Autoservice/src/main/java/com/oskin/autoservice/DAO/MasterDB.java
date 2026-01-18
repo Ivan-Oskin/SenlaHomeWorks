@@ -22,7 +22,7 @@ public class MasterDB {
     public ArrayList<Master> SelectMasters(){
         ArrayList<Master> masters = new ArrayList<>();
         try(Statement statement = connectionDB.getConnection().createStatement()){
-            ResultSet setMaster = statement.executeQuery("SELECT * FROM Masters");
+            ResultSet setMaster = statement.executeQuery("SELECT * FROM masters");
             while (setMaster.next()){
                 int id = setMaster.getInt("id");
                 String name  = setMaster.getString("name");
@@ -36,7 +36,7 @@ public class MasterDB {
         return masters;
     }
     public Master findMasterInDb(String name){
-        String sql = "SELECT * FROM Masters WHERE name = ?";
+        String sql = "SELECT * FROM masters WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             ArrayList<Master> masters = new ArrayList<>();
             statement.setString(1, name);
@@ -72,7 +72,7 @@ public class MasterDB {
         return null;
     }
     public Master findMasterInDb(int id){
-        String sql = "SELECT * FROM Masters WHERE id = ?";
+        String sql = "SELECT * FROM masters WHERE id = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id);
             ResultSet set = statement.executeQuery();
@@ -108,7 +108,7 @@ public class MasterDB {
         return inf;
     }
     public void addMasterInDB(Master master){
-        String sql = "INSERT INTO Masters (id, name) VALUES (?, ?)";
+        String sql = "INSERT INTO masters (id, name) VALUES (?, ?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, master.getId());
             statement.setString(2, master.getName());

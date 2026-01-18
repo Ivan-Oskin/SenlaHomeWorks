@@ -1,9 +1,7 @@
 package com.oskin.autoservice.DAO;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.Place;
-import com.oskin.autoservice.View.CarRepairInput;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +19,7 @@ public class PlaceBD {
     public ArrayList<Place> selectPlace(){
         ArrayList<Place> places = new ArrayList<>();
         try(Statement statement = connectionDB.getConnection().createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT * FROM Places");
+            ResultSet set = statement.executeQuery("SELECT * FROM places");
             while (set.next()){
                 int id = set.getInt("id");
                 String name = set.getString("name");
@@ -33,7 +31,7 @@ public class PlaceBD {
         return places;
     }
     public void addPlaceInDB(Place place){
-        String sql = "INSERT INTO Places (id, name) VALUES (?, ?)";
+        String sql = "INSERT INTO places (id, name) VALUES (?, ?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, place.getId());
             statement.setString(2, place.getName());
@@ -52,7 +50,7 @@ public class PlaceBD {
         return functionsDB.deleteInDB(id, NameTables.PLACE);
     }
     public Place findPlaceInDb(int id){
-        String sql = "SELECT * FROM Places WHERE id = ?";
+        String sql = "SELECT * FROM places WHERE id = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id);
             ResultSet set = statement.executeQuery();
@@ -66,7 +64,7 @@ public class PlaceBD {
         return null;
     }
     public Place findPlaceInDb(String name){
-        String sql = "SELECT * FROM Places WHERE name = ?";
+        String sql = "SELECT * FROM places WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, name);
             ResultSet set = statement.executeQuery();
