@@ -1,9 +1,9 @@
-package com.oskin.autoservice.DAO;
+package com.oskin.autoservice.repository;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.autoservice.Model.Master;
+import com.oskin.autoservice.Model.SortType;
 import com.oskin.autoservice.Model.SortTypeMaster;
-import com.oskin.autoservice.View.CarRepairInput;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,12 +13,9 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class MasterDB {
+public class MasterRepository implements CrudRepository<Master> {
     @Inject
     ConnectionDB connectionDB;
-    @Inject
-    FunctionsDB functionsDB;
-
     public int inputInt(){
         Scanner scanner = new Scanner(System.in);
         int input = 0;
@@ -32,12 +29,12 @@ public class MasterDB {
         }
         return input;
     }
-    public ArrayList<Master> SelectMasters(SortTypeMaster sortTypeMaster){
+    @Override
+    public <G extends SortType> ArrayList<Master> findAll(G sortTypeMaster){
         ArrayList<Master> masters = new ArrayList<>();
-        if(sortTypeMaster != SortTypeMaster.BUSYNESS){
-            String sql = "SELECT * FROM masters ORDER BY ?";
+        if(!sortTypeMaster.getStringSortType().equals(SortTypeMaster.BUSYNESS.getStringSortType())){
+            String sql = "SELECT * FROM masters ORDER BY " + sortTypeMaster.getStringSortType();
             try(PreparedStatement preparedStatement = connectionDB.getConnection().prepareStatement(sql)){
-                preparedStatement.setString(1, sortTypeMaster.getStringSortType());
                 ResultSet setMaster = preparedStatement.executeQuery();
                 while (setMaster.next()){
                     int id = setMaster.getInt("id");
@@ -67,7 +64,7 @@ public class MasterDB {
         }
         return masters;
     }
-    public Master findMasterInDb(String name){
+    public Master find(String name){
         String sql = "SELECT * FROM masters WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             ArrayList<Master> masters = new ArrayList<>();
@@ -102,7 +99,8 @@ public class MasterDB {
         }
         return null;
     }
-    public Master findMasterInDb(int id){
+    @Override
+    public Master find(int id){
         String sql = "SELECT * FROM masters WHERE id = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id);
@@ -117,27 +115,54 @@ public class MasterDB {
         }
         return null;
     }
-    public boolean deleteMasterInDB(String name){
-        Master master = findMasterInDb(name);
+    public boolean delete(String name){
+        Master master = find(name);
         if(master == null){
             return false;
         } else {
-            int id = master.getId();
-            return functionsDB.deleteInDB(id, NameTables.MASTER);
+            return delete(master.getId());
         }
     }
-    public boolean deleteMasterInDB(int id){
-        return functionsDB.deleteInDB(id, NameTables.MASTER);
+
+    @Override
+    public boolean delete(int id){
+        String sql = "DELETE FROM masters WHERE id = ?;";
+        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            statement.setInt(1, id);
+            int result = statement.executeUpdate();
+            if(result > 0){
+                connectionDB.commit();
+                return true;
+            }
+        } catch (java.sql.SQLException e){
+            connectionDB.rollback();
+            e.printStackTrace();
+        }
+        return false;
     }
-    public void addMasterInDB(Master master){
+    @Override
+    public void create(Master master){
         String sql = "INSERT INTO masters (id, name) VALUES (?, ?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, master.getId());
             statement.setString(2, master.getName());
             statement.executeUpdate();
-            functionsDB.commit();
+            connectionDB.commit();
         } catch (java.sql.SQLException e){
-            functionsDB.rollback();
+            connectionDB.rollback();
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void update(Master master){
+        String sql = "UPDATE masters SET name = ? WHERE id = ?";
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)){
+            statement.setString(1, master.getName());
+            statement.setInt(2, master.getId());
+            statement.executeUpdate();
+            connectionDB.commit();
+        } catch (SQLException e){
+            connectionDB.rollback();
             e.printStackTrace();
         }
     }

@@ -1,5 +1,5 @@
 package com.oskin.autoservice.Controller;
-import com.oskin.autoservice.DAO.PlaceBD;
+import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.Model.*;
 import com.oskin.Annotations.*;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ public class CarRepairGarage {
     @Inject
     Config config;
     @Inject
-    PlaceBD placeBD;
+    PlaceRepository placeRepository;
     @Inject
     CarRepairOrders carRepairOrders;
     private static CarRepairGarage instance;
@@ -28,18 +28,18 @@ public class CarRepairGarage {
 
     public void addPlace(int id, String name) {
         Place place = new Place(id, name);
-        placeBD.addPlaceInDB(place);
+        placeRepository.create(place);
     }
 
     public boolean deletePlace(String name) {
-        return placeBD.deletePlaceInDB(name);
+        return placeRepository.delete(name);
     }
 
     public ArrayList<Place> getListOfPlace() {
-        return placeBD.selectPlace();
+        return placeRepository.findAll(SortTypePlace.ID);
     }
     public Place findPlace(String name) {
-        return placeBD.findPlaceInDb(name);
+        return placeRepository.find(name);
 
     }
     public ArrayList<Place> getFreePlace(LocalDateTime date) {
@@ -56,7 +56,7 @@ public class CarRepairGarage {
     }
 
     public void exportGarage(){
-        ArrayList<Place> places = placeBD.selectPlace();
+        ArrayList<Place> places = placeRepository.findAll(SortTypePlace.ID);
         int size = places.size();
         ArrayList<String> dataList = new ArrayList<>(size+1);
         dataList.add("ID,NAME\n");

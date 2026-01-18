@@ -1,25 +1,26 @@
-package com.oskin.autoservice.DAO;
+package com.oskin.autoservice.repository;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.autoservice.Model.Place;
+import com.oskin.autoservice.Model.SortType;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class PlaceBD {
+public class PlaceRepository implements CrudRepository<Place> {
     @Inject
     ConnectionDB connectionDB;
-    @Inject
-    FunctionsDB functionsDB;
     Scanner scanner = new Scanner(System.in);
-    public ArrayList<Place> selectPlace(){
+    @Override
+    public <G extends SortType> ArrayList<Place> findAll(G SortType){
         ArrayList<Place> places = new ArrayList<>();
-        try(Statement statement = connectionDB.getConnection().createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT * FROM places");
+        String sql = "SELECT * FROM places ORDER BY "+SortType.getStringSortType();
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            ResultSet set = statement.executeQuery();
             while (set.next()){
                 int id = set.getInt("id");
                 String name = set.getString("name");
@@ -30,26 +31,43 @@ public class PlaceBD {
         }
         return places;
     }
-    public void addPlaceInDB(Place place){
+
+    @Override
+    public void create(Place place){
         String sql = "INSERT INTO places (id, name) VALUES (?, ?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, place.getId());
             statement.setString(2, place.getName());
             statement.executeUpdate();
-            functionsDB.commit();
+            connectionDB.commit();
         } catch (java.sql.SQLException e){
-            functionsDB.rollback();
+            connectionDB.rollback();
             e.printStackTrace();
         }
     }
-    public boolean deletePlaceInDB(String name){
-        Place place = findPlaceInDb(name);
-        return functionsDB.deleteInDB(place.getId(), NameTables.PLACE);
+
+    @Override
+    public boolean delete(int id){
+        String sql = "DELETE FROM places WHERE id = ?;";
+        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            statement.setInt(1, id);
+            int result = statement.executeUpdate();
+            if(result > 0){
+                connectionDB.commit();
+                return true;
+            }
+        } catch (java.sql.SQLException e){
+            connectionDB.rollback();
+            e.printStackTrace();
+        }
+        return false;
     }
-    public boolean deletePlaceInDB(int id){
-        return functionsDB.deleteInDB(id, NameTables.PLACE);
+    public boolean delete(String name){
+        Place place = find(name);
+        return delete(place.getId());
     }
-    public Place findPlaceInDb(int id){
+    @Override
+    public Place find(int id){
         String sql = "SELECT * FROM places WHERE id = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id);
@@ -63,7 +81,20 @@ public class PlaceBD {
         }
         return null;
     }
-    public Place findPlaceInDb(String name){
+    @Override
+    public void update(Place place){
+        String sql = "UPDATE places SET name = ? WHERE id = ?";
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)){
+            statement.setString(1, place.getName());
+            statement.setInt(2, place.getId());
+            statement.executeUpdate();
+            connectionDB.commit();
+        } catch (SQLException e){
+            connectionDB.rollback();
+            e.printStackTrace();
+        }
+    }
+    public Place find(String name){
         String sql = "SELECT * FROM places WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, name);

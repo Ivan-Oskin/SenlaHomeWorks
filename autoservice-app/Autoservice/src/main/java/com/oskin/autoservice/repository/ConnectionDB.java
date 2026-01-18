@@ -1,10 +1,12 @@
-package com.oskin.autoservice.DAO;
+package com.oskin.autoservice.repository;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;
 import com.oskin.config.Config;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 @Singleton
 public final class ConnectionDB {
@@ -36,5 +38,19 @@ public final class ConnectionDB {
             Connect();
         }
         return connection;
+    }
+    public void commit(){
+        try {
+           getConnection().commit();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public void rollback(){
+        try {
+            getConnection().rollback();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 }

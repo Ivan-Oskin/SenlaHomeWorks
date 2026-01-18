@@ -1,8 +1,7 @@
 package com.oskin.autoservice.View;
 import com.oskin.Annotations.*;
 import com.oskin.autoservice.Controller.*;
-import com.oskin.autoservice.DAO.ConnectionDB;
-import com.oskin.autoservice.DAO.PlaceBD;
+import com.oskin.autoservice.repository.ConnectionDB;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;

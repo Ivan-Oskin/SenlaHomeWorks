@@ -1,6 +1,6 @@
 package com.oskin.autoservice.Model;
 
-public enum SortTypeOrder {
+public enum SortTypeOrder implements SortType {
     CREATE("timeCreate"),
     START("timeStart"),
     COMPLETE("timeComplete"),

@@ -1,6 +1,6 @@
 package com.oskin.autoservice.Model;
 
-public class Master {
+public class Master implements IIndentified {
     private int id;
     private String name;
 

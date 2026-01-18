@@ -1,13 +1,11 @@
-package com.oskin.autoservice.DAO;
+package com.oskin.autoservice.repository;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Model.Order;
-import com.oskin.autoservice.Model.Place;
-import com.oskin.autoservice.Model.SortTypeOrder;
-import com.oskin.autoservice.Model.StatusOrder;
+import com.oskin.autoservice.Model.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,19 +13,17 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class OrderDB {
+public class OrderRepository implements CrudRepository<Order> {
     @Inject
     ConnectionDB connectionDB;
     @Inject
-    PlaceBD placeBD;
-    @Inject
-    FunctionsDB functionsDB;
+    PlaceRepository placeRepository;
     Scanner scanner = new Scanner(System.in);
-    public ArrayList<Order> selectOrder(SortTypeOrder sortTypeOrder){
+    @Override
+    public <G extends SortType> ArrayList<Order> findAll(G sortTypeOrder){
         ArrayList<Order> orders = new ArrayList<>();
-        String sql = "SELECT * FROM orders ORDER BY ?";
+        String sql = "SELECT * FROM orders ORDER BY " + sortTypeOrder.getStringSortType();
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setString(1, sortTypeOrder.getStringSortType());
             ResultSet set = statement.executeQuery();
             while (set.next()){
                 int id = set.getInt("id");
@@ -44,7 +40,7 @@ public class OrderDB {
                 LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
-                Place place = placeBD.findPlaceInDb(place_id);
+                Place place = placeRepository.find(place_id);
                 if(place != null){
                     orders.add(new Order(id, name, cost, place, createTime, startTime, completeTime, status));
                 }
@@ -57,7 +53,7 @@ public class OrderDB {
         }
         return orders;
     }
-    public Order findOrderInDB(String name){
+    public Order find(String name){
         String sql = "SELECT * FROM orders WHERE name = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, name);
@@ -77,7 +73,7 @@ public class OrderDB {
                 LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
-                Place place = placeBD.findPlaceInDb(place_id);
+                Place place = placeRepository.find(place_id);
                 if(place != null){
                      orders.add(new Order(id, name, cost, place, createTime, startTime, completeTime, status));
                 }
@@ -114,7 +110,8 @@ public class OrderDB {
         }
         return null;
     }
-    public Order findOrderInDB(int idOrder){
+    @Override
+    public Order find(int idOrder){
         String sql = "SELECT * FROM orders WHERE id = ?";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, idOrder);
@@ -133,7 +130,7 @@ public class OrderDB {
                 LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
                 int cost = set.getInt("cost");
                 int place_id = set.getInt("place_id");
-                Place place = placeBD.findPlaceInDb(place_id);
+                Place place = placeRepository.find(place_id);
                 if(place != null){
                     return new Order(idOrder, name, cost, place, createTime, startTime, completeTime, status);
                 }
@@ -143,15 +140,34 @@ public class OrderDB {
         }
         return null;
     }
-    public boolean deleteOrderInDB(String name){
-        Order order = findOrderInDB(name);
-        return functionsDB.deleteInDB(order.getId(), NameTables.ORDER);
-    }
-    public boolean deleteOrderInDB(int id){
-        return functionsDB.deleteInDB(id, NameTables.ORDER);
-    }
+    public boolean delete(String name){
+        Order order = find(name);
+        if(order == null){
+            return false;
+        }
+        else {
+            return delete(order.getId());
 
-    public void addOrderInDB(Order order){
+        }
+    }
+    @Override
+    public boolean delete(int id){
+        String sql = "DELETE FROM orders WHERE id = ?;";
+        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
+            statement.setInt(1, id);
+            int result = statement.executeUpdate();
+            if(result > 0){
+                connectionDB.commit();
+                return true;
+            }
+        } catch (java.sql.SQLException e){
+           connectionDB.rollback();
+            e.printStackTrace();
+        }
+        return false;
+    }
+    @Override
+    public void create(Order order){
         String sql = "INSERT INTO orders (id, name, status, timeCreate, timeStart, timeComplete, cost, place_id) VALUES (?,?,?,?,?,?,?,?)";
         try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, order.getId());
@@ -163,9 +179,9 @@ public class OrderDB {
             statement.setInt(7, order.getCost());
             statement.setInt(8, order.getPlace().getId());
             statement.executeUpdate();
-            functionsDB.commit();
+            connectionDB.commit();
         } catch (java.sql.SQLException e){
-            functionsDB.rollback();
+            connectionDB.rollback();
             e.printStackTrace();
         }
     }
@@ -177,11 +193,11 @@ public class OrderDB {
             int change = statement.executeUpdate();
             System.out.println(change);
             if(change > 0) {
-                functionsDB.commit();
+                connectionDB.commit();
                 return true;
             }
         } catch (java.sql.SQLException e){
-            functionsDB.rollback();
+            connectionDB.rollback();
             e.printStackTrace();
         }
         return false;
@@ -195,13 +211,30 @@ public class OrderDB {
             int inf = statement.executeUpdate();
             System.out.println(inf);
             if(inf > 0) {
-                functionsDB.commit();
+                connectionDB.commit();
                 return true;
             }
         } catch (java.sql.SQLException e){
-            functionsDB.rollback();
+            connectionDB.rollback();
             e.printStackTrace();
         }
         return false;
+    }
+    public void update(Order order){
+        String sql = "UPDATE orders SET name = ?, status = ?, timeCreate = ?, timeStart, timeComplete = ?, cost = ?, place_id = ? WHERE id = ?";
+        try(PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)){
+            statement.setString(1, order.getName());
+            statement.setString(2, order.getStatus().getSTATUS());
+            statement.setTimestamp(3, Timestamp.valueOf(order.getTimeCreate()));
+            statement.setTimestamp(4, Timestamp.valueOf(order.getTimeStart()));
+            statement.setTimestamp(5, Timestamp.valueOf(order.getTimeComplete()));
+            statement.setInt(6, order.getCost());
+            statement.setInt(7, order.getPlace().getId());
+            statement.executeUpdate();
+            connectionDB.commit();
+        } catch (SQLException e){
+            connectionDB.rollback();
+            e.printStackTrace();
+        }
     }
 }

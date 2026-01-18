@@ -1,8 +1,8 @@
 package com.oskin.autoservice.Controller;
 import com.oskin.Annotations.*;
-import com.oskin.autoservice.DAO.MasterDB;
-import com.oskin.autoservice.DAO.OrderDB;
-import com.oskin.autoservice.DAO.OrdersByMasterDb;
+import com.oskin.autoservice.repository.MasterRepository;
+import com.oskin.autoservice.repository.OrderRepository;
+import com.oskin.autoservice.repository.OrderMasterRepository;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 import java.util.ArrayList;
@@ -16,13 +16,13 @@ public class CarRepairMaster {
     @Inject
     Config config;
     @Inject
-    MasterDB masterDB;
+    MasterRepository masterRepository;
     @Inject
     CarRepairOrderMaster carRepairOrderMaster;
     @Inject
-    OrdersByMasterDb ordersByMasterDb;
+    OrderMasterRepository orderMasterRepository;
     @Inject
-    OrderDB orderDB;
+    OrderRepository orderRepository;
     private static CarRepairMaster instance;
     private CarRepairMaster() {
 
@@ -35,26 +35,26 @@ public class CarRepairMaster {
     }
     public void addMaster(int id, String name) {
         Master master = new Master(id, name);
-        masterDB.addMasterInDB(master);
+        masterRepository.create(master);
     }
     public boolean deleteMaster(String name) {
-        Master master = masterDB.findMasterInDb(name);
+        Master master = masterRepository.find(name);
         if(master != null) {
-            masterDB.deleteMasterInDB(master.getId());
-            carRepairOrderMaster.deleteOrderMaster(master.getId());
+            masterRepository.delete(master.getId());
+            carRepairOrderMaster.deleteByMaster(master.getId());
             return true;
         }
         return false;
     }
     public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
-        ArrayList<Master> masters = masterDB.SelectMasters(sortType);
+        ArrayList<Master> masters = masterRepository.findAll(sortType);
         return masters;
     }
 
     public ArrayList<Master> getMastersByOrder(String name) {
-        Order order = orderDB.findOrderInDB(name);
+        Order order = orderRepository.find(name);
         if(master != null){
-            ArrayList<OrderMaster> orderMasters = ordersByMasterDb.getMastersByOrderInDB(order.getId());
+            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getMastersByOrderInDB(order.getId());
             return carRepairOrderMaster.getMasterFromOrderMaster(orderMasters);
         }
         return new ArrayList<>();

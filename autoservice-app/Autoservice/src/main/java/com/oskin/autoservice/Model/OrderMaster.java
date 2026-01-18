@@ -1,6 +1,6 @@
 package com.oskin.autoservice.Model;
 
-public class OrderMaster {
+public class OrderMaster implements IIndentified {
     private int id;
     private Master master;
     private Order order;

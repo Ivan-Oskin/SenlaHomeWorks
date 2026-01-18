@@ -1,8 +1,9 @@
 package com.oskin.autoservice.Controller;
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.DAO.MasterDB;
-import com.oskin.autoservice.DAO.OrderDB;
-import com.oskin.autoservice.DAO.OrdersByMasterDb;
+import com.oskin.autoservice.Model.SortTypeOrderMaster;
+import com.oskin.autoservice.repository.MasterRepository;
+import com.oskin.autoservice.repository.OrderRepository;
+import com.oskin.autoservice.repository.OrderMasterRepository;
 import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.OrderMaster;
@@ -13,11 +14,11 @@ import java.util.ArrayList;
 
 public class CarRepairOrderMaster {
     @Inject
-    MasterDB masterDB;
+    MasterRepository masterRepository;
     @Inject
-    OrderDB orderDB;
+    OrderRepository orderRepository;
     @Inject
-    OrdersByMasterDb ordersByMasterDb;
+    OrderMasterRepository orderMasterRepository;
     @Inject
     WorkWithFile workWithFile;
     @Inject
@@ -39,23 +40,23 @@ public class CarRepairOrderMaster {
         return masters;
     }
     public boolean setOrderMaster(String nameMaster, String nameOrder) {
-        Master master = masterDB.findMasterInDb(nameMaster);
-        Order order = orderDB.findOrderInDB(nameOrder);
+        Master master = masterRepository.find(nameMaster);
+        Order order = orderRepository.find(nameOrder);
         if (master != null &&  order != null) {
-            ArrayList<OrderMaster> orderMasters = ordersByMasterDb.getOrdersByMasterInDB(master.getId());
+            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
             ArrayList<Order> orders = getOrderFromOrderMaster(orderMasters);
             Order findOrder = orders.stream().filter(order1 -> order1.getId() == order.getId()).findFirst().orElse(null);
             if (findOrder == null) {
-                int maxId = ordersByMasterDb.getMaxIdLink();
+                int maxId = orderMasterRepository.getMaxIdLink();
                 int idLink = maxId != -1 ? maxId + 1 : 1;
-                ordersByMasterDb.addOrdersByMasterInDB(idLink, master.getId(), order.getId());
+                orderMasterRepository.create(idLink, master.getId(), order.getId());
                 return true;
             }
         }
         return false;
     }
     public void exportOrderMaster() {
-        ArrayList<OrderMaster> orderMastersArray = ordersByMasterDb.selectOrderMaster();
+        ArrayList<OrderMaster> orderMastersArray = orderMasterRepository.findAll(SortTypeOrderMaster.ID);
         ArrayList<String> dataList = new ArrayList<>(orderMastersArray.size() + 1);
         dataList.add("id,id_master,id_order\n");
         for (OrderMaster orderMaster : orderMastersArray) {
@@ -67,7 +68,7 @@ public class CarRepairOrderMaster {
         workWithFile.whereExport(dataList, config.getStandardFileCsvOrderMaster());
     }
 
-    public void deleteOrderMaster(int id_master){
-        ordersByMasterDb.deleteLinkByMasterInDB(id_master);
+    public void deleteByMaster(int id_master){
+        orderMasterRepository.deleteByMaster(id_master);
     }
 }

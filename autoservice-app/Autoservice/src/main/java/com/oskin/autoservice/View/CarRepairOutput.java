@@ -1,7 +1,7 @@
 package com.oskin.autoservice.View;
 
 import com.oskin.Annotations.*;
-import com.oskin.autoservice.DAO.OrdersByMasterDb;
+import com.oskin.autoservice.repository.OrderMasterRepository;
 import com.oskin.autoservice.Model.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Singleton
 public class CarRepairOutput {
     @Inject
-    OrdersByMasterDb ordersByMasterDb;
+    OrderMasterRepository orderMasterRepository;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
@@ -52,7 +52,7 @@ public class CarRepairOutput {
     public void printMasters(ArrayList<Master> masters, boolean printOrder) {
         for (Master master : masters) {
             System.out.println(master.getId() + " " + master.getName());
-            ArrayList<OrderMaster> orderMasters = ordersByMasterDb.getOrdersByMasterInDB(master.getId());
+            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
             if (!orderMasters.isEmpty() && printOrder) {
                 System.out.println("Заказы:");
                 for (OrderMaster orderMaster : orderMasters) {

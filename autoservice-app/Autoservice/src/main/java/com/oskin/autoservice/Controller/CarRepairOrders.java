@@ -1,27 +1,26 @@
 package com.oskin.autoservice.Controller;
 import com.oskin.Annotations.*;
-import com.oskin.autoservice.DAO.MasterDB;
-import com.oskin.autoservice.DAO.OrderDB;
-import com.oskin.autoservice.DAO.OrdersByMasterDb;
+import com.oskin.autoservice.repository.MasterRepository;
+import com.oskin.autoservice.repository.OrderRepository;
+import com.oskin.autoservice.repository.OrderMasterRepository;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 @Singleton
-public class CarRepairOrders {
+public class CarRepairOrders{
     @Inject
-    OrderDB orderDB;
+    OrderRepository orderRepository;
     @Inject
     WorkWithFile workWithFile;
     @Inject
     Config config;
     @Inject
-    MasterDB masterDB;
+    MasterRepository masterRepository;
     @Inject
-    OrdersByMasterDb ordersByMasterDb;
+    OrderMasterRepository orderMasterRepository;
     @Inject
     CarRepairOrderMaster carRepairOrderMaster;
 
@@ -37,19 +36,23 @@ public class CarRepairOrders {
     }
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete);
-        orderDB.addOrderInDB(order);
+        orderRepository.create(order);
+    }
+    public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete, StatusOrder status) {
+        Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete, status);
+        orderRepository.create(order);
     }
     public boolean deleteOrder(String name) {
-        return orderDB.deleteOrderInDB(name);
+        return orderRepository.delete(name);
     }
     public boolean completeOrder(String name) {
-        return orderDB.ChangeStatusInDb(name, StatusOrder.CLOSE);
+        return orderRepository.ChangeStatusInDb(name, StatusOrder.CLOSE);
     }
     public boolean cancelOrder(String name) {
-        return orderDB.ChangeStatusInDb(name, StatusOrder.CANCEL);
+        return orderRepository.ChangeStatusInDb(name, StatusOrder.CANCEL);
     }
     public boolean offset(String name, int countDay, int countHour) {
-        Order order = orderDB.findOrderInDB(name);
+        Order order = orderRepository.find(name);
         if(order == null){
             System.out.println("не находит");
             return false;
@@ -61,17 +64,17 @@ public class CarRepairOrders {
             LocalDateTime ChangeCompleteTime = completeTime.plusDays(countDay);
             startTime = ChangeStartTime.plusHours(countHour);
             completeTime = ChangeCompleteTime.plusHours(countHour);
-            return orderDB.offsetInDb(name, startTime,completeTime);
+            return orderRepository.offsetInDb(name, startTime,completeTime);
         }
     }
 
     public ArrayList<Order> getListOfOrders(SortTypeOrder sortType) {
-        ArrayList<Order> newList = orderDB.selectOrder(sortType);
+        ArrayList<Order> newList = orderRepository.findAll(sortType);
         return newList;
     }
 
     public ArrayList<Order> getListOfActiveOrders(SortTypeOrder sortType) {
-        ArrayList<Order> orders = orderDB.selectOrder(sortType);
+        ArrayList<Order> orders = orderRepository.findAll(sortType);
         ArrayList<Order> newList = new ArrayList<>();
         for (Order order : orders) {
             if (order.getStatus().equals(StatusOrder.ACTIVE)) {
@@ -81,7 +84,7 @@ public class CarRepairOrders {
         return newList;
     }
     public ArrayList<Order> getOrdersInTime(StatusOrder status, LocalDateTime startDate, LocalDateTime endDate, SortTypeOrder sortType) {
-        ArrayList<Order> orders = orderDB.selectOrder(sortType);
+        ArrayList<Order> orders = orderRepository.findAll(sortType);
         ArrayList<Order> newList = new ArrayList<>();
         for (Order order : orders) {
             if (order.getTimeStart().compareTo(endDate) <= 0 && order.getTimeComplete().compareTo(startDate) >= 0 && order.getStatus().equals(status)) {
@@ -92,9 +95,9 @@ public class CarRepairOrders {
     }
 
     public ArrayList<Order> getOrderByMaster(String name) {
-        Master master = masterDB.findMasterInDb(name);
+        Master master = masterRepository.find(name);
         if (master != null) {
-            ArrayList<OrderMaster> orderMasters = ordersByMasterDb.getOrdersByMasterInDB(master.getId());
+            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
             return carRepairOrderMaster.getOrderFromOrderMaster(orderMasters);
         }
         return new ArrayList<>();

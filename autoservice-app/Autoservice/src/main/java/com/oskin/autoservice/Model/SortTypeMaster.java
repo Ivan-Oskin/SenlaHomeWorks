@@ -1,6 +1,6 @@
 package com.oskin.autoservice.Model;
 
-public enum SortTypeMaster {
+public enum SortTypeMaster implements SortType {
     ID("id"),
     ALPHABET("name"),
     BUSYNESS("busy");

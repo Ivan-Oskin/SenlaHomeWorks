@@ -1,6 +1,6 @@
 package com.oskin.autoservice.Controller;
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.DAO.*;
+import com.oskin.autoservice.repository.*;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
 import java.time.LocalDateTime;
@@ -19,17 +19,17 @@ public class ImportDates {
     @Inject
     Config config;
     @Inject
-    OrderDB orderDB;
+    OrderRepository orderRepository;
     @Inject
     CarRepairGarage carRepairGarage;
     @Inject
     CarRepairMaster carRepairMaster;
     @Inject
-    MasterDB masterDB;
+    MasterRepository masterRepository;
     @Inject
-    PlaceBD placeBD;
+    PlaceRepository placeRepository;
     @Inject
-    OrdersByMasterDb ordersByMasterDb;
+    OrderMasterRepository orderMasterRepository;
 
     public int inputInt(){
         Scanner scanner = new Scanner(System.in);
@@ -92,7 +92,7 @@ public class ImportDates {
                             continue;
                         }
                         int PlaceId = Integer.parseInt(line.get(7));
-                        place = placeBD.findPlaceInDb(PlaceId);
+                        place = placeRepository.find(PlaceId);
                         if(place == null){
                             System.out.println("место с id "+PlaceId+" Не найдено.");
                             System.out.println("Заказ "+name + "не будет добавлен");
@@ -112,13 +112,12 @@ public class ImportDates {
                         System.err.println("произошла ошибка при парсинге времени заказа "+name);
                         continue;
                     }
-                    Order order = orderDB.findOrderInDB(id);
+                    Order order = orderRepository.find(id);
                     if(order != null && replace){
-                        orderDB.deleteOrderInDB(id);
-                        carRepairOrders.addOrder(id, name, cost, place, create, start, complete);
+                        orderRepository.update(new Order(id, name, cost, place, create, start, complete, status));
                     }
                     else if(order == null){
-                        carRepairOrders.addOrder(id, name, cost, place, create, start, complete);
+                        carRepairOrders.addOrder(id, name, cost, place, create, start, complete, status);
                     }
                 }
             }
@@ -141,10 +140,9 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        Place place = placeBD.findPlaceInDb(id);
+                        Place place = placeRepository.find(id);
                         if(place != null && replace){
-                            placeBD.deletePlaceInDB(id);
-                            carRepairGarage.addPlace(id, name);
+                            placeRepository.update(new Place(id, name));
                         }
                         else if(place == null) {
                             carRepairGarage.addPlace(id, name);
@@ -174,10 +172,9 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        Master master = masterDB.findMasterInDb(id);
+                        Master master = masterRepository.find(id);
                         if (master != null && replace) {
-                            masterDB.deleteMasterInDB(id);
-                            carRepairMaster.addMaster(id, name);
+                            masterRepository.update(new Master(id, name));
                         } else if(master == null) {
                             carRepairMaster.addMaster(id, name);
                         }
@@ -208,13 +205,12 @@ public class ImportDates {
                         int id = Integer.parseInt(line.get(0));
                         int master_id = Integer.parseInt(line.get(1));
                         int order_id = Integer.parseInt(line.get(2));
-                        OrderMaster orderMaster = ordersByMasterDb.findOrderMasterInDb(id);
+                        OrderMaster orderMaster = orderMasterRepository.find(id);
                         if(orderMaster != null && replace){
-                            ordersByMasterDb.deleteLinkInDB(id);
-                            ordersByMasterDb.addOrdersByMasterInDB(id,master_id, order_id);
+                           orderMasterRepository.update(new OrderMaster(id, orderRepository.find(order_id), masterRepository.find(master_id)));
                         }
                         else if(orderMaster == null) {
-                            ordersByMasterDb.addOrdersByMasterInDB(id, master_id, order_id);
+                            orderMasterRepository.create(id, master_id, order_id);
                         }
                     } catch (NumberFormatException e){
                         System.err.println("Неправильные данные");
