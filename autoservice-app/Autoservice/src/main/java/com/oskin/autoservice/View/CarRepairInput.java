@@ -1,7 +1,6 @@
 package com.oskin.autoservice.View;
 import com.oskin.Annotations.*;
 import com.oskin.autoservice.Model.*;
-
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -71,7 +70,7 @@ public class CarRepairInput {
             while (true) {
                 year = scanner.nextInt();
                 scanner.nextLine();
-                if (year >= LocalDateTime.now().getYear() && year < 2030) break;
+                if (year >= LocalDateTime.now().getYear()-5 && year < 2030) break;
                 System.out.println("Неправильный ввод");
             }
             carRepairOutput.infAboutInput("Месяц");

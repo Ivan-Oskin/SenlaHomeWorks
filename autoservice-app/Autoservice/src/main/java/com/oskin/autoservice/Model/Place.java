@@ -1,6 +1,6 @@
 package com.oskin.autoservice.Model;
 
-public class Place implements Nameable {
+public class Place implements IIndentified {
     private String name;
     private int id;
 
@@ -19,5 +19,4 @@ public class Place implements Nameable {
     public String getName() {
         return this.name;
     }
-
 }

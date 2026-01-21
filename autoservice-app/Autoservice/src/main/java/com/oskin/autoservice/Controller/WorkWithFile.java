@@ -1,13 +1,7 @@
 package com.oskin.autoservice.Controller;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.Annotations.*;
-import com.oskin.autoservice.Model.Nameable;
 import com.oskin.autoservice.View.CarRepairInput;
 import com.oskin.config.Config;
-
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +26,7 @@ public class WorkWithFile {
         }
         File file;
         if(isStandart){
-            Path path = Paths.get(config.getStandartPathToData()+name);
+            Path path = Paths.get(config.getStandardPathToData()+name);
             file = path.toFile();
         }
         else {
@@ -78,7 +72,6 @@ public class WorkWithFile {
             }
         }
     }
-
     public ArrayList<ArrayList<String>> importData(String fileName){
         ArrayList<ArrayList<String>> data = new ArrayList<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
@@ -104,7 +97,7 @@ public class WorkWithFile {
         }
         switch (input){
             case 1:{
-                return config.getStandartPathToData()+fileName;
+                return config.getStandardPathToData()+fileName;
             }
             case 2:
             {
@@ -122,18 +115,6 @@ public class WorkWithFile {
             {
                 return "???";
             }
-        }
-    }
-
-    public <T extends Nameable> void serialization(ArrayList<T> array, String fileName){
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        try{
-            mapper.writeValue(new File(fileName), array);
-        }
-        catch (IOException e){
-            System.err.println("Произошла ошибка при работе с файлом");
         }
     }
 }

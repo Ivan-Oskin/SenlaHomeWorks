@@ -2,7 +2,7 @@ package com.oskin.autoservice.Model;
 
 import java.time.LocalDateTime;
 
-public class Order implements Nameable {
+public class Order implements IIndentified {
     private int id;
     private String name;
     private StatusOrder status;
@@ -67,14 +67,14 @@ public class Order implements Nameable {
         this.status = StatusOrder.ACTIVE;
         this.place = place;
     }
-
-    public void changeDay(int day) {
-        this.timeStart = timeStart.plusDays(day);
-        this.timeComplete = timeComplete.plusDays(day);
-    }
-
-    public void changeHour(int hour) {
-        this.timeStart = timeStart.plusHours(hour);
-        this.timeComplete = timeComplete.plusHours(hour);
+    public Order(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete, StatusOrder status) {
+        this.id = id;
+        this.name = name;
+        this.cost = cost;
+        this.timeCreate = timeCreate;
+        this.timeStart = timeStart;
+        this.timeComplete = timeComplete;
+        this.status = status;
+        this.place = place;
     }
 }

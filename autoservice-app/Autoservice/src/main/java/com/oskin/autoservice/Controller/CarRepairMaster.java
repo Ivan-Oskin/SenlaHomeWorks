@@ -1,165 +1,73 @@
 package com.oskin.autoservice.Controller;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.Annotations.*;
+import com.oskin.autoservice.repository.MasterRepository;
+import com.oskin.autoservice.repository.OrderRepository;
+import com.oskin.autoservice.repository.OrderMasterRepository;
 import com.oskin.autoservice.Model.*;
 import com.oskin.config.Config;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 
+import static org.postgresql.hostchooser.HostRequirement.master;
 
 @Singleton
 public class CarRepairMaster {
     @Inject
     WorkWithFile workWithFile;
     @Inject
-    CarRepair carRepair;
-    @Inject
     Config config;
+    @Inject
+    MasterRepository masterRepository;
+    @Inject
+    CarRepairOrderMaster carRepairOrderMaster;
+    @Inject
+    OrderMasterRepository orderMasterRepository;
+    @Inject
+    OrderRepository orderRepository;
     private static CarRepairMaster instance;
-
     private CarRepairMaster() {
 
     }
-
     public static CarRepairMaster getInstance() {
         if (instance == null) {
             instance = new CarRepairMaster();
         }
         return instance;
     }
-
-    private ArrayList<Master> masters = new ArrayList<>();
-
     public void addMaster(int id, String name) {
         Master master = new Master(id, name);
-        masters.add(master);
+        masterRepository.create(master);
     }
-
-    public void addMaster(int id, String name, ArrayList<String> listOfOrder) {
-        Master master = new Master(id, name, listOfOrder);
-        masters.add(master);
-    }
-
     public boolean deleteMaster(String name) {
-        return carRepair.delete(name, masters);
-    }
-
-    public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
-        switch (sortType) {
-            case ID:
-                masters.sort(Comparator.comparing(Master::getId));
-                break;
-            case ALPHABET:
-                masters.sort(Comparator.comparing(Master::getName));
-                break;
-            case BUSYNESS:
-                masters.sort(Comparator.comparing(Master::getCountOfOrders));
-                break;
+        Master master = masterRepository.find(name);
+        if(master != null) {
+            masterRepository.delete(master.getId());
+            carRepairOrderMaster.deleteByMaster(master.getId());
+            return true;
         }
+        return false;
+    }
+    public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
+        ArrayList<Master> masters = masterRepository.findAll(sortType);
         return masters;
     }
 
-    public boolean setOrderToMaster(String nameMaster, String nameOrder) {
-        ArrayList<Order> listOfOrders = CarRepairOrders.getInstance().getListOfOrders(SortTypeOrder.ID);
-        int i = carRepair.findByName(nameMaster, masters);
-        int j = carRepair.findByName(nameOrder, listOfOrders);
-        if (i >= 0 && j >= 0) {
-            Master master = masters.get(i);
-            master.addOrder(listOfOrders.get(j));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public ArrayList<Master> getMastersByOrder(String name) {
-        ArrayList<Master> newList = new ArrayList<>();
-        for (int i = 0; i < masters.size(); i++) {
-            Master master = masters.get(i);
-            if (master.getNamesOfOrder().contains(name)) {
-                newList.add(master);
-            }
+        Order order = orderRepository.find(name);
+        if(master != null){
+            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getMastersByOrderInDB(order.getId());
+            return carRepairOrderMaster.getMasterFromOrderMaster(orderMasters);
         }
-        return newList;
+        return new ArrayList<>();
     }
-
     public void exportMaster() {
+        ArrayList<Master> masters = getListOfMasters(SortTypeMaster.ID);
         ArrayList<String> dataList = new ArrayList<>(masters.size() + 1);
-        dataList.add("ID,NAME,ORDERS\n");
-        for (Master master : getListOfMasters(SortTypeMaster.ID)) {
+        dataList.add("ID,NAME\n");
+        for (Master master : masters) {
             int id = master.getId();
             String name = master.getName();
-            String orders = String.join(";", master.getNamesOfOrder());
-            if (orders.isEmpty()) orders = "none";
-            dataList.add(id + "," + name + "," + orders + "\n");
+            dataList.add(id + "," + name + "\n");
         }
-        workWithFile.whereExport(dataList, config.getStandartFileCsvMaster());
-    }
-
-    public void importMaster() {
-        String nameFile = workWithFile.whereFromImport(config.getStandartFileCsvMaster());
-        if(nameFile.equals("???")){
-            return;
-        }
-        ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
-        if (!data.isEmpty()) {
-            for (ArrayList<String> line : data) {
-                if (line.size() != 3) {
-                    System.out.println("Неправильная таблица данных");
-                    return;
-                } else {
-                    try {
-                        int id = Integer.parseInt(line.get(0));
-                        String name = line.get(1);
-                        ArrayList<String> nameOrders = new ArrayList<>();
-                        if (!line.get(2).equals("none")) {
-                            nameOrders = new ArrayList<>(Arrays.asList(line.get(2).split(";")));
-                        }
-                        int findMaster = carRepair.findById(id, masters);
-                        if (findMaster > -1) {
-                            if (!(masters.get(findMaster).getName().equals(name) && masters.get(findMaster).getNamesOfOrder().equals(nameOrders))) {
-                                masters.set(findMaster, new Master(id, name, nameOrders));
-                            } else {
-                                continue;
-                            }
-                        } else {
-                            addMaster(id, name, nameOrders);
-                        }
-                    } catch (NumberFormatException e) {
-                        System.err.println("Неправильные данные");
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    public void saveMaster(){
-        workWithFile.serialization(masters, config.getStandartPathToData()+config.getStandartFileJsonMaster());
-    }
-    public void loadMaster(){
-        ObjectMapper mapper = new ObjectMapper();
-        File file = new File(config.getStandartPathToData()+config.getStandartFileJsonMaster());
-        if(file.exists()){
-            try{
-                masters = mapper.readValue(file, new TypeReference<ArrayList<Master>>() {});
-            }
-            catch (IOException e){
-                System.err.println("Произошла ошибка при работе с файлом");
-            }
-        }
-        else{
-            try {
-                file.createNewFile();
-            }
-            catch (IOException e){
-                System.err.println("произошла ошибка при создании файла");
-            }
-        }
+        workWithFile.whereExport(dataList, config.getStandardFileCsvMaster());
     }
 }
