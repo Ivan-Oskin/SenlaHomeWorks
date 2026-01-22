@@ -1,4 +1,5 @@
 package com.oskin.config;
+
 import com.oskin.Annotations.ConfigProperty;
 import com.oskin.Annotations.Singleton;
 
@@ -16,13 +17,13 @@ public class Config {
     private String standardFileCsvOrders;
     @ConfigProperty(propertyName = "standard.file.json.orders")
     private String standardFileJsonOrders;
-    @ConfigProperty(propertyName = "rule.add.place",type = boolean.class)
+    @ConfigProperty(propertyName = "rule.add.place", type = boolean.class)
     private boolean ruleAddPlace;
-    @ConfigProperty( propertyName = "rule.delete.place",type = boolean.class)
+    @ConfigProperty(propertyName = "rule.delete.place", type = boolean.class)
     private boolean ruleDeletePlace;
-    @ConfigProperty(propertyName = "rule.delete.order",type = boolean.class)
+    @ConfigProperty(propertyName = "rule.delete.order", type = boolean.class)
     private boolean ruleDeleteOrder;
-    @ConfigProperty(propertyName = "rule.offset",type = boolean.class)
+    @ConfigProperty(propertyName = "rule.offset", type = boolean.class)
     private boolean ruleOffset;
     @ConfigProperty(propertyName = "standard.path.to.data")
     private String standardPathToData;
@@ -35,44 +36,68 @@ public class Config {
     @ConfigProperty(propertyName = "standard.fiel.csv.order_master")
     private String standardFileCsvOrderMaster;
 
-    public Config(){
+    public Config() {
         Configuration configuration = new Configuration();
         configuration.configure(this);
     }
 
-    public String getStandardFileCsvGarage(){
+    public String getStandardFileCsvGarage() {
         return this.standardFileCsvGarage;
     }
-    public String getStandardFileCsvMaster(){
+
+    public String getStandardFileCsvMaster() {
         return this.standardFileCsvMaster;
     }
-    public String getStandardFileCsvOrders(){
+
+    public String getStandardFileCsvOrders() {
         return this.standardFileCsvOrders;
     }
-    public String getStandardFileCsvOrderMaster(){return this.standardFileCsvOrderMaster;}
-    public String getStandardFileJsonGarage(){
+
+    public String getStandardFileCsvOrderMaster() {
+        return this.standardFileCsvOrderMaster;
+    }
+
+    public String getStandardFileJsonGarage() {
         return this.standardFileJsonGarage;
     }
-    public String getStandardFileJsonMaster(){
+
+    public String getStandardFileJsonMaster() {
         return this.standardFileJsonMaster;
     }
-    public String getStandardFileJsonOrders(){
+
+    public String getStandardFileJsonOrders() {
         return this.standardFileJsonOrders;
     }
-    public boolean getRuleAddPlace(){
+
+    public boolean getRuleAddPlace() {
         return this.ruleAddPlace;
     }
-    public boolean getRuleDeletePlace(){
+
+    public boolean getRuleDeletePlace() {
         return this.ruleDeletePlace;
     }
-    public boolean getRuleDeleteOrder(){
+
+    public boolean getRuleDeleteOrder() {
         return this.ruleDeleteOrder;
     }
-    public boolean getRuleOffset(){
+
+    public boolean getRuleOffset() {
         return this.ruleOffset;
     }
-    public String getStandardPathToData(){return this.standardPathToData;}
-    public String getUrlBd(){return this.urlBd;}
-    public String getUserBd(){return this.userBd;}
-    public String getPasswordBd(){return this.passwordBd;}
+
+    public String getStandardPathToData() {
+        return this.standardPathToData;
+    }
+
+    public String getUrlBd() {
+        return this.urlBd;
+    }
+
+    public String getUserBd() {
+        return this.userBd;
+    }
+
+    public String getPasswordBd() {
+        return this.passwordBd;
+    }
 }

@@ -1,8 +1,17 @@
 package com.oskin.autoservice.Controller;
+
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.repository.*;
-import com.oskin.autoservice.Model.*;
+import com.oskin.autoservice.repository.MasterRepository;
+import com.oskin.autoservice.repository.OrderRepository;
+import com.oskin.autoservice.repository.PlaceRepository;
+import com.oskin.autoservice.repository.OrderMasterRepository;
+import com.oskin.autoservice.Model.Place;
+import com.oskin.autoservice.Model.StatusOrder;
+import com.oskin.autoservice.Model.Order;
+import com.oskin.autoservice.Model.Master;
+import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.config.Config;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -31,43 +40,41 @@ public class ImportDates {
     @Inject
     OrderMasterRepository orderMasterRepository;
 
-    public int inputInt(){
+    public int inputInt() {
         Scanner scanner = new Scanner(System.in);
         int input = 0;
-        try{
+        try {
             input = scanner.nextInt();
             scanner.nextLine();
-        }
-        catch (InputMismatchException e){
+        } catch (InputMismatchException e) {
             scanner.nextLine();
             System.err.println("\nНадо ввести только цифру!!!\n");
         }
         return input;
     }
 
-    public boolean ReplaceAgree(){
-        while (true){
+    public boolean replaceAgree() {
+        while (true) {
             System.out.println("Что делать при совпадении?.\n 1 - Заменить существующее \n 2 - Оставить существующее");
             int x = inputInt();
-            if(x == 1) return true;
-            else if(x == 2) return false;
+            if (x == 1) return true;
+            else if (x == 2) return false;
         }
     }
 
-    public void importOrder(){
-        boolean replace = ReplaceAgree();
+    public void importOrder() {
+        boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvOrders());
-        if(nameFile.equals("???")){
+        if (nameFile.equals("???")) {
             return;
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
-        if(!data.isEmpty()){
-            for(ArrayList<String> line : data){
-                if(line.size() != 8){
+        if (!data.isEmpty()) {
+            for (ArrayList<String> line : data) {
+                if (line.size() != 8) {
                     System.out.println("Неправильная таблица данных");
                     return;
-                }
-                else {
+                } else {
                     int id;
                     String name;
                     int cost;
@@ -81,24 +88,24 @@ public class ImportDates {
                         name = line.get(1);
                         cost = Integer.parseInt(line.get(2));
                         String statusString = line.get(3);
-                        for(StatusOrder statusOrder : StatusOrder.values()){
-                            if(statusOrder.getSTATUS().equals(statusString)){
+                        for (StatusOrder statusOrder : StatusOrder.values()) {
+                            if (statusOrder.getSTATUS().equals(statusString)) {
                                 status = statusOrder;
                                 break;
                             }
                         }
-                        if(status == null){
-                            System.err.println("Неправильные данные в заказе "+name);
+                        if (status == null) {
+                            System.err.println("Неправильные данные в заказе " + name);
                             continue;
                         }
                         int PlaceId = Integer.parseInt(line.get(7));
                         place = placeRepository.find(PlaceId);
-                        if(place == null){
-                            System.out.println("место с id "+PlaceId+" Не найдено.");
-                            System.out.println("Заказ "+name + "не будет добавлен");
+                        if (place == null) {
+                            System.out.println("место с id " + PlaceId + " Не найдено.");
+                            System.out.println("Заказ " + name + "не будет добавлен");
                             continue;
                         }
-                    } catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");
                         return;
                     }
@@ -107,47 +114,44 @@ public class ImportDates {
                         create = LocalDateTime.parse(line.get(4), formatter);
                         start = LocalDateTime.parse(line.get(5), formatter);
                         complete = LocalDateTime.parse(line.get(6), formatter);
-                    }
-                    catch (DateTimeParseException e){
-                        System.err.println("произошла ошибка при парсинге времени заказа "+name);
+                    } catch (DateTimeParseException e) {
+                        System.err.println("произошла ошибка при парсинге времени заказа " + name);
                         continue;
                     }
                     Order order = orderRepository.find(id);
-                    if(order != null && replace){
+                    if (order != null && replace) {
                         orderRepository.update(new Order(id, name, cost, place, create, start, complete, status));
-                    }
-                    else if(order == null){
+                    } else if (order == null) {
                         carRepairOrders.addOrder(id, name, cost, place, create, start, complete, status);
                     }
                 }
             }
         }
     }
-    public void importGarage(){
-        boolean replace = ReplaceAgree();
+
+    public void importGarage() {
+        boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvGarage());
-        if(nameFile.equals("???")){
+        if (nameFile.equals("???")) {
             return;
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
-        if(!data.isEmpty()){
-            for(ArrayList<String> line : data){
-                if(line.size() != 2){
+        if (!data.isEmpty()) {
+            for (ArrayList<String> line : data) {
+                if (line.size() != 2) {
                     System.out.println("Неправильная таблица данных");
                     return;
-                }
-                else {
+                } else {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
                         Place place = placeRepository.find(id);
-                        if(place != null && replace){
+                        if (place != null && replace) {
                             placeRepository.update(new Place(id, name));
-                        }
-                        else if(place == null) {
+                        } else if (place == null) {
                             carRepairGarage.addPlace(id, name);
                         }
-                    } catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");
                         return;
                     }
@@ -157,9 +161,9 @@ public class ImportDates {
     }
 
     public void importMaster() {
-        boolean replace = ReplaceAgree();
+        boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvMaster());
-        if(nameFile.equals("???")){
+        if (nameFile.equals("???")) {
             return;
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
@@ -175,7 +179,7 @@ public class ImportDates {
                         Master master = masterRepository.find(id);
                         if (master != null && replace) {
                             masterRepository.update(new Master(id, name));
-                        } else if(master == null) {
+                        } else if (master == null) {
                             carRepairMaster.addMaster(id, name);
                         }
                     } catch (NumberFormatException e) {
@@ -187,32 +191,30 @@ public class ImportDates {
         }
     }
 
-    public void importOrderMaster(){
-        boolean replace = ReplaceAgree();
+    public void importOrderMaster() {
+        boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvOrderMaster());
-        if(nameFile.equals("???")){
+        if (nameFile.equals("???")) {
             return;
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
-        if(!data.isEmpty()){
-            for(ArrayList<String> line : data){
-                if(line.size() != 3){
+        if (!data.isEmpty()) {
+            for (ArrayList<String> line : data) {
+                if (line.size() != 3) {
                     System.out.println("Неправильная таблица данных");
                     return;
-                }
-                else {
+                } else {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         int master_id = Integer.parseInt(line.get(1));
                         int order_id = Integer.parseInt(line.get(2));
                         OrderMaster orderMaster = orderMasterRepository.find(id);
-                        if(orderMaster != null && replace){
-                           orderMasterRepository.update(new OrderMaster(id, orderRepository.find(order_id), masterRepository.find(master_id)));
-                        }
-                        else if(orderMaster == null) {
+                        if (orderMaster != null && replace) {
+                            orderMasterRepository.update(new OrderMaster(id, orderRepository.find(order_id), masterRepository.find(master_id)));
+                        } else if (orderMaster == null) {
                             orderMasterRepository.create(id, master_id, order_id);
                         }
-                    } catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");
                         return;
                     }

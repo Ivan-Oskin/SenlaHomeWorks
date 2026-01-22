@@ -6,11 +6,11 @@ public enum SortTypePlace implements SortType {
 
     private String StringSortType;
 
-    SortTypePlace(String StringSortType){
-        this.StringSortType = StringSortType;
+    SortTypePlace(String stringSortType) {
+        this.StringSortType = stringSortType;
     }
 
-    public String getStringSortType(){
+    public String getStringSortType() {
         return this.StringSortType;
     }
 }

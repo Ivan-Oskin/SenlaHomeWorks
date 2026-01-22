@@ -1,16 +1,20 @@
 package com.oskin.autoservice.Controller;
-import com.oskin.Annotations.*;
+import com.oskin.Annotations.Inject;
+import com.oskin.Annotations.Singleton;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
-import com.oskin.autoservice.Model.*;
+import com.oskin.autoservice.Model.Master;
+import com.oskin.autoservice.Model.Order;
+import com.oskin.autoservice.Model.SortTypeMaster;
+import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.config.Config;
 import java.util.ArrayList;
 
 import static org.postgresql.hostchooser.HostRequirement.master;
 
 @Singleton
-public class CarRepairMaster {
+public final class CarRepairMaster {
     @Inject
     WorkWithFile workWithFile;
     @Inject
@@ -39,7 +43,7 @@ public class CarRepairMaster {
     }
     public boolean deleteMaster(String name) {
         Master master = masterRepository.find(name);
-        if(master != null) {
+        if (master != null) {
             masterRepository.delete(master.getId());
             carRepairOrderMaster.deleteByMaster(master.getId());
             return true;
@@ -53,7 +57,7 @@ public class CarRepairMaster {
 
     public ArrayList<Master> getMastersByOrder(String name) {
         Order order = orderRepository.find(name);
-        if(master != null){
+        if (master != null) {
             ArrayList<OrderMaster> orderMasters = orderMasterRepository.getMastersByOrderInDB(order.getId());
             return carRepairOrderMaster.getMasterFromOrderMaster(orderMasters);
         }

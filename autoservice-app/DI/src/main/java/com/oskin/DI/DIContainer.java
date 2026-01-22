@@ -1,19 +1,20 @@
 package com.oskin.DI;
+import com.oskin.Annotations.Singleton;
+
 import java.util.HashMap;
 import java.util.Map;
-import com.oskin.Annotations.*;
-public class DIСontainer {
+public class DIContainer {
     private static Map<Class, Object> container = new HashMap<>();
-    private static DIСontainer instance;
+    private static DIContainer instance;
     private static BuilderObject builder;
     private static InjectObject inject;
-    public DIСontainer(BuilderObject builder, InjectObject inject){
+    public DIContainer(BuilderObject builder, InjectObject inject) {
         this.builder = builder;
         this.inject = inject;
     }
 
-    public static  <T> T getDependecy(Class<T> type){
-        if(container.containsKey(type)){
+    public static  <T> T getDependecy(Class<T> type) {
+        if (container.containsKey(type)) {
             return (T) container.get(type);
         }
 
@@ -21,7 +22,7 @@ public class DIСontainer {
         inject.inject(obj);
 
         Singleton singleton = obj.getClass().getAnnotation(Singleton.class);
-        if(singleton != null){
+        if (singleton != null) {
             container.put(obj.getClass(), obj);
         }
         return obj;

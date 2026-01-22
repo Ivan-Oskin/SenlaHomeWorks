@@ -1,16 +1,24 @@
 package com.oskin.autoservice.Controller;
-import com.oskin.Annotations.*;
+
+import com.oskin.Annotations.Inject;
+import com.oskin.Annotations.Singleton;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
-import com.oskin.autoservice.Model.*;
+import com.oskin.autoservice.Model.Place;
+import com.oskin.autoservice.Model.Order;
+import com.oskin.autoservice.Model.StatusOrder;
+import com.oskin.autoservice.Model.SortTypeOrder;
+import com.oskin.autoservice.Model.Master;
+import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.config.Config;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @Singleton
-public class CarRepairOrders{
+public final class CarRepairOrders {
     @Inject
     OrderRepository orderRepository;
     @Inject
@@ -26,45 +34,51 @@ public class CarRepairOrders{
 
     private static CarRepairOrders instance;
 
-    private CarRepairOrders(){}
+    private CarRepairOrders() {
+    }
 
-    public static CarRepairOrders getInstance(){
-        if(instance == null){
+    public static CarRepairOrders getInstance() {
+        if (instance == null) {
             instance = new CarRepairOrders();
         }
         return instance;
     }
+
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete);
         orderRepository.create(order);
     }
+
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete, StatusOrder status) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete, status);
         orderRepository.create(order);
     }
+
     public boolean deleteOrder(String name) {
         return orderRepository.delete(name);
     }
+
     public boolean completeOrder(String name) {
-        return orderRepository.ChangeStatusInDb(name, StatusOrder.CLOSE);
+        return orderRepository.changeStatusInDb(name, StatusOrder.CLOSE);
     }
+
     public boolean cancelOrder(String name) {
-        return orderRepository.ChangeStatusInDb(name, StatusOrder.CANCEL);
+        return orderRepository.changeStatusInDb(name, StatusOrder.CANCEL);
     }
+
     public boolean offset(String name, int countDay, int countHour) {
         Order order = orderRepository.find(name);
-        if(order == null){
+        if (order == null) {
             System.out.println("не находит");
             return false;
-        }
-        else {
+        } else {
             LocalDateTime startTime = order.getTimeStart();
             LocalDateTime completeTime = order.getTimeComplete();
             LocalDateTime ChangeStartTime = startTime.plusDays(countDay);
             LocalDateTime ChangeCompleteTime = completeTime.plusDays(countDay);
             startTime = ChangeStartTime.plusHours(countHour);
             completeTime = ChangeCompleteTime.plusHours(countHour);
-            return orderRepository.offsetInDb(name, startTime,completeTime);
+            return orderRepository.offsetInDb(name, startTime, completeTime);
         }
     }
 
@@ -83,6 +97,7 @@ public class CarRepairOrders{
         }
         return newList;
     }
+
     public ArrayList<Order> getOrdersInTime(StatusOrder status, LocalDateTime startDate, LocalDateTime endDate, SortTypeOrder sortType) {
         ArrayList<Order> orders = orderRepository.findAll(sortType);
         ArrayList<Order> newList = new ArrayList<>();
@@ -103,12 +118,12 @@ public class CarRepairOrders{
         return new ArrayList<>();
     }
 
-    public void exportOrder(){
+    public void exportOrder() {
         ArrayList<Order> orders = getListOfOrders(SortTypeOrder.ID);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
-        ArrayList<String> dataList = new ArrayList<>(orders.size()+1);
+        ArrayList<String> dataList = new ArrayList<>(orders.size() + 1);
         dataList.add("ID,NAME,COST,STATUS,CREATE_TIME,START_TIME,COMPLETE_TIME,PLACE\n");
-        for(Order order : orders){
+        for (Order order : orders) {
             int id = order.getId();
             String name = order.getName();
             int cost = order.getCost();
@@ -120,7 +135,7 @@ public class CarRepairOrders{
             LocalDateTime completeTime = order.getTimeComplete();
             String complete = completeTime.format(formatter);
             int placeId = order.getPlace().getId();
-            dataList.add(id+","+name+","+cost+","+status+","+start+","+create+","+complete+","+placeId+"\n");
+            dataList.add(id + "," + name + "," + cost + "," + status + "," + start + "," + create + "," + complete + "," + placeId + "\n");
         }
         workWithFile.whereExport(dataList, config.getStandardFileCsvOrders());
     }

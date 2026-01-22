@@ -5,19 +5,21 @@ public class MenuItem {
     private String title;
     private IAction action;
 
-    public MenuItem(int number, String title, IAction action){
+    public MenuItem(int number, String title, IAction action) {
         this.number = number;
         this.action = action;
         this.title = title;
     }
 
-    public int getNumber(){
+    public int getNumber() {
         return number;
     }
-    public String getTitle(){
+
+    public String getTitle() {
         return title;
     }
-    public void execute(){
+
+    public void execute() {
         action.execute();
     }
 }

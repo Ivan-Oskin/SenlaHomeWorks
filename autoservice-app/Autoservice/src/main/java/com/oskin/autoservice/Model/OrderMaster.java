@@ -5,22 +5,21 @@ public class OrderMaster implements IIndentified {
     private Master master;
     private Order order;
 
-    public OrderMaster(int id, Order order, Master master){
+    public OrderMaster(int id, Order order, Master master) {
         this.id = id;
         this.master = master;
         this.order = order;
     }
 
-    public Order getOrder(){
+    public Order getOrder() {
         return this.order;
     }
 
-    public Master getMaster(){
+    public Master getMaster() {
         return this.master;
     }
 
-    public int getId(){
+    public int getId() {
         return this.id;
     }
-
 }

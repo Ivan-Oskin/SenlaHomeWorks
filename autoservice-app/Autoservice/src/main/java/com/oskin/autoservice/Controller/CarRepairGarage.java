@@ -1,13 +1,18 @@
 package com.oskin.autoservice.Controller;
+import com.oskin.Annotations.Inject;
 import com.oskin.autoservice.repository.PlaceRepository;
-import com.oskin.autoservice.Model.*;
-import com.oskin.Annotations.*;
+import com.oskin.autoservice.Model.Place;
+import com.oskin.autoservice.Model.Order;
+import com.oskin.autoservice.Model.StatusOrder;
+import com.oskin.autoservice.Model.SortTypeOrder;
+import com.oskin.autoservice.Model.SortTypePlace;
+import com.oskin.Annotations.Singleton;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import com.oskin.config.Config;
 
 @Singleton
-public class CarRepairGarage {
+public final class CarRepairGarage {
     @Inject
     WorkWithFile workWithFile;
     @Inject
@@ -17,11 +22,11 @@ public class CarRepairGarage {
     @Inject
     CarRepairOrders carRepairOrders;
     private static CarRepairGarage instance;
-    private CarRepairGarage(){
+    private CarRepairGarage() {
     }
 
-    public static CarRepairGarage getInstance(){
-        if(instance == null)
+    public static CarRepairGarage getInstance() {
+        if (instance == null)
             instance = new  CarRepairGarage();
         return instance;
     }
@@ -40,7 +45,6 @@ public class CarRepairGarage {
     }
     public Place findPlace(String name) {
         return placeRepository.find(name);
-
     }
     public ArrayList<Place> getFreePlace(LocalDateTime date) {
         ArrayList<Place> newList = new ArrayList<Place>(getListOfPlace());
@@ -55,15 +59,15 @@ public class CarRepairGarage {
         return newList;
     }
 
-    public void exportGarage(){
+    public void exportGarage() {
         ArrayList<Place> places = placeRepository.findAll(SortTypePlace.ID);
         int size = places.size();
-        ArrayList<String> dataList = new ArrayList<>(size+1);
+        ArrayList<String> dataList = new ArrayList<>(size + 1);
         dataList.add("ID,NAME\n");
-        for(int i = 0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             int id = places.get(i).getId();
             String name = places.get(i).getName();
-            dataList.add(id+","+name+"\n");
+            dataList.add(id + "," + name + "\n");
         }
         workWithFile.whereExport(dataList, config.getStandardFileCsvGarage());
     }

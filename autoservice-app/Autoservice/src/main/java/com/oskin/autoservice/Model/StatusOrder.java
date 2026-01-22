@@ -7,11 +7,11 @@ public enum StatusOrder {
 
     private final String STATUS;
 
-    StatusOrder(String STATUS){
-        this.STATUS = STATUS;
+    StatusOrder(String status) {
+        this.STATUS = status;
     }
 
-    public String getSTATUS(){
+    public String getSTATUS() {
         return this.STATUS;
     }
 }

@@ -7,11 +7,11 @@ public enum SortTypeMaster implements SortType {
 
     String sortType;
 
-    SortTypeMaster(String sortType){
+    SortTypeMaster(String sortType) {
         this.sortType = sortType;
     }
 
-    public String getStringSortType(){
+    public String getStringSortType() {
         return this.sortType;
     }
 }

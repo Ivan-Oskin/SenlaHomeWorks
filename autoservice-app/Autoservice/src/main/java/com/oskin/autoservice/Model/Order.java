@@ -49,11 +49,11 @@ public class Order implements IIndentified {
         return this.place;
     }
 
-    public int getId(){
+    public int getId() {
         return this.id;
     }
 
-    public Order(){
+    public Order() {
 
     }
 
@@ -67,6 +67,7 @@ public class Order implements IIndentified {
         this.status = StatusOrder.ACTIVE;
         this.place = place;
     }
+
     public Order(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete, StatusOrder status) {
         this.id = id;
         this.name = name;

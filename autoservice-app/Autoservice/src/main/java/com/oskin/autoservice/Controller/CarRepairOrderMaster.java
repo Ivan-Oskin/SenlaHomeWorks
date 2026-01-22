@@ -24,17 +24,17 @@ public class CarRepairOrderMaster {
     @Inject
     Config config;
 
-    public ArrayList<Order> getOrderFromOrderMaster(ArrayList<OrderMaster> orderMasters){
+    public ArrayList<Order> getOrderFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
         ArrayList<Order> orders = new ArrayList<>(orderMasters.size());
-        for(OrderMaster orderMaster : orderMasters){
+        for (OrderMaster orderMaster : orderMasters) {
             orders.add(orderMaster.getOrder());
         }
         return orders;
     }
 
-    public ArrayList<Master> getMasterFromOrderMaster(ArrayList<OrderMaster> orderMasters){
+    public ArrayList<Master> getMasterFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
         ArrayList<Master> masters = new ArrayList<>(orderMasters.size());
-        for(OrderMaster orderMaster : orderMasters){
+        for (OrderMaster orderMaster : orderMasters) {
             masters.add(orderMaster.getMaster());
         }
         return masters;
@@ -63,12 +63,12 @@ public class CarRepairOrderMaster {
             int id = orderMaster.getId();
             int master_id = orderMaster.getMaster().getId();
             int order_id = orderMaster.getOrder().getId();
-            dataList.add(id + "," + master_id + ","+ order_id+"," + "\n");
+            dataList.add(id + "," + master_id + "," + order_id + "," + "\n");
         }
         workWithFile.whereExport(dataList, config.getStandardFileCsvOrderMaster());
     }
 
-    public void deleteByMaster(int id_master){
-        orderMasterRepository.deleteByMaster(id_master);
+    public void deleteByMaster(int idMaster) {
+        orderMasterRepository.deleteByMaster(idMaster);
     }
 }

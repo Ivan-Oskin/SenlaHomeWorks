@@ -1,7 +1,13 @@
 package com.oskin.autoservice.View;
-import com.oskin.Annotations.*;
-import com.oskin.autoservice.Controller.*;
+
+import com.oskin.Annotations.Inject;
+import com.oskin.Annotations.Singleton;
+import com.oskin.autoservice.Controller.CarRepairOrderMaster;
 import com.oskin.autoservice.repository.ConnectionDB;
+import com.oskin.autoservice.Controller.CarRepairGarage;
+import com.oskin.autoservice.Controller.CarRepairMaster;
+import com.oskin.autoservice.Controller.CarRepairOrders;
+import com.oskin.autoservice.Controller.ImportDates;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -29,14 +35,15 @@ public class MainMenu {
     @Inject
     CarRepairOrderMaster carRepairOrderMaster;
 
-    public MainMenu(){}
+    public MainMenu() {
+    }
 
-    public void run(){
-        connectionDB.Connect();
+    public void run() {
+        connectionDB.connect();
         builderMenu.setTitle("Добавить данные");
-        builderMenu.addItem(1, "Добавить мастера",() -> carRepairViewFunctions.addMaster());
+        builderMenu.addItem(1, "Добавить мастера", () -> carRepairViewFunctions.addMaster());
         builderMenu.addItem(2, "Добавить место", () -> carRepairViewFunctions.addPlace());
-        builderMenu.addItem(3, "Добавить заказ", ()-> carRepairViewFunctions.addOrder());
+        builderMenu.addItem(3, "Добавить заказ", () -> carRepairViewFunctions.addOrder());
         builderMenu.addItem(4, "Добавить заказ мастеру", () -> carRepairViewFunctions.setOrderToMaster());
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Удалить данные");
@@ -62,17 +69,17 @@ public class MainMenu {
         builderMenu.addItem(9, "Ближайшая свободна дата", () -> carRepairViewFunctions.getNearestDate());
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Экспорт данных");
-        builderMenu.addItem(1, "Экспортировать места", ()-> carRepairGarage.exportGarage());
-        builderMenu.addItem(2, "Экспортировать мастеров", ()-> carRepairMaster.exportMaster());
-        builderMenu.addItem(3, "Экспортировать заказы", ()-> carRepairOrders.exportOrder());
-        builderMenu.addItem(4, "Экспортировать связи заказов и мастеров", ()-> carRepairOrderMaster.exportOrderMaster());
+        builderMenu.addItem(1, "Экспортировать места", () -> carRepairGarage.exportGarage());
+        builderMenu.addItem(2, "Экспортировать мастеров", () -> carRepairMaster.exportMaster());
+        builderMenu.addItem(3, "Экспортировать заказы", () -> carRepairOrders.exportOrder());
+        builderMenu.addItem(4, "Экспортировать связи заказов и мастеров", () -> carRepairOrderMaster.exportOrderMaster());
         builderMenu.addItem(5, "Сделать экспорт всех сущностей",
-            () -> {
-                carRepairGarage.exportGarage();
-                carRepairMaster.exportMaster();
-                carRepairOrders.exportOrder();
-                carRepairOrderMaster.exportOrderMaster();
-            });
+                () -> {
+                    carRepairGarage.exportGarage();
+                    carRepairMaster.exportMaster();
+                    carRepairOrders.exportOrder();
+                    carRepairOrderMaster.exportOrderMaster();
+                });
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Импорт данных");
         builderMenu.addItem(1, "Импорт мест", () -> importDates.importGarage());
@@ -80,30 +87,29 @@ public class MainMenu {
         builderMenu.addItem(3, "Импорт заказов", () -> importDates.importOrder());
         builderMenu.addItem(4, "Импорт связи заказов и мастеров", () -> importDates.importOrderMaster());
         builderMenu.addItem(5, "Сделать импорт всех сущностей",
-            () -> {
-                importDates.importGarage();
-                importDates.importMaster();
-                importDates.importOrder();
-                importDates.importOrderMaster();
-            });
+                () -> {
+                    importDates.importGarage();
+                    importDates.importMaster();
+                    importDates.importOrder();
+                    importDates.importOrderMaster();
+                });
         navigator.addMenu(builderMenu.build());
         Scanner scanner = new Scanner(System.in);
-        while (true){
+        while (true) {
             System.out.println("Введите действие: ");
             navigator.getNamesOfMenu();
             int x = 0;
-            try{
+            try {
                 x = scanner.nextInt();
                 scanner.nextLine();
-                if(x == 0){
+                if (x == 0) {
                     return;
                 }
-            }
-            catch (InputMismatchException e){
+            } catch (InputMismatchException e) {
                 System.err.println("\nНадо ввести только цифру!!!\n");
                 scanner.nextLine();
             }
             navigator.navigate(x);
-       }
+        }
     }
 }
