@@ -5,7 +5,8 @@ import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.StatusOrder;
 import com.oskin.autoservice.Model.Place;
 import com.oskin.autoservice.Model.SortType;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,9 +24,11 @@ public class OrderRepository implements CrudRepository<Order> {
     @Inject
     PlaceRepository placeRepository;
     Scanner scanner = new Scanner(System.in);
+    private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);
 
     @Override
     public <G extends SortType> ArrayList<Order> findAll(G sortTypeOrder) {
+        logger.info("start findAll order");
         ArrayList<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders ORDER BY " + sortTypeOrder.getStringSortType();
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
@@ -52,13 +55,15 @@ public class OrderRepository implements CrudRepository<Order> {
                     System.out.println("Место с id " + place_id + " не найдено. Заказ " + name + " некоректен");
                 }
             }
+            logger.info("successful findAll order");
         } catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            logger.error("error findAll order {}", e.getMessage());
         }
         return orders;
     }
 
     public Order find(String name) {
+        logger.info("start findByName order");
         String sql = "SELECT * FROM orders WHERE name = ?";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, name);
@@ -100,22 +105,26 @@ public class OrderRepository implements CrudRepository<Order> {
                         scanner.nextLine();
                     }
                     if (x > 0 && x < orders.size() + 1) {
+                        logger.info("successful findByName with choice order");
                         return orders.get(x - 1);
                     } else {
                         System.out.println("Неправильный ввод");
                     }
                 }
             } else if (orders.size() == 1) {
+                logger.info("successful findByName without choice order");
                 return orders.get(0);
             }
         } catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            logger.error("error findByName order {}", e.getMessage());
         }
+        logger.info("No found but successful findByName order");
         return null;
     }
 
     @Override
     public Order find(int idOrder) {
+        logger.info("start findById order");
         String sql = "SELECT * FROM orders WHERE id = ?";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, idOrder);
@@ -136,12 +145,14 @@ public class OrderRepository implements CrudRepository<Order> {
                 int place_id = set.getInt("place_id");
                 Place place = placeRepository.find(place_id);
                 if (place != null) {
+                    logger.info("successful findById order");
                     return new Order(idOrder, name, cost, place, createTime, startTime, completeTime, status);
                 }
             }
         } catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            logger.error("error findById order {}", e.getMessage());
         }
+        logger.info("No found but successful findById order");
         return null;
     }
 
@@ -156,23 +167,26 @@ public class OrderRepository implements CrudRepository<Order> {
 
     @Override
     public boolean delete(int id) {
+        logger.info("start delete order");
         String sql = "DELETE FROM orders WHERE id = ?;";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, id);
             int result = statement.executeUpdate();
             if (result > 0) {
                 connectionDB.commit();
+                logger.info("successful delete order");
                 return true;
             }
         } catch (java.sql.SQLException e) {
             connectionDB.rollback();
-            e.printStackTrace();
+            logger.error("error delete order {}", e.getMessage());
         }
         return false;
     }
 
     @Override
     public void create(Order order) {
+        logger.info("start create order");
         String sql = "INSERT INTO orders (id, name, status, timeCreate, timeStart, timeComplete, cost, place_id) VALUES (?,?,?,?,?,?,?,?)";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setInt(1, order.getId());
@@ -184,14 +198,16 @@ public class OrderRepository implements CrudRepository<Order> {
             statement.setInt(7, order.getCost());
             statement.setInt(8, order.getPlace().getId());
             statement.executeUpdate();
+            logger.info("successful create order");
             connectionDB.commit();
         } catch (java.sql.SQLException e) {
+            logger.error("error create order {}", e.getMessage());
             connectionDB.rollback();
-            e.printStackTrace();
         }
     }
 
     public boolean changeStatusInDb(String name, StatusOrder statusOrder) {
+        logger.info("start changeStatus order");
         String sql = "UPDATE orders SET status = ? WHERE name = ?;";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, statusOrder.getSTATUS());
@@ -199,17 +215,19 @@ public class OrderRepository implements CrudRepository<Order> {
             int change = statement.executeUpdate();
             System.out.println(change);
             if (change > 0) {
+                logger.info("successful changeStatus order");
                 connectionDB.commit();
                 return true;
             }
         } catch (java.sql.SQLException e) {
+            logger.error("error changeStatus order {}", e.getMessage());
             connectionDB.rollback();
-            e.printStackTrace();
         }
         return false;
     }
 
     public boolean offsetInDb(String name, LocalDateTime timeStart, LocalDateTime timeComplete) {
+        logger.info("start offset order");
         String sql = "UPDATE orders SET timeStart = ?, timeComplete = ? WHERE name = ?";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setTimestamp(1, Timestamp.valueOf(timeStart));
@@ -218,17 +236,19 @@ public class OrderRepository implements CrudRepository<Order> {
             int inf = statement.executeUpdate();
             System.out.println(inf);
             if (inf > 0) {
+                logger.info("successful offset order");
                 connectionDB.commit();
                 return true;
             }
         } catch (java.sql.SQLException e) {
+            logger.error("error offset order {}", e.getMessage());
             connectionDB.rollback();
-            e.printStackTrace();
         }
         return false;
     }
 
     public void update(Order order) {
+        logger.info("start update order");
         String sql = "UPDATE orders SET name = ?, status = ?, timeCreate = ?, timeStart, timeComplete = ?, cost = ?, place_id = ? WHERE id = ?";
         try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
             statement.setString(1, order.getName());
@@ -239,10 +259,11 @@ public class OrderRepository implements CrudRepository<Order> {
             statement.setInt(6, order.getCost());
             statement.setInt(7, order.getPlace().getId());
             statement.executeUpdate();
+            logger.info("successful update order");
             connectionDB.commit();
         } catch (SQLException e) {
+            logger.error("error update order {}", e.getMessage());
             connectionDB.rollback();
-            e.printStackTrace();
         }
     }
 }

@@ -8,6 +8,8 @@ import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -23,6 +25,7 @@ public class CarRepairOrderMaster {
     WorkWithFile workWithFile;
     @Inject
     Config config;
+    Logger logger = LoggerFactory.getLogger(CarRepairOrderMaster.class);
 
     public ArrayList<Order> getOrderFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
         ArrayList<Order> orders = new ArrayList<>(orderMasters.size());
@@ -56,6 +59,7 @@ public class CarRepairOrderMaster {
         return false;
     }
     public void exportOrderMaster() {
+        logger.info("Start export orderMaster");
         ArrayList<OrderMaster> orderMastersArray = orderMasterRepository.findAll(SortTypeOrderMaster.ID);
         ArrayList<String> dataList = new ArrayList<>(orderMastersArray.size() + 1);
         dataList.add("id,id_master,id_order\n");

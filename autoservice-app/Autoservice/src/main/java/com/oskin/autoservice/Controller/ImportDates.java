@@ -11,6 +11,8 @@ import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,6 +41,7 @@ public class ImportDates {
     PlaceRepository placeRepository;
     @Inject
     OrderMasterRepository orderMasterRepository;
+    Logger logger = LoggerFactory.getLogger(ImportDates.class);
 
     public int inputInt() {
         Scanner scanner = new Scanner(System.in);
@@ -63,6 +66,7 @@ public class ImportDates {
     }
 
     public void importOrder() {
+        logger.info("Start import order");
         boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvOrders());
         if (nameFile.equals("???")) {
@@ -70,6 +74,7 @@ public class ImportDates {
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
+            logger.info("File found and opened successfully");
             for (ArrayList<String> line : data) {
                 if (line.size() != 8) {
                     System.out.println("Неправильная таблица данных");
@@ -126,10 +131,12 @@ public class ImportDates {
                     }
                 }
             }
+            logger.info("successfully import order");
         }
     }
 
     public void importGarage() {
+        logger.info("Start import garage");
         boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvGarage());
         if (nameFile.equals("???")) {
@@ -137,6 +144,7 @@ public class ImportDates {
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
+            logger.info("File found and opened successfully");
             for (ArrayList<String> line : data) {
                 if (line.size() != 2) {
                     System.out.println("Неправильная таблица данных");
@@ -157,10 +165,12 @@ public class ImportDates {
                     }
                 }
             }
+            logger.info("successfully import place");
         }
     }
 
     public void importMaster() {
+        logger.info("Start import master");
         boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvMaster());
         if (nameFile.equals("???")) {
@@ -169,6 +179,7 @@ public class ImportDates {
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
             for (ArrayList<String> line : data) {
+                logger.info("File found and opened successfully");
                 if (line.size() != 2) {
                     System.out.println("Неправильная таблица данных");
                     return;
@@ -188,10 +199,12 @@ public class ImportDates {
                     }
                 }
             }
+            logger.info("successfully import master");
         }
     }
 
     public void importOrderMaster() {
+        logger.info("Start import orderMaster");
         boolean replace = replaceAgree();
         String nameFile = workWithFile.whereFromImport(config.getStandardFileCsvOrderMaster());
         if (nameFile.equals("???")) {
@@ -201,6 +214,7 @@ public class ImportDates {
         if (!data.isEmpty()) {
             for (ArrayList<String> line : data) {
                 if (line.size() != 3) {
+                    logger.info("File found and opened successfully");
                     System.out.println("Неправильная таблица данных");
                     return;
                 } else {
@@ -220,6 +234,7 @@ public class ImportDates {
                     }
                 }
             }
+            logger.info("successfully import orderMaster");
         }
     }
 }

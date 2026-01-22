@@ -4,6 +4,8 @@ import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;
 import com.oskin.autoservice.View.CarRepairInput;
 import com.oskin.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,6 +26,7 @@ public class WorkWithFile {
     private CarRepairInput carRepairInput;
     @Inject
     private Config config;
+    private final Logger logger = LoggerFactory.getLogger(WorkWithFile.class);
 
     public void exportData(ArrayList<String> dataString, String fileName, boolean isStandart) {
         String name;
@@ -60,6 +63,7 @@ public class WorkWithFile {
             case 1:
                 exportData(dataList, nameObject, true);
                 System.out.println("Данные экспортированы");
+                logger.info("successfully export");
                 break;
             case 2:
                 Scanner scanner = new Scanner(System.in);
@@ -67,6 +71,7 @@ public class WorkWithFile {
                 String nameFile = scanner.nextLine();
                 exportData(dataList, nameFile, false);
                 System.out.println("Данные экспортированы");
+                logger.info("successfully export");
                 break;
             default:
                 return;

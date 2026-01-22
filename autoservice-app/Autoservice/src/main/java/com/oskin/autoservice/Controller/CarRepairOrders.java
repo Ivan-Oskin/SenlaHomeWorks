@@ -12,6 +12,8 @@ import com.oskin.autoservice.Model.SortTypeOrder;
 import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +33,7 @@ public final class CarRepairOrders {
     OrderMasterRepository orderMasterRepository;
     @Inject
     CarRepairOrderMaster carRepairOrderMaster;
+    private final Logger logger = LoggerFactory.getLogger(CarRepairOrders.class);
 
     private static CarRepairOrders instance;
 
@@ -119,6 +122,7 @@ public final class CarRepairOrders {
     }
 
     public void exportOrder() {
+        logger.info("Start export order");
         ArrayList<Order> orders = getListOfOrders(SortTypeOrder.ID);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
         ArrayList<String> dataList = new ArrayList<>(orders.size() + 1);

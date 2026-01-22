@@ -10,6 +10,8 @@ import com.oskin.Annotations.Singleton;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import com.oskin.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public final class CarRepairGarage {
@@ -21,6 +23,7 @@ public final class CarRepairGarage {
     PlaceRepository placeRepository;
     @Inject
     CarRepairOrders carRepairOrders;
+    Logger logger = LoggerFactory.getLogger(CarRepairGarage.class);
     private static CarRepairGarage instance;
     private CarRepairGarage() {
     }
@@ -60,6 +63,7 @@ public final class CarRepairGarage {
     }
 
     public void exportGarage() {
+        logger.info("Start export place");
         ArrayList<Place> places = placeRepository.findAll(SortTypePlace.ID);
         int size = places.size();
         ArrayList<String> dataList = new ArrayList<>(size + 1);

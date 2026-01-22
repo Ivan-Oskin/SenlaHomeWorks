@@ -9,6 +9,9 @@ import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.SortTypeMaster;
 import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 
 import static org.postgresql.hostchooser.HostRequirement.master;
@@ -27,6 +30,7 @@ public final class CarRepairMaster {
     OrderMasterRepository orderMasterRepository;
     @Inject
     OrderRepository orderRepository;
+    private final Logger logger = LoggerFactory.getLogger(CarRepairMaster.class);
     private static CarRepairMaster instance;
     private CarRepairMaster() {
 
@@ -64,6 +68,7 @@ public final class CarRepairMaster {
         return new ArrayList<>();
     }
     public void exportMaster() {
+        logger.info("Start export master");
         ArrayList<Master> masters = getListOfMasters(SortTypeMaster.ID);
         ArrayList<String> dataList = new ArrayList<>(masters.size() + 1);
         dataList.add("ID,NAME\n");
