@@ -69,7 +69,6 @@ public class PlaceRepository implements CrudRepository<Place> {
         } catch (java.sql.SQLException e) {
             logger.error("error delete place {}", e.getMessage());
             connectionDB.rollback();
-
         }
         return false;
     }

@@ -142,7 +142,6 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
         } catch (java.sql.SQLException e) {
             logger.error("error delete orderMaster {}", e.getMessage());
             connectionDB.rollback();
-
         }
         return false;
     }
