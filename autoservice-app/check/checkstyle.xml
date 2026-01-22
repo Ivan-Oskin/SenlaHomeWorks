@@ -185,7 +185,7 @@
     </module>
 
     <module name="SuppressionFilter">
-        <property name="file" value="suppressions.xml"/>
+        <property name="file" value="check/suppressions.xml"/>
     </module>
 
     <module name="RegexpMultiline">
