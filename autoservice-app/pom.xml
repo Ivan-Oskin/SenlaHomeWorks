@@ -19,7 +19,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson-version>2.20.1</jackson-version>
-        <logback-version>1.4.14</logback-version>
+        <logback-version>1.5.25</logback-version>
         <checkstyle-version>3.6.0</checkstyle-version>
         <reflections-version>0.9.12</reflections-version>
         <postgresql-version>42.7.1</postgresql-version>
