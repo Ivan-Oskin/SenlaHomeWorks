@@ -4,15 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.example</groupId>
+        <groupId>com.oskin.autoservice</groupId>
         <artifactId>autoservice-app</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>Annotations</artifactId>
-    <name>Archetype - Annotations</name>
-    <groupId>com.oskin.Annotations</groupId>
-
+    <artifactId>annotations</artifactId>
+    <name>annotations</name>
+    <groupId>com.oskin.autoservice</groupId>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
