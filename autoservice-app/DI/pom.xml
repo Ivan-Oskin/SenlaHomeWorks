@@ -9,12 +9,11 @@
     <artifactId>di</artifactId>
     <name>di</name>
     <groupId>com.oskin.autoservice</groupId>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
+            <version>${reflections-version}</version>
         </dependency>
         <dependency>
             <groupId>com.oskin.autoservice</groupId>

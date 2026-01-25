@@ -8,7 +8,6 @@
     </parent>
     <artifactId>autoservice</artifactId>
     <name>autoservice</name>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>com.oskin.autoservice</groupId>
@@ -23,7 +22,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.1</version>
+            <version>${postgresql-version}</version>
         </dependency>
     </dependencies>
 </project>

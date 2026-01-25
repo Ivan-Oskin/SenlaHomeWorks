@@ -18,23 +18,28 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jackson-version>2.20.1</jackson-version>
+        <logback-version>1.4.14</logback-version>
+        <checkstyle-version>3.6.0</checkstyle-version>
+        <reflections-version>0.9.12</reflections-version>
+        <postgresql-version>42.7.1</postgresql-version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.20.1</version>
+            <version>${jackson-version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.20.1</version>
+            <version>${jackson-version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.14</version>
+            <version>${logback-version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -42,7 +47,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${checkstyle-version}</version>
                 <configuration>
                     <configLocation>check/checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
