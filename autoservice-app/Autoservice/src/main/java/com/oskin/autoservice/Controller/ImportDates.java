@@ -1,15 +1,15 @@
-package com.oskin.autoservice.Controller;
+package com.oskin.autoservice.controller;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
-import com.oskin.autoservice.Model.Place;
-import com.oskin.autoservice.Model.StatusOrder;
-import com.oskin.autoservice.Model.Order;
-import com.oskin.autoservice.Model.Master;
-import com.oskin.autoservice.Model.OrderMaster;
+import com.oskin.autoservice.model.Place;
+import com.oskin.autoservice.model.StatusOrder;
+import com.oskin.autoservice.model.Order;
+import com.oskin.autoservice.model.Master;
+import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,8 +1,8 @@
-package com.oskin.autoservice.Controller;
+package com.oskin.autoservice.controller;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;
-import com.oskin.autoservice.View.CarRepairInput;
+import com.oskin.autoservice.view.CarRepairInput;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

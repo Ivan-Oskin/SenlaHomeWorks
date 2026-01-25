@@ -1,9 +1,9 @@
 package com.oskin.autoservice.repository;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Model.Master;
-import com.oskin.autoservice.Model.SortType;
-import com.oskin.autoservice.Model.SortTypeMaster;
+import com.oskin.autoservice.model.Master;
+import com.oskin.autoservice.model.SortType;
+import com.oskin.autoservice.model.SortTypeMaster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

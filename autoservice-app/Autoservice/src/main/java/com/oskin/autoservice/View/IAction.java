@@ -1,4 +1,4 @@
-package com.oskin.autoservice.View;
+package com.oskin.autoservice.view;
 
 @FunctionalInterface
 public interface IAction {

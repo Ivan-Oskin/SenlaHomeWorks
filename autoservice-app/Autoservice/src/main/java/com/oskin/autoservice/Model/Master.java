@@ -1,4 +1,4 @@
-package com.oskin.autoservice.Model;
+package com.oskin.autoservice.model;
 
 public class Master implements IIndentified {
     private int id;

@@ -1,19 +1,19 @@
-package com.oskin.autoservice.View;
+package com.oskin.autoservice.view;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;
 
-import com.oskin.autoservice.Controller.CarRepairDate;
-import com.oskin.autoservice.Controller.CarRepairGarage;
-import com.oskin.autoservice.Controller.CarRepairMaster;
-import com.oskin.autoservice.Controller.CarRepairOrders;
-import com.oskin.autoservice.Controller.CarRepairOrderMaster;
-import com.oskin.autoservice.Model.Place;
-import com.oskin.autoservice.Model.StatusOrder;
-import com.oskin.autoservice.Model.SortTypeOrder;
-import com.oskin.autoservice.Model.Master;
-import com.oskin.autoservice.Model.SortTypeMaster;
-import com.oskin.autoservice.Model.Order;
+import com.oskin.autoservice.controller.CarRepairDate;
+import com.oskin.autoservice.controller.CarRepairGarage;
+import com.oskin.autoservice.controller.CarRepairMaster;
+import com.oskin.autoservice.controller.CarRepairOrders;
+import com.oskin.autoservice.controller.CarRepairOrderMaster;
+import com.oskin.autoservice.model.Place;
+import com.oskin.autoservice.model.StatusOrder;
+import com.oskin.autoservice.model.SortTypeOrder;
+import com.oskin.autoservice.model.Master;
+import com.oskin.autoservice.model.SortTypeMaster;
+import com.oskin.autoservice.model.Order;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

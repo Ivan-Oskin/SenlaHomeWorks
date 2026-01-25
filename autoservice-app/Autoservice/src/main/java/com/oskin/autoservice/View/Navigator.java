@@ -1,4 +1,4 @@
-package com.oskin.autoservice.View;
+package com.oskin.autoservice.view;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;

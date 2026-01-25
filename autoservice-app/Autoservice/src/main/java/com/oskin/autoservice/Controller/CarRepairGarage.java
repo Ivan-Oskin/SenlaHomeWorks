@@ -1,11 +1,11 @@
-package com.oskin.autoservice.Controller;
+package com.oskin.autoservice.controller;
 import com.oskin.Annotations.Inject;
 import com.oskin.autoservice.repository.PlaceRepository;
-import com.oskin.autoservice.Model.Place;
-import com.oskin.autoservice.Model.Order;
-import com.oskin.autoservice.Model.StatusOrder;
-import com.oskin.autoservice.Model.SortTypeOrder;
-import com.oskin.autoservice.Model.SortTypePlace;
+import com.oskin.autoservice.model.Place;
+import com.oskin.autoservice.model.Order;
+import com.oskin.autoservice.model.StatusOrder;
+import com.oskin.autoservice.model.SortTypeOrder;
+import com.oskin.autoservice.model.SortTypePlace;
 import com.oskin.Annotations.Singleton;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
 package com.oskin.autoservice.repository;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Model.Place;
-import com.oskin.autoservice.Model.SortType;
+import com.oskin.autoservice.model.Place;
+import com.oskin.autoservice.model.SortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

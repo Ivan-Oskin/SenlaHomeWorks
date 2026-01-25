@@ -1,10 +1,10 @@
-package com.oskin.autoservice.View;
+package com.oskin.autoservice.view;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;
-import com.oskin.autoservice.Model.SortTypeMaster;
-import com.oskin.autoservice.Model.SortTypeOrder;
-import com.oskin.autoservice.Model.StatusOrder;
+import com.oskin.autoservice.model.SortTypeMaster;
+import com.oskin.autoservice.model.SortTypeOrder;
+import com.oskin.autoservice.model.StatusOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

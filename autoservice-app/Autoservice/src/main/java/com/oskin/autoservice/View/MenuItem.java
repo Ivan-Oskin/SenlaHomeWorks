@@ -1,4 +1,4 @@
-package com.oskin.autoservice.View;
+package com.oskin.autoservice.view;
 
 public class MenuItem {
     private int number;

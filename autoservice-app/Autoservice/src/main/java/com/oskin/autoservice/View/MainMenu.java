@@ -1,13 +1,13 @@
-package com.oskin.autoservice.View;
+package com.oskin.autoservice.view;
 
 import com.oskin.Annotations.Inject;
 import com.oskin.Annotations.Singleton;
-import com.oskin.autoservice.Controller.CarRepairOrderMaster;
+import com.oskin.autoservice.controller.CarRepairOrderMaster;
 import com.oskin.autoservice.repository.ConnectionDB;
-import com.oskin.autoservice.Controller.CarRepairGarage;
-import com.oskin.autoservice.Controller.CarRepairMaster;
-import com.oskin.autoservice.Controller.CarRepairOrders;
-import com.oskin.autoservice.Controller.ImportDates;
+import com.oskin.autoservice.controller.CarRepairGarage;
+import com.oskin.autoservice.controller.CarRepairMaster;
+import com.oskin.autoservice.controller.CarRepairOrders;
+import com.oskin.autoservice.controller.ImportDates;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;

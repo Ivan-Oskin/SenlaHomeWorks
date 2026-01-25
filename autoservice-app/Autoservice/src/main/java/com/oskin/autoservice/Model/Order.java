@@ -1,4 +1,4 @@
-package com.oskin.autoservice.Model;
+package com.oskin.autoservice.model;
 
 import java.time.LocalDateTime;
 

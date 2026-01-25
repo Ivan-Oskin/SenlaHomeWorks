@@ -1,7 +1,7 @@
 package com.oskin.autoservice.repository;
 
-import com.oskin.autoservice.Model.IIndentified;
-import com.oskin.autoservice.Model.SortType;
+import com.oskin.autoservice.model.IIndentified;
+import com.oskin.autoservice.model.SortType;
 
 import java.util.ArrayList;
 

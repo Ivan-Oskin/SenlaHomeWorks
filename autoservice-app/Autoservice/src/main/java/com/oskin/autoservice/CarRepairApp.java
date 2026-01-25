@@ -3,7 +3,7 @@ package com.oskin.autoservice;
 import com.oskin.DI.BuilderObject;
 import com.oskin.DI.DIContainer;
 import com.oskin.DI.InjectObject;
-import com.oskin.autoservice.View.MainMenu;
+import com.oskin.autoservice.view.MainMenu;
 
 public final class CarRepairApp {
     private static CarRepairApp instance;

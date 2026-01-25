@@ -1,10 +1,10 @@
 package com.oskin.autoservice.repository;
 
 import com.oskin.Annotations.Inject;
-import com.oskin.autoservice.Model.Master;
-import com.oskin.autoservice.Model.Order;
-import com.oskin.autoservice.Model.OrderMaster;
-import com.oskin.autoservice.Model.SortType;
+import com.oskin.autoservice.model.Master;
+import com.oskin.autoservice.model.Order;
+import com.oskin.autoservice.model.OrderMaster;
+import com.oskin.autoservice.model.SortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
