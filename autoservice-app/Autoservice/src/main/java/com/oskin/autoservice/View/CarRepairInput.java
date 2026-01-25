@@ -5,6 +5,8 @@ import com.oskin.Annotations.Singleton;
 import com.oskin.autoservice.Model.SortTypeMaster;
 import com.oskin.autoservice.Model.SortTypeOrder;
 import com.oskin.autoservice.Model.StatusOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
@@ -13,6 +15,7 @@ import java.util.Scanner;
 @Singleton
 public class CarRepairInput {
     Scanner scanner = new Scanner(System.in);
+    Logger logger = LoggerFactory.getLogger(CarRepairInput.class);
     private static CarRepairInput instance;
 
     @Inject
@@ -28,7 +31,7 @@ public class CarRepairInput {
             scanner.nextLine();
         } catch (InputMismatchException e) {
             scanner.nextLine();
-            System.err.println("\nНадо ввести только цифру!!!\n");
+            logger.error("Надо ввести только цифру!!!");
         }
         return input;
     }
@@ -39,7 +42,7 @@ public class CarRepairInput {
         while (true) {
             x = inputInt();
             if (x > 0 && x < 6) break;
-            System.out.println("Неправильный ввод");
+            logger.error("Неправильный ввод");
         }
         if (x == 1) return SortTypeOrder.ID;
         if (x == 2) return SortTypeOrder.CREATE;
@@ -54,7 +57,7 @@ public class CarRepairInput {
         while (true) {
             x = inputInt();
             if (x > 0 && x < 4) break;
-            System.out.println("Неправильный ввод");
+            logger.error("Неправильный ввод");
         }
         if (x == 1) return SortTypeMaster.ID;
         if (x == 2) return SortTypeMaster.ALPHABET;
@@ -78,7 +81,7 @@ public class CarRepairInput {
                 year = scanner.nextInt();
                 scanner.nextLine();
                 if (year >= LocalDateTime.now().getYear() - 5 && year < 2030) break;
-                System.out.println("Неправильный ввод");
+                logger.error("Неправильный ввод");
             }
             carRepairOutput.infAboutInput("Месяц");
             while (true) {
@@ -87,7 +90,7 @@ public class CarRepairInput {
                 if (month >= 1 && month <= 12) {
                     break;
                 }
-                System.out.println("Неправильный ввод");
+                logger.error("Неправильный ввод");
             }
             carRepairOutput.infAboutInput("День");
             while (true) {
@@ -96,7 +99,7 @@ public class CarRepairInput {
                 if (day >= 1 && day <= 31) {
                     break;
                 }
-                System.out.println("Неправильный ввод");
+                logger.error("Неправильный ввод");
             }
             carRepairOutput.infAboutInput("Часы");
             while (true) {
@@ -105,13 +108,13 @@ public class CarRepairInput {
                 if (hour >= 9 && hour < 18) {
                     break;
                 }
-                System.out.println("Неправильный ввод");
+                logger.error("Неправильный ввод");
             }
             LocalDateTime time = LocalDateTime.of(year, month, day, hour, 0);
             return time;
         } catch (InputMismatchException e) {
             scanner.nextLine();
-            System.err.println("\nНеправильный ввод, нужно вводить только цифры\n");
+            logger.error("Неправильный ввод, нужно вводить только цифры");
             return null;
         }
     }
@@ -123,7 +126,7 @@ public class CarRepairInput {
         while (true) {
             x = inputInt();
             if (x > 0 && x < 4) break;
-            System.out.println("Неправильный ввод");
+            logger.error("Неправильный ввод");
         }
         if (x == 1) return StatusOrder.ACTIVE;
         if (x == 2) return StatusOrder.CLOSE;

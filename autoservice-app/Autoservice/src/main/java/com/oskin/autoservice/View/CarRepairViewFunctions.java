@@ -15,6 +15,8 @@ import com.oskin.autoservice.Model.Master;
 import com.oskin.autoservice.Model.SortTypeMaster;
 import com.oskin.autoservice.Model.Order;
 import com.oskin.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 @Singleton
 public class CarRepairViewFunctions {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+    private Logger logger = LoggerFactory.getLogger(CarRepairViewFunctions.class);
     @Inject
     CarRepairGarage carRepairGarage;
     @Inject
@@ -47,7 +50,7 @@ public class CarRepairViewFunctions {
     public void getFreePlace() {
         LocalDateTime time = carRepairInput.createTime();
         if (time == null) {
-            System.out.println("произошла ошибка при вводе данных");
+            logger.error("произошла ошибка при вводе данных");
             return;
         }
         carRepairOutput.printPlace(carRepairGarage.getFreePlace(time));
@@ -75,13 +78,13 @@ public class CarRepairViewFunctions {
         System.out.println("Введите начальное время");
         LocalDateTime startTime = carRepairInput.createTime();
         if (startTime == null) {
-            System.out.println("произошла ошибка при вводе данных");
+            logger.error("произошла ошибка при вводе данных");
             return;
         }
         System.out.println("Введие конечное время");
         LocalDateTime endTime = carRepairInput.createTime();
         if (endTime == null) {
-            System.out.println("произошла ошибка при вводе данных");
+            logger.error("произошла ошибка при вводе данных");
             return;
         }
         StatusOrder status = carRepairInput.whatStatus();
@@ -92,7 +95,7 @@ public class CarRepairViewFunctions {
     public void getCountInTime() {
         LocalDateTime time = carRepairInput.createTime();
         if (time == null) {
-            System.out.println("произошла ошибка при вводе данных");
+            logger.error("произошла ошибка при вводе данных");
             return;
         }
         System.out.println("Количество свободных мест - " + carRepairDate.getCountFreeTime(time));
@@ -102,7 +105,7 @@ public class CarRepairViewFunctions {
         LocalDateTime time = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0);
         LocalDateTime nearestDate = carRepairDate.getNearestDate(time);
         if (nearestDate == null) {
-            System.out.println("Ошибка! Отсуствует список мастеров или заказов");
+            logger.error("Ошибка! Отсуствует список мастеров или заказов");
             return;
         }
         System.out.println("Ближайщее свободное время: " + nearestDate.format(formatter));
@@ -118,7 +121,7 @@ public class CarRepairViewFunctions {
 
     public void addPlace() {
         if (!config.getRuleAddPlace()) {
-            System.err.println("Запрещено");
+            logger.error("Запрещено");
             return;
         }
         String name = carRepairInput.inputName("имя");
@@ -139,7 +142,7 @@ public class CarRepairViewFunctions {
         String namePlace = carRepairInput.inputName("наименование места");
         Place place = carRepairGarage.findPlace(namePlace);
         if (place == null) {
-            System.out.println("Наименование места не найдено");
+            carRepairOutput.noFound();
             return;
         }
         LocalDateTime timeStart;
@@ -147,13 +150,13 @@ public class CarRepairViewFunctions {
         carRepairOutput.infAboutInput("Начало выполнения заказа: ");
         timeStart = carRepairInput.createTime();
         if (timeStart == null) {
-            System.out.println("Произошла ошибка при вводе данных");
+            logger.error("произошла ошибка при вводе данных");
             return;
         }
         carRepairOutput.infAboutInput("Конец выполнения заказа");
         timeComplete = carRepairInput.createTime();
         if (timeComplete == null) {
-            System.out.println("Произошла ошибка при вводе данных");
+            logger.error("произошла ошибка при вводе данных");
             return;
         }
         ArrayList<Order> list = carRepairOrders.getListOfOrders(SortTypeOrder.ID);
@@ -165,9 +168,9 @@ public class CarRepairViewFunctions {
         String name = carRepairInput.inputName("имя");
         boolean inf = carRepairOrders.cancelOrder(name);
         if (inf) {
-            System.out.println(name + " отменен");
+            logger.info("{} - отменен", name);
         } else {
-            System.out.println("Имя не найдено");
+            carRepairOutput.noFound();
         }
     }
 
@@ -175,15 +178,15 @@ public class CarRepairViewFunctions {
         String name = carRepairInput.inputName("имя");
         boolean inf = carRepairOrders.completeOrder(name);
         if (inf) {
-            System.out.println(name + " закрыт");
+            logger.info("{} - закрыт", name);
         } else {
-            System.out.println("Имя не найдено");
+            carRepairOutput.noFound();
         }
     }
 
     public void offsetTimeOrder() {
         if (!config.getRuleOffset()) {
-            System.err.println("Запрещено");
+            logger.error("Запрещено");
             return;
         }
         String name = carRepairInput.inputName("имя");
@@ -195,7 +198,7 @@ public class CarRepairViewFunctions {
         if (inf) {
             System.out.println(name + " - время выполнения смещено");
         } else {
-            System.out.println(name + " - не удалось смести время");
+            logger.error("{} - не удалось смести время", name);
         }
     }
 
@@ -207,7 +210,7 @@ public class CarRepairViewFunctions {
 
     public void deleteOrder() {
         if (!config.getRuleDeleteOrder()) {
-            System.err.println("Запрещено");
+            logger.error("Запрещено");
             return;
         }
         String name = carRepairInput.inputName("имя");
@@ -217,7 +220,7 @@ public class CarRepairViewFunctions {
 
     public void deletePlace() {
         if (!config.getRuleDeletePlace()) {
-            System.err.println("Запрещено");
+            logger.error("Запрещено");
             return;
         }
         String name = carRepairInput.inputName("имя");
@@ -229,7 +232,7 @@ public class CarRepairViewFunctions {
         String nameMaster = carRepairInput.inputName("имя мастера");
         String nameOrder = carRepairInput.inputName("название заказа");
         boolean inf = carRepairOrderMaster.setOrderMaster(nameMaster, nameOrder);
-        if (inf) System.out.println("Заказ " + nameOrder + " добавлен к мастеру " + nameMaster);
-        else System.out.println("не получилось добавить заказ мастеру ");
+        if (inf) logger.info("Заказ {} добавлен к мастеру {}", nameOrder, nameMaster);
+        else logger.error("не получилось добавить заказ мастеру");
     }
 }

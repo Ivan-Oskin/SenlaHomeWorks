@@ -7,6 +7,8 @@ import com.oskin.autoservice.Model.Order;
 import com.oskin.autoservice.Model.OrderMaster;
 import com.oskin.autoservice.Model.Place;
 import com.oskin.autoservice.repository.OrderMasterRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 public class CarRepairOutput {
     @Inject
     OrderMasterRepository orderMasterRepository;
+    Logger logger = LoggerFactory.getLogger(CarRepairOutput.class);
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
@@ -22,19 +25,19 @@ public class CarRepairOutput {
     }
 
     public void infAboutAdd(String nameObject) {
-        System.out.println(nameObject + " Добавлен");
+        logger.info("{} - добавлен", nameObject);
     }
 
     public void infAboutDelete(String nameObject, boolean inf) {
         if (inf) {
-            System.out.println(nameObject + " Удален");
+            logger.info("{} - удален", nameObject);
         } else {
-            System.out.println(nameObject + " - Имя не найдено");
+            logger.info("{} - имя не найдено", nameObject);
         }
     }
 
     public void noFound() {
-        System.out.println("Имя не найдено");
+        logger.info("имя не найдено");
     }
 
     public void infAboutInput(String objectName) {
