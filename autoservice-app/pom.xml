@@ -22,7 +22,9 @@
         <logback-version>1.5.25</logback-version>
         <checkstyle-version>3.6.0</checkstyle-version>
         <reflections-version>0.9.12</reflections-version>
-        <postgresql-version>42.7.1</postgresql-version>
+        <postgresql-version>42.7.9</postgresql-version>
+        <jpa-version>2.2</jpa-version>
+        <hibernate-version>7.2.2.Final</hibernate-version>
     </properties>
 
     <dependencies>

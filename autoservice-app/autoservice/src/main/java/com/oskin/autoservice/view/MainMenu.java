@@ -8,6 +8,8 @@ import com.oskin.autoservice.controller.CarRepairGarage;
 import com.oskin.autoservice.controller.CarRepairMaster;
 import com.oskin.autoservice.controller.CarRepairOrders;
 import com.oskin.autoservice.controller.ImportDates;
+import com.oskin.autoservice.repository.SessionHibernate;
+import org.hibernate.Session;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -40,6 +42,7 @@ public class MainMenu {
 
     public void run() {
         connectionDB.connect();
+        Session session = SessionHibernate.getSession();
         builderMenu.setTitle("Добавить данные");
         builderMenu.addItem(1, "Добавить мастера", () -> carRepairViewFunctions.addMaster());
         builderMenu.addItem(2, "Добавить место", () -> carRepairViewFunctions.addPlace());
