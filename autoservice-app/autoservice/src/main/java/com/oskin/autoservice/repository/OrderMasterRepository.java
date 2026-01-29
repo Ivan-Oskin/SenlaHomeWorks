@@ -5,18 +5,16 @@ import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.autoservice.model.SortType;
+import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class OrderMasterRepository implements CrudRepository<OrderMaster> {
-    @Inject
-    ConnectionDB connectionDB;
     @Inject
     OrderRepository orderRepository;
     @Inject
@@ -25,165 +23,168 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
 
     @Override
     public <G extends SortType> ArrayList<OrderMaster> findAll(G sortType) {
-        logger.info("start findAll orderMaster");
-        ArrayList<OrderMaster> orderMaster = new ArrayList<>();
-        String sql = "SELECT * FROM order_master ORDER BY " + sortType.getStringSortType();
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            ResultSet setOrderMaster = statement.executeQuery();
-            while (setOrderMaster.next()) {
-                int id = setOrderMaster.getInt("id");
-                Order order = orderRepository.find(setOrderMaster.getInt("order_id"));
-                Master master = masterRepository.find(setOrderMaster.getInt("master_id"));
-                orderMaster.add(new OrderMaster(id, order, master));
+        logger.info("Start findAll orderMaster ");
+        List<OrderMaster> orderMasters = new ArrayList<>();
+        try {
+            String hql = "SELECT om FROM OrderMaster om " +
+                    "LEFT JOIN FETCH om.master m " +
+                    "LEFT JOIN FETCH om.order o" +
+                    "ORDER BY om." + sortType.getStringSortType();
+            Query<OrderMaster> query = SessionHibernate.getSession().createQuery(hql, OrderMaster.class);
+            orderMasters = query.getResultList();
+            Iterator<OrderMaster> iterator = orderMasters.iterator();
+            while (iterator.hasNext()) {
+                OrderMaster orderMaster = iterator.next();
+                if (orderMaster.getOrder() == null) {
+                    String sql = "SELECT order_id FROM order_master WHERE id = " + orderMaster.getId();
+                    NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
+                    List<Integer> listPlaceId = queryPlaceId.getResultList();
+                    logger.error("order_id = {} не найден", listPlaceId.get(0));
+                    iterator.remove();
+                }
+                if (orderMaster.getMaster() == null) {
+                    String sql = "SELECT master_id FROM order_master WHERE id = " + orderMaster.getId();
+                    NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
+                    List<Integer> listPlaceId = queryPlaceId.getResultList();
+                    logger.error("master_id = {} не найден", listPlaceId.get(0));
+                    iterator.remove();
+                }
             }
-            logger.info("successful findAll orderMaster");
-        } catch (java.sql.SQLException e) {
-            logger.error("error findAll orderMaster {}", e.getMessage());
+            logger.info("successful findAll order ");
+        } catch (Exception e) {
+            logger.error("error findAll order {}", e.getMessage());
         }
-        return orderMaster;
+        return (ArrayList<OrderMaster>) orderMasters;
     }
     @Override
     public void create(OrderMaster orderMaster) {
-        logger.info("start create orderMaster by object");
-        String sql = "INSERT INTO order_master (id, master_id, order_id) VALUES (?, ?, ?)";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, orderMaster.getId());
-            statement.setInt(2, orderMaster.getMaster().getId());
-            statement.setInt(3, orderMaster.getOrder().getId());
-            statement.executeUpdate();
-            logger.info("successful create orderMaster by object");
-            connectionDB.commit();
-        } catch (java.sql.SQLException e) {
-            connectionDB.rollback();
-            logger.error("error create orderMaster by object {}", e.getMessage());
+        logger.info("Start create orderMaster");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            SessionHibernate.getSession().persist(orderMaster);
+            transaction.commit();
+            logger.info("successful create orderMaster ");
+        } catch (Exception e) {
+            transaction.rollback();
+            logger.error("error create orderMaster {}", e.getMessage());
         }
     }
 
-    public void create(int id, int idMaster, int idOrder) {
-        logger.info("start create orderMaster by fields");
-        String sql = "INSERT INTO order_master (id, master_id, order_id) VALUES (?, ?, ?)";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, id);
-            statement.setInt(2, idMaster);
-            statement.setInt(3, idOrder);
-            statement.executeUpdate();
-            logger.info("successful create orderMaster by fields");
-            connectionDB.commit();
-        } catch (java.sql.SQLException e) {
-            connectionDB.rollback();
+
+    public void create(int id, int idMaster, int idOrder){
+        Order order = orderRepository.find(idOrder);
+        Master master = masterRepository.find(idMaster);
+        OrderMaster orderMaster = new OrderMaster(id, order, master);
+        logger.info("Start create orderMaster by fields ");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            SessionHibernate.getSession().persist(orderMaster);
+            transaction.commit();
+            logger.info("successful create orderMaster by fields ");
+        } catch (Exception e) {
+            transaction.rollback();
             logger.error("error create orderMaster by fields {}", e.getMessage());
         }
     }
 
     public int getMaxIdLink() {
-        int result = -1;
-        try (Statement statement = connectionDB.getConnection().createStatement()) {
-            ResultSet set = statement.executeQuery("SELECT id FROM order_master ORDER BY id DESC LIMIT 1");
-            while (set.next()) {
-                result = set.getInt("id");
+        try {
+            String sql = "SELECT id FROM order_master ORDER BY id DESC LIMIT 1";
+            NativeQuery<Integer> query = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
+            List<Integer> list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list.get(0);
             }
-        } catch (java.sql.SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Error getMaxId OrderMaster");
         }
-        return result;
+        return -1;
     }
 
     public ArrayList<OrderMaster> getOrdersByMasterInDB(int idMaster) {
         logger.info("start getOrders orderMaster");
-        ArrayList<OrderMaster> orderMasterArrayList = new ArrayList<>();
-        String sql = "SELECT * FROM order_master WHERE master_id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, idMaster);
-            ResultSet setOrderMaster = statement.executeQuery();
-            while (setOrderMaster.next()) {
-                int id = setOrderMaster.getInt("id");
-                Order order = orderRepository.find(setOrderMaster.getInt("order_id"));
-                Master master = masterRepository.find(setOrderMaster.getInt("master_id"));
-                OrderMaster orderMaster = new OrderMaster(id, order, master);
-                orderMasterArrayList.add(orderMaster);
-            }
+        List<OrderMaster> orderMasters = new ArrayList<>();
+        String hql = "SELECT om FROM OrderMaster om " +
+                "LEFT JOIN FETCH om.order " +
+                "LEFT JOIN FETCH om.master " +
+                "WHERE om.master.id = :masterId";
+        try {
+            Query<OrderMaster> query = SessionHibernate.getSession().createQuery(hql, OrderMaster.class);
+            query.setParameter("masterId", idMaster);
+            orderMasters = query.getResultList();
             logger.info("successful getOrders orderMaster");
-        } catch (java.sql.SQLException e) {
+        } catch (Exception e) {
             logger.error("error getOrders orderMaster {}", e.getMessage());
         }
-        return orderMasterArrayList;
+        return (ArrayList<OrderMaster>) orderMasters;
     }
 
-    public boolean deleteByMaster(int idMaster) {
+    public void deleteByMaster(int idMaster) {
         logger.info("start deleteByMaster orderMaster");
-        String sql = "DELETE FROM order_master WHERE master_id = ?;";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, idMaster);
-            int x = statement.executeUpdate();
-            if (x > 0) {
-                logger.info("successful deleteByMaster orderMaster");
-                connectionDB.commit();
-                return true;
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        String hql = "DELETE FROM OrderMaster om WHERE om.master.id = :masterId";
+        try {
+            Query<?> query = SessionHibernate.getSession().createQuery(hql);
+            query.setParameter("masterId", idMaster);
+            int deleted = query.executeUpdate();
+            if(deleted > 0){
+                transaction.commit();
+                logger.info("successful deleteByMaster orderMaster ");
             }
-        } catch (java.sql.SQLException e) {
+        } catch (Exception e) {
             logger.error("error deleteByMaster orderMaster {}", e.getMessage());
-            connectionDB.rollback();
+            transaction.rollback();
         }
-        return false;
     }
 
     @Override
     public boolean delete(int id) {
-        logger.info("start delete orderMaster");
-        String sql = "DELETE FROM order_master WHERE id = ?;";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, id);
-            int x = statement.executeUpdate();
-            if (x > 0) {
+        logger.info("Start delete orderMaster ");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            OrderMaster orderMaster = find(id);
+            if (orderMaster != null) {
+                SessionHibernate.getSession().remove(orderMaster);
                 logger.info("successful delete orderMaster");
-                connectionDB.commit();
+                transaction.commit();
                 return true;
             }
-        } catch (java.sql.SQLException e) {
+        } catch (Exception e) {
             logger.error("error delete orderMaster {}", e.getMessage());
-            connectionDB.rollback();
+            transaction.rollback();
         }
         return false;
     }
 
     public ArrayList<OrderMaster> getMastersByOrderInDB(int idOrder) {
         logger.info("start getMaster orderMaster");
-        ArrayList<OrderMaster> orderMasterArrayList = new ArrayList<>();
-        String sql = "SELECT * FROM order_master WHERE order_id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, idOrder);
-            ResultSet setOrderMaster = statement.executeQuery();
-            while (setOrderMaster.next()) {
-                int id = setOrderMaster.getInt("id");
-                Order order = orderRepository.find(setOrderMaster.getInt("order_id"));
-                Master master = masterRepository.find(setOrderMaster.getInt("master_id"));
-                OrderMaster orderMaster = new OrderMaster(id, order, master);
-                orderMasterArrayList.add(orderMaster);
-            }
+        List<OrderMaster> orderMasterList = new ArrayList<>();
+        String hql = "SELECT om FROM OrderMaster om " +
+                "LEFT JOIN FETCH om.order " +
+                "LEFT JOIN FETCH om.master " +
+                "WHERE om.order.id = :orderId";
+        try {
+            Query<OrderMaster> query = SessionHibernate.getSession().createQuery(hql, OrderMaster.class);
+            query.setParameter("orderId", idOrder);
+            orderMasterList = query.getResultList();
             logger.info("successful getMasters orderMaster");
-        } catch (java.sql.SQLException e) {
+        } catch (Exception e) {
             logger.error("error getMasters orderMaster {}", e.getMessage());
         }
-        return orderMasterArrayList;
+        return (ArrayList<OrderMaster>) orderMasterList;
     }
 
     @Override
     public OrderMaster find(int id) {
-        logger.info("start findById orderMaster");
-        String sql = "SELECT * FROM order_master WHERE id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, id);
-            ResultSet set = statement.executeQuery();
-            while (set.next()) {
-                int master_id = set.getInt("master_id");
-                int order_id = set.getInt("order_id");
-                Master master = masterRepository.find(master_id);
-                Order order = orderRepository.find(order_id);
-                logger.info("successful find orderMaster");
-                return new OrderMaster(id, order, master);
+        logger.info("Start findById orderMaster");
+        try {
+            OrderMaster orderMaster = SessionHibernate.getSession().find(OrderMaster.class, id);
+            if (orderMaster != null) {
+                logger.info("successful findById orderMaster ");
+                return orderMaster;
             }
-        } catch (java.sql.SQLException e) {
-            logger.error("error find orderMaster {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("error findById orderMaster {}", e.getMessage());
         }
         logger.info("No found but successful findById orderMaster");
         return null;
@@ -191,18 +192,15 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
 
     @Override
     public void update(OrderMaster orderMaster) {
-        logger.info("start update orderMaster");
-        String sql = "UPDATE order_master SET master_id = ?, order_id = ? WHERE id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, orderMaster.getMaster().getId());
-            statement.setInt(2, orderMaster.getOrder().getId());
-            statement.setInt(3, orderMaster.getId());
-            statement.executeUpdate();
-            logger.info("successful update orderMaster");
-            connectionDB.commit();
-        } catch (SQLException e) {
-            connectionDB.rollback();
+        logger.info("Start update orderMaster ");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            SessionHibernate.getSession().merge(orderMaster);
+            logger.info("successful update orderMaster ");
+            transaction.commit();
+        } catch (Exception e) {
             logger.error("error update orderMaster {}", e.getMessage());
+            transaction.rollback();
         }
     }
 }

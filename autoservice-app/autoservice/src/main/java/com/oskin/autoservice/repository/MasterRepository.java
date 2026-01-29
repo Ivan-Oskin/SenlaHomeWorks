@@ -33,8 +33,7 @@ public class MasterRepository implements CrudRepository<Master> {
         List<Master> masters = new ArrayList<>();
         if (!sortTypeMaster.getStringSortType().equals(SortTypeMaster.BUSYNESS.getStringSortType())) {
             try {
-                Query<Master> query = SessionHibernate.getSession().createQuery("FROM Master ORDER by :sortType", Master.class);
-                query.setParameter("sortType", sortTypeMaster.getStringSortType());
+                Query<Master> query = SessionHibernate.getSession().createQuery("FROM Master ORDER by " + sortTypeMaster.getStringSortType(), Master.class);
                 masters = query.getResultList();
                 logger.info("successful findAll master ");
             } catch (Exception e) {

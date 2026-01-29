@@ -61,7 +61,7 @@ public final class CarRepairMaster {
 
     public ArrayList<Master> getMastersByOrder(String name) {
         Order order = orderRepository.find(name);
-        if (master != null) {
+        if (order != null) {
             ArrayList<OrderMaster> orderMasters = orderMasterRepository.getMastersByOrderInDB(order.getId());
             return carRepairOrderMaster.getMasterFromOrderMaster(orderMasters);
         }

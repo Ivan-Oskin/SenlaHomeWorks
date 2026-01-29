@@ -19,8 +19,7 @@ public class PlaceRepository implements CrudRepository<Place> {
         logger.info("Start findAll place ");
         List<Place> places = new ArrayList<>();
         try {
-            Query<Place> query = SessionHibernate.getSession().createQuery("FROM Place ORDER by :sortType", Place.class);
-            query.setParameter("sortType", sortType.getStringSortType());
+            Query<Place> query = SessionHibernate.getSession().createQuery("FROM Place ORDER by "+sortType.getStringSortType(), Place.class);
             places = query.getResultList();
             logger.info("successful findAll place ");
         } catch (Exception e) {
