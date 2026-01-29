@@ -86,8 +86,7 @@ public final class CarRepairOrders {
     }
 
     public ArrayList<Order> getListOfOrders(SortTypeOrder sortType) {
-        ArrayList<Order> newList = orderRepository.findAll(sortType);
-        return newList;
+        return orderRepository.findAll(sortType);
     }
 
     public ArrayList<Order> getListOfActiveOrders(SortTypeOrder sortType) {

@@ -98,7 +98,6 @@ public class PlaceRepository implements CrudRepository<Place> {
             transaction.rollback();
         }
     }
-
     public Place find(String name) {
         logger.info("Start findByName place ");
         try {

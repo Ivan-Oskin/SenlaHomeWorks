@@ -1,6 +1,4 @@
 package com.oskin.autoservice.repository;
-
-import com.oskin.annotations.Inject;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.SortType;
 import com.oskin.autoservice.model.SortTypeMaster;
@@ -14,8 +12,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MasterRepository implements CrudRepository<Master> {
-    @Inject
-    ConnectionDB connectionDB;
     private final Logger logger = LoggerFactory.getLogger(MasterRepository.class);
 
     public int inputInt() {
