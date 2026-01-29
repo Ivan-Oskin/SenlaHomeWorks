@@ -17,7 +17,7 @@ public class SessionHibernate {
     private static SessionFactory sessionFactory;
     private static Session session;
 
-    static{
+    static {
         try {
             StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure("hibernate_cfg.xml").build();
             MetadataSources sources = new MetadataSources(registry);
@@ -27,13 +27,13 @@ public class SessionHibernate {
             sources.addAnnotatedClasses(OrderMaster.class);
             Metadata metadata = sources.getMetadataBuilder().build();
             sessionFactory = metadata.getSessionFactoryBuilder().build();
-        } catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("error start session {}", e.getMessage());
         }
     }
 
-    public static Session getSession(){
-        if (session != null && session.isOpen()){
+    public static Session getSession() {
+        if (session != null && session.isOpen()) {
             return session;
         }
         logger.info("Начало подключения");
