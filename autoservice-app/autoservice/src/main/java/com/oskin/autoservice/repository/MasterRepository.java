@@ -1,25 +1,19 @@
 package com.oskin.autoservice.repository;
-
-import com.oskin.annotations.Inject;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.SortType;
 import com.oskin.autoservice.model.SortTypeMaster;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class MasterRepository implements CrudRepository<Master> {
-    @Inject
-    ConnectionDB connectionDB;
     private final Logger logger = LoggerFactory.getLogger(MasterRepository.class);
-
+    private final Logger loggerFile = LoggerFactory.getLogger("file");
     public int inputInt() {
         Scanner scanner = new Scanner(System.in);
         int input = 0;
@@ -36,53 +30,37 @@ public class MasterRepository implements CrudRepository<Master> {
     @Override
     public <G extends SortType> ArrayList<Master> findAll(G sortTypeMaster) {
         logger.info("start findAll master");
-        ArrayList<Master> masters = new ArrayList<>();
+        List<Master> masters = new ArrayList<>();
         if (!sortTypeMaster.getStringSortType().equals(SortTypeMaster.BUSYNESS.getStringSortType())) {
-            String sql = "SELECT * FROM masters ORDER BY " + sortTypeMaster.getStringSortType();
-            try (PreparedStatement preparedStatement = connectionDB.getConnection().prepareStatement(sql)) {
-                ResultSet setMaster = preparedStatement.executeQuery();
-                while (setMaster.next()) {
-                    int id = setMaster.getInt("id");
-                    String name = setMaster.getString("name");
-                    Master master = new Master(id, name);
-                    masters.add(master);
-                }
-                logger.info("successful find master and order by fields");
-            } catch (java.sql.SQLException e) {
-                logger.error("error findAll master and order by fields {}", e.getMessage());
+            try {
+                Query<Master> query = SessionHibernate.getSession().createQuery("FROM Master ORDER by " + sortTypeMaster.getStringSortType(), Master.class);
+                masters = query.getResultList();
+                logger.info("successful findAll master ");
+            } catch (Exception e) {
+                loggerFile.error("error findAll master {}", e.getMessage());
             }
         } else {
-            try (Statement statement = connectionDB.getConnection().createStatement()) {
-                ResultSet setMaster = statement.executeQuery("SELECT masters.id, masters.name FROM masters\n" +
-                        "LEFT JOIN order_master ON masters.id = order_master.master_id\n" +
-                        "GROUP BY masters.id\n" +
-                        "ORDER BY COUNT(order_master) DESC;\n");
-                while (setMaster.next()) {
-                    int id = setMaster.getInt("id");
-                    String name = setMaster.getString("name");
-                    Master master = new Master(id, name);
-                    masters.add(master);
-                }
+            String hql = "SELECT m.id, m.name FROM Master m " +
+                    "LEFT JOIN OrderMaster om WITH om.master = m " +
+                    "GROUP BY m.id " +
+                    "ORDER BY COUNT(om) DESC ";
+            try {
+                Query<Master> query = SessionHibernate.getSession().createQuery(hql, Master.class);
+                masters = query.getResultList();
                 logger.info("successful findAll master and order by count orders");
-            } catch (SQLException e) {
-                logger.error("error findAll master and order by count orders {}", e.getMessage());
+            } catch (Exception e) {
+                loggerFile.error("error findAll master and order by count orders {}", e.getMessage());
             }
         }
-        return masters;
+        return (ArrayList<Master>) masters;
     }
 
     public Master find(String name) {
         logger.info("start findByName master");
-        String sql = "SELECT * FROM masters WHERE name = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            ArrayList<Master> masters = new ArrayList<>();
-            statement.setString(1, name);
-            ResultSet set = statement.executeQuery();
-            while (set.next()) {
-                int id = set.getInt("id");
-                Master master = new Master(id, name);
-                masters.add(master);
-            }
+        try {
+            Query<Master> query = SessionHibernate.getSession().createQuery("From Master WHERE name = :name", Master.class);
+            query.setParameter("name", name);
+            List<Master> masters = query.getResultList();
             if (masters.size() > 1) {
                 while (true) {
                     System.out.println("Было найдено несколько записей. Выберите какую запись выбрать: ");
@@ -103,8 +81,8 @@ public class MasterRepository implements CrudRepository<Master> {
                 logger.info("successful findByName master without choices");
                 return masters.get(0);
             }
-        } catch (java.sql.SQLException e) {
-            logger.error("error findByName master {}", e.getMessage());
+        } catch (Exception e) {
+            loggerFile.error("error findByName master {}", e.getMessage());
         }
         logger.info("No found but successful findByName master");
         return null;
@@ -112,81 +90,64 @@ public class MasterRepository implements CrudRepository<Master> {
 
     @Override
     public Master find(int id) {
-        logger.info("start findById master");
-        String sql = "SELECT * FROM masters WHERE id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, id);
-            ResultSet set = statement.executeQuery();
-            while (set.next()) {
-                String name = set.getString("name");
-                Master master = new Master(id, name);
+        logger.info("Start findById master");
+        try {
+            Master master = SessionHibernate.getSession().find(Master.class, id);
+            if (master != null) {
+                logger.info("successful findById master ");
                 return master;
             }
-            logger.info("successful findById master");
-        } catch (java.sql.SQLException e) {
-            logger.error("error findById master {}", e.getMessage());
+        } catch (Exception e) {
+            loggerFile.error("error findById {}", e.getMessage());
         }
         logger.info("No found but successful findById master");
         return null;
     }
 
-    public boolean delete(String name) {
-        Master master = find(name);
-        if (master == null) {
-            return false;
-        } else {
-            return delete(master.getId());
-        }
-    }
-
     @Override
     public boolean delete(int id) {
-        logger.info("start delete master");
-        String sql = "DELETE FROM masters WHERE id = ?;";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, id);
-            int result = statement.executeUpdate();
-            if (result > 0) {
+        logger.info("Start delete master ");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            Master master = find(id);
+            if (master != null) {
+                SessionHibernate.getSession().remove(master);
                 logger.info("successful delete master");
-                connectionDB.commit();
+                transaction.commit();
                 return true;
             }
-        } catch (java.sql.SQLException e) {
-            logger.error("error delete master {}", e.getMessage());
-            connectionDB.rollback();
+        } catch (Exception e) {
+            loggerFile.error("error delete master {}", e.getMessage());
+            transaction.rollback();
         }
         return false;
     }
 
     @Override
     public void create(Master master) {
-        logger.info("start create master");
-        String sql = "INSERT INTO masters (id, name) VALUES (?, ?)";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, master.getId());
-            statement.setString(2, master.getName());
-            statement.executeUpdate();
-            logger.info("successful create master");
-            connectionDB.commit();
-        } catch (java.sql.SQLException e) {
-            connectionDB.rollback();
-            logger.error("error create master {}", e.getMessage());
+        logger.info("Start create master");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            SessionHibernate.getSession().merge(master);
+            transaction.commit();
+            logger.info("successful create master ");
+        } catch (Exception e) {
+            transaction.rollback();
+            loggerFile.error("error create master {}", e.getMessage());
         }
     }
 
     @Override
     public void update(Master master) {
-        logger.info("start update master");
-        String sql = "UPDATE masters SET name = ? WHERE id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setString(1, master.getName());
-            statement.setInt(2, master.getId());
-            statement.executeUpdate();
-            logger.info("successful update master");
-            connectionDB.commit();
-        } catch (SQLException e) {
-            logger.error("error update master {}", e.getMessage());
-            connectionDB.rollback();
+        logger.info("Start update master ");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            SessionHibernate.getSession().merge(master);
+            logger.info("successful update master ");
+            transaction.commit();
+        } catch (Exception e) {
+            loggerFile.error("error update master {}", e.getMessage());
+            transaction.rollback();
         }
     }
 }

@@ -3,11 +3,11 @@ package com.oskin.autoservice.view;
 import com.oskin.annotations.Inject;
 import com.oskin.annotations.Singleton;
 import com.oskin.autoservice.controller.CarRepairOrderMaster;
-import com.oskin.autoservice.repository.ConnectionDB;
 import com.oskin.autoservice.controller.CarRepairGarage;
 import com.oskin.autoservice.controller.CarRepairMaster;
 import com.oskin.autoservice.controller.CarRepairOrders;
 import com.oskin.autoservice.controller.ImportDates;
+import com.oskin.autoservice.repository.SessionHibernate;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -29,8 +29,6 @@ public class MainMenu {
     @Inject
     CarRepairViewFunctions carRepairViewFunctions;
     @Inject
-    ConnectionDB connectionDB;
-    @Inject
     ImportDates importDates;
     @Inject
     CarRepairOrderMaster carRepairOrderMaster;
@@ -39,7 +37,7 @@ public class MainMenu {
     }
 
     public void run() {
-        connectionDB.connect();
+        SessionHibernate.getSession();
         builderMenu.setTitle("Добавить данные");
         builderMenu.addItem(1, "Добавить мастера", () -> carRepairViewFunctions.addMaster());
         builderMenu.addItem(2, "Добавить место", () -> carRepairViewFunctions.addPlace());
