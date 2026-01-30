@@ -13,7 +13,8 @@ import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.OrderMaster;
 
 public class SessionHibernate {
-    static Logger logger = LoggerFactory.getLogger(SessionHibernate.class);
+    private final static Logger logger = LoggerFactory.getLogger(SessionHibernate.class);
+    private final static Logger loggerFile = LoggerFactory.getLogger("file");
     private static SessionFactory sessionFactory;
     private static Session session;
 
@@ -28,7 +29,7 @@ public class SessionHibernate {
             Metadata metadata = sources.getMetadataBuilder().build();
             sessionFactory = metadata.getSessionFactoryBuilder().build();
         } catch (Exception e) {
-            logger.error("error start session {}", e.getMessage());
+            loggerFile.error("error start session {}", e.getMessage());
         }
     }
 
@@ -37,8 +38,12 @@ public class SessionHibernate {
             return session;
         }
         logger.info("Начало подключения");
-        session = sessionFactory.openSession();
-        logger.info("Подключение успешно");
+        try{
+            session = sessionFactory.openSession();
+            logger.info("Подключение успешно");
+        } catch (Exception e){
+            loggerFile.info("error connection - {}",e.getMessage());
+        }
         return session;
     }
 }

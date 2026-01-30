@@ -12,7 +12,8 @@ import java.util.Scanner;
 
 public class PlaceRepository implements CrudRepository<Place> {
     private final Logger logger = LoggerFactory.getLogger(PlaceRepository.class);
-    Scanner scanner = new Scanner(System.in);
+    private final Logger loggerFile = LoggerFactory.getLogger("file");
+    private final Scanner scanner = new Scanner(System.in);
 
     @Override
     public <G extends SortType> ArrayList<Place> findAll(G sortType) {
@@ -23,7 +24,7 @@ public class PlaceRepository implements CrudRepository<Place> {
             places = query.getResultList();
             logger.info("successful findAll place ");
         } catch (Exception e) {
-            logger.error("error findAll place {}", e.getMessage());
+            loggerFile.error("error findAll place {}", e.getMessage());
         }
         return (ArrayList<Place>) places;
     }
@@ -38,7 +39,7 @@ public class PlaceRepository implements CrudRepository<Place> {
             logger.info("successful create place ");
         } catch (Exception e) {
             transaction.rollback();
-            logger.error("error create place {}", e.getMessage());
+            loggerFile.error("error create place {}", e.getMessage());
         }
     }
 
@@ -55,7 +56,7 @@ public class PlaceRepository implements CrudRepository<Place> {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("error delete place {}", e.getMessage());
+            loggerFile.error("error delete place {}", e.getMessage());
             transaction.rollback();
         }
         return false;
@@ -78,7 +79,7 @@ public class PlaceRepository implements CrudRepository<Place> {
                 return place;
             }
         } catch (Exception e) {
-            logger.error("error findById {}", e.getMessage());
+            loggerFile.error("error findById {}", e.getMessage());
         }
         logger.info("No found but successful findById place");
         return null;
@@ -93,7 +94,7 @@ public class PlaceRepository implements CrudRepository<Place> {
             logger.info("successful update place ");
             transaction.commit();
         } catch (Exception e) {
-            logger.error("error update place {}", e.getMessage());
+            loggerFile.error("error update place {}", e.getMessage());
             transaction.rollback();
         }
     }
@@ -130,7 +131,7 @@ public class PlaceRepository implements CrudRepository<Place> {
                 return places.get(0);
             }
         } catch (Exception e) {
-            logger.error("error findByName place {}", e.getMessage());
+            loggerFile.error("error findByName place {}", e.getMessage());
         }
         logger.info("No found but successful findByName place");
         return null;

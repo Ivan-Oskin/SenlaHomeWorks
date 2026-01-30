@@ -20,6 +20,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
     @Inject
     MasterRepository masterRepository;
     private final Logger logger = LoggerFactory.getLogger(OrderMasterRepository.class);
+    private Logger loggerFile = LoggerFactory.getLogger("file");
 
     @Override
     public <G extends SortType> ArrayList<OrderMaster> findAll(G sortType) {
@@ -39,20 +40,20 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
                     String sql = "SELECT order_id FROM order_master WHERE id = " + orderMaster.getId();
                     NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
                     List<Integer> listPlaceId = queryPlaceId.getResultList();
-                    logger.error("order_id = {} не найден", listPlaceId.get(0));
+                    loggerFile.error("order_id = {} не найден", listPlaceId.get(0));
                     iterator.remove();
                 }
                 if (orderMaster.getMaster() == null) {
                     String sql = "SELECT master_id FROM order_master WHERE id = " + orderMaster.getId();
                     NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
                     List<Integer> listPlaceId = queryPlaceId.getResultList();
-                    logger.error("master_id = {} не найден", listPlaceId.get(0));
+                    loggerFile.error("master_id = {} не найден", listPlaceId.get(0));
                     iterator.remove();
                 }
             }
             logger.info("successful findAll order ");
         } catch (Exception e) {
-            logger.error("error findAll order {}", e.getMessage());
+            loggerFile.error("error findAll order {}", e.getMessage());
         }
         return (ArrayList<OrderMaster>) orderMasters;
     }
@@ -66,7 +67,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
             logger.info("successful create orderMaster ");
         } catch (Exception e) {
             transaction.rollback();
-            logger.error("error create orderMaster {}", e.getMessage());
+            loggerFile.error("error create orderMaster {}", e.getMessage());
         }
     }
 
@@ -83,7 +84,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
             logger.info("successful create orderMaster by fields ");
         } catch (Exception e) {
             transaction.rollback();
-            logger.error("error create orderMaster by fields {}", e.getMessage());
+            loggerFile.error("error create orderMaster by fields {}", e.getMessage());
         }
     }
 
@@ -96,7 +97,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
                 return list.get(0);
             }
         } catch (Exception e) {
-            logger.error("Error getMaxId OrderMaster");
+            loggerFile.error("Error getMaxId OrderMaster");
         }
         return -1;
     }
@@ -114,7 +115,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
             orderMasters = query.getResultList();
             logger.info("successful getOrders orderMaster");
         } catch (Exception e) {
-            logger.error("error getOrders orderMaster {}", e.getMessage());
+            loggerFile.error("error getOrders orderMaster {}", e.getMessage());
         }
         return (ArrayList<OrderMaster>) orderMasters;
     }
@@ -132,7 +133,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
                 logger.info("successful deleteByMaster orderMaster ");
             }
         } catch (Exception e) {
-            logger.error("error deleteByMaster orderMaster {}", e.getMessage());
+            loggerFile.error("error deleteByMaster orderMaster {}", e.getMessage());
             transaction.rollback();
         }
     }
@@ -150,7 +151,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("error delete orderMaster {}", e.getMessage());
+            loggerFile.error("error delete orderMaster {}", e.getMessage());
             transaction.rollback();
         }
         return false;
@@ -169,7 +170,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
             orderMasterList = query.getResultList();
             logger.info("successful getMasters orderMaster");
         } catch (Exception e) {
-            logger.error("error getMasters orderMaster {}", e.getMessage());
+            loggerFile.error("error getMasters orderMaster {}", e.getMessage());
         }
         return (ArrayList<OrderMaster>) orderMasterList;
     }
@@ -184,7 +185,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
                 return orderMaster;
             }
         } catch (Exception e) {
-            logger.error("error findById orderMaster {}", e.getMessage());
+            loggerFile.error("error findById orderMaster {}", e.getMessage());
         }
         logger.info("No found but successful findById orderMaster");
         return null;
@@ -199,7 +200,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
             logger.info("successful update orderMaster ");
             transaction.commit();
         } catch (Exception e) {
-            logger.error("error update orderMaster {}", e.getMessage());
+            loggerFile.error("error update orderMaster {}", e.getMessage());
             transaction.rollback();
         }
     }

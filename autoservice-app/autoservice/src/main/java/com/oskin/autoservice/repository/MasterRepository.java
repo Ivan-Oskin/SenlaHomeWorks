@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class MasterRepository implements CrudRepository<Master> {
     private final Logger logger = LoggerFactory.getLogger(MasterRepository.class);
-
+    private final Logger loggerFile = LoggerFactory.getLogger("file");
     public int inputInt() {
         Scanner scanner = new Scanner(System.in);
         int input = 0;
@@ -37,7 +37,7 @@ public class MasterRepository implements CrudRepository<Master> {
                 masters = query.getResultList();
                 logger.info("successful findAll master ");
             } catch (Exception e) {
-                logger.error("error findAll master {}", e.getMessage());
+                loggerFile.error("error findAll master {}", e.getMessage());
             }
         } else {
             String hql = "SELECT m.id, m.name FROM Master m " +
@@ -49,7 +49,7 @@ public class MasterRepository implements CrudRepository<Master> {
                 masters = query.getResultList();
                 logger.info("successful findAll master and order by count orders");
             } catch (Exception e) {
-                logger.error("error findAll master and order by count orders {}", e.getMessage());
+                loggerFile.error("error findAll master and order by count orders {}", e.getMessage());
             }
         }
         return (ArrayList<Master>) masters;
@@ -82,7 +82,7 @@ public class MasterRepository implements CrudRepository<Master> {
                 return masters.get(0);
             }
         } catch (Exception e) {
-            logger.error("error findByName master {}", e.getMessage());
+            loggerFile.error("error findByName master {}", e.getMessage());
         }
         logger.info("No found but successful findByName master");
         return null;
@@ -98,19 +98,10 @@ public class MasterRepository implements CrudRepository<Master> {
                 return master;
             }
         } catch (Exception e) {
-            logger.error("error findById {}", e.getMessage());
+            loggerFile.error("error findById {}", e.getMessage());
         }
         logger.info("No found but successful findById master");
         return null;
-    }
-
-    public boolean delete(String name) {
-        Master master = find(name);
-        if (master == null) {
-            return false;
-        } else {
-            return delete(master.getId());
-        }
     }
 
     @Override
@@ -126,7 +117,7 @@ public class MasterRepository implements CrudRepository<Master> {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("error delete master {}", e.getMessage());
+            loggerFile.error("error delete master {}", e.getMessage());
             transaction.rollback();
         }
         return false;
@@ -142,7 +133,7 @@ public class MasterRepository implements CrudRepository<Master> {
             logger.info("successful create master ");
         } catch (Exception e) {
             transaction.rollback();
-            logger.error("error create master {}", e.getMessage());
+            loggerFile.error("error create master {}", e.getMessage());
         }
     }
 
@@ -155,7 +146,7 @@ public class MasterRepository implements CrudRepository<Master> {
             logger.info("successful update master ");
             transaction.commit();
         } catch (Exception e) {
-            logger.error("error update master {}", e.getMessage());
+            loggerFile.error("error update master {}", e.getMessage());
             transaction.rollback();
         }
     }

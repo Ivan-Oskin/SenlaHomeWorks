@@ -18,6 +18,7 @@ import java.util.InputMismatchException;
 public class OrderRepository implements CrudRepository<Order> {
     Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);
+    private final Logger loggerFile = LoggerFactory.getLogger("file");
 
     @Override
     public <G extends SortType> ArrayList<Order> findAll(G sortType) {
@@ -36,13 +37,13 @@ public class OrderRepository implements CrudRepository<Order> {
                     String sql = "SELECT place_id FROM orders WHERE id = " + order.getId();
                     NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
                     List<Integer> listPlaceId = queryPlaceId.getResultList();
-                    logger.error("place_id = {} не найден, order {} не будет выведен", listPlaceId.get(0), order.getName());
+                    loggerFile.error("place_id = {} не найден, order {} не будет выведен", listPlaceId.get(0), order.getName());
                     iterator.remove();
                 }
             }
             logger.info("successful findAll order ");
         } catch (Exception e) {
-            logger.error("error findAll order {}", e.getMessage());
+            loggerFile.error("error findAll order {}", e.getMessage());
         }
         return (ArrayList<Order>) orders;
     }
@@ -81,7 +82,7 @@ public class OrderRepository implements CrudRepository<Order> {
                 return orders.get(0);
             }
         } catch (Exception e) {
-            logger.error("error findByName order {}", e.getMessage());
+            loggerFile.error("error findByName order {}", e.getMessage());
         }
         logger.info("No found but successful findByName order");
         return null;
@@ -97,7 +98,7 @@ public class OrderRepository implements CrudRepository<Order> {
                 return order;
             }
         } catch (Exception e) {
-            logger.error("error findById {}", e.getMessage());
+            loggerFile.error("error findById {}", e.getMessage());
         }
         logger.info("No found but successful findById order");
         return null;
@@ -125,7 +126,7 @@ public class OrderRepository implements CrudRepository<Order> {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("error delete order {}", e.getMessage());
+            loggerFile.error("error delete order {}", e.getMessage());
             transaction.rollback();
         }
         return false;
@@ -141,7 +142,7 @@ public class OrderRepository implements CrudRepository<Order> {
             logger.info("successful create order");
         } catch (Exception e) {
             transaction.rollback();
-            logger.error("error create order {}", e.getMessage());
+            loggerFile.error("error create order {}", e.getMessage());
         }
     }
 
@@ -163,7 +164,7 @@ public class OrderRepository implements CrudRepository<Order> {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("error changeStatus order {}", e.getMessage());
+            loggerFile.error("error changeStatus order {}", e.getMessage());
             transaction.rollback();
         }
         return false;
@@ -188,7 +189,7 @@ public class OrderRepository implements CrudRepository<Order> {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("error offset order {}", e.getMessage());
+            loggerFile.error("error offset order {}", e.getMessage());
             transaction.rollback();
         }
         return false;
@@ -202,7 +203,7 @@ public class OrderRepository implements CrudRepository<Order> {
             logger.info("successful update order ");
             transaction.commit();
         } catch (Exception e) {
-            logger.error("error update order {}", e.getMessage());
+            loggerFile.error("error update order {}", e.getMessage());
             transaction.rollback();
         }
     }
