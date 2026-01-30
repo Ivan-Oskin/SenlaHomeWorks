@@ -38,11 +38,11 @@ public class SessionHibernate {
             return session;
         }
         logger.info("Начало подключения");
-        try{
+        try {
             session = sessionFactory.openSession();
             logger.info("Подключение успешно");
-        } catch (Exception e){
-            loggerFile.info("error connection - {}",e.getMessage());
+        } catch (Exception e) {
+            loggerFile.info("error connection - {}", e.getMessage());
         }
         return session;
     }

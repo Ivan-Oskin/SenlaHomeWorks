@@ -58,7 +58,12 @@ public final class CarRepairOrders {
     }
 
     public boolean deleteOrder(String name) {
-        return orderRepository.delete(name);
+        Order order = orderRepository.find(name);
+        if (order != null) {
+            orderMasterRepository.deleteByOrder(order.getId());
+            return orderRepository.delete(name);
+        }
+        return false;
     }
 
     public boolean completeOrder(String name) {

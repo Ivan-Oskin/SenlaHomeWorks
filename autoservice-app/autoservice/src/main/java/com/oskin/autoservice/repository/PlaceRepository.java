@@ -1,4 +1,5 @@
 package com.oskin.autoservice.repository;
+import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.SortType;
 import org.hibernate.Transaction;
@@ -14,13 +15,14 @@ public class PlaceRepository implements CrudRepository<Place> {
     private final Logger logger = LoggerFactory.getLogger(PlaceRepository.class);
     private final Logger loggerFile = LoggerFactory.getLogger("file");
     private final Scanner scanner = new Scanner(System.in);
+    StringBuilder stringBuilder = new StringBuilder();
 
     @Override
     public <G extends SortType> ArrayList<Place> findAll(G sortType) {
         logger.info("Start findAll place ");
         List<Place> places = new ArrayList<>();
         try {
-            Query<Place> query = SessionHibernate.getSession().createQuery("FROM Place ORDER by "+sortType.getStringSortType(), Place.class);
+            Query<Place> query = SessionHibernate.getSession().createQuery("FROM Place ORDER by " + sortType.getStringSortType(), Place.class);
             places = query.getResultList();
             logger.info("successful findAll place ");
         } catch (Exception e) {
@@ -50,10 +52,25 @@ public class PlaceRepository implements CrudRepository<Place> {
         try {
             Place place = find(id);
             if (place != null) {
-                SessionHibernate.getSession().remove(place);
-                logger.info("successful delete place ");
-                transaction.commit();
-                return true;
+                String hql = "FROM Order o WHERE o.place.id = :placeId";
+                Query<Order> query = SessionHibernate.getSession().createQuery(hql, Order.class);
+                query.setParameter("placeId", place.getId());
+                List<Order> ordersWithThisPlace = query.getResultList();
+                if (ordersWithThisPlace.isEmpty()) {
+                    SessionHibernate.getSession().remove(place);
+                    logger.info("successful delete place ");
+                    transaction.commit();
+                    return true;
+                } else {
+                    loggerFile.error("error delete place because place have orders");
+                    logger.info("Нельзя удалить место, т.к есть заказы с этим местом");
+                    for (Order order : ordersWithThisPlace) {
+                        stringBuilder.append(order.getName());
+                        stringBuilder.append(" ");
+                    }
+                    String nameOrders = stringBuilder.toString();
+                    logger.info("связанные заказы : {}", nameOrders);
+                }
             }
         } catch (Exception e) {
             loggerFile.error("error delete place {}", e.getMessage());

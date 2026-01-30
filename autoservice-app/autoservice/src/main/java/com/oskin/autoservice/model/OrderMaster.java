@@ -19,7 +19,9 @@ public class OrderMaster implements IIndentified {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    public OrderMaster(){};
+    public OrderMaster() {
+
+    }
 
     public OrderMaster(int id, Order order, Master master) {
         this.id = id;

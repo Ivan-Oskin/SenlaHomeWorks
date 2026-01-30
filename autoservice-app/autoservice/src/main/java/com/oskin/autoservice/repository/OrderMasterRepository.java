@@ -72,7 +72,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
     }
 
 
-    public void create(int id, int idMaster, int idOrder){
+    public void create(int id, int idMaster, int idOrder) {
         Order order = orderRepository.find(idOrder);
         Master master = masterRepository.find(idMaster);
         OrderMaster orderMaster = new OrderMaster(id, order, master);
@@ -128,12 +128,29 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
             Query<?> query = SessionHibernate.getSession().createQuery(hql);
             query.setParameter("masterId", idMaster);
             int deleted = query.executeUpdate();
-            if(deleted > 0){
+            if (deleted > 0) {
                 transaction.commit();
                 logger.info("successful deleteByMaster orderMaster ");
             }
         } catch (Exception e) {
             loggerFile.error("error deleteByMaster orderMaster {}", e.getMessage());
+            transaction.rollback();
+        }
+    }
+    public void deleteByOrder(int idOrder) {
+        logger.info("start deleteByOrder orderMaster");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        String hql = "DELETE FROM OrderMaster om WHERE om.order.id = :orderId";
+        try {
+            Query<?> query = SessionHibernate.getSession().createQuery(hql);
+            query.setParameter("orderId", idOrder);
+            int deleted = query.executeUpdate();
+            if (deleted > 0) {
+                transaction.commit();
+                logger.info("successful deleteByOrder orderMaster ");
+            }
+        } catch (Exception e) {
+            loggerFile.error("error deleteByOrder orderMaster {}", e.getMessage());
             transaction.rollback();
         }
     }

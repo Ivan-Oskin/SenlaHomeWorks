@@ -37,7 +37,8 @@ public class OrderRepository implements CrudRepository<Order> {
                     String sql = "SELECT place_id FROM orders WHERE id = " + order.getId();
                     NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
                     List<Integer> listPlaceId = queryPlaceId.getResultList();
-                    loggerFile.error("place_id = {} не найден, order {} не будет выведен", listPlaceId.get(0), order.getName());
+                    logger.error("place_id = {} не найден, order {} не будет выведен", listPlaceId.get(0), order.getName());
+                    loggerFile.error("place_id = {} no found, order {}", listPlaceId.get(0), order.getName());
                     iterator.remove();
                 }
             }
@@ -148,7 +149,7 @@ public class OrderRepository implements CrudRepository<Order> {
 
     public boolean changeStatusInDb(String name, StatusOrder statusOrder) {
         logger.info("start changeStatus order");
-        String hql = "UPDATE Order o SET o.status = :status WHERE o.name = :name;";
+        String hql = "UPDATE Order o SET o.status = :status WHERE o.name = :name";
         Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Query<?> query = SessionHibernate.getSession().createQuery(hql);
