@@ -33,7 +33,7 @@ public class PlaceRepository implements CrudRepository<Place> {
         logger.info("Start create place");
         Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().persist(place);
+            SessionHibernate.getSession().merge(place);
             transaction.commit();
             logger.info("successful create place ");
         } catch (Exception e) {

@@ -40,11 +40,13 @@ public class MasterRepository implements CrudRepository<Master> {
                 logger.error("error findAll master {}", e.getMessage());
             }
         } else {
+            String hql = "SELECT m.id, m.name FROM Master m " +
+                    "LEFT JOIN OrderMaster om WITH om.master = m " +
+                    "GROUP BY m.id " +
+                    "ORDER BY COUNT(om) DESC ";
             try {
-                String hql = "SELECT Master.id, Master.name FROM Master\n" +
-                        "LEFT JOIN orderMaster ON Master.id = orderMaster.master_id\n" +
-                        "GROUP BY Master.id\n" +
-                        "ORDER BY COUNT(orderMaster) DESC;\n";
+                Query<Master> query = SessionHibernate.getSession().createQuery(hql, Master.class);
+                masters = query.getResultList();
                 logger.info("successful findAll master and order by count orders");
             } catch (Exception e) {
                 logger.error("error findAll master and order by count orders {}", e.getMessage());
@@ -135,7 +137,7 @@ public class MasterRepository implements CrudRepository<Master> {
         logger.info("Start create master");
         Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().persist(master);
+            SessionHibernate.getSession().merge(master);
             transaction.commit();
             logger.info("successful create master ");
         } catch (Exception e) {

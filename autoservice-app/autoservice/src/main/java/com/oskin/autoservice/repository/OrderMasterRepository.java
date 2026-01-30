@@ -28,7 +28,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
         try {
             String hql = "SELECT om FROM OrderMaster om " +
                     "LEFT JOIN FETCH om.master m " +
-                    "LEFT JOIN FETCH om.order o" +
+                    "LEFT JOIN FETCH om.order o " +
                     "ORDER BY om." + sortType.getStringSortType();
             Query<OrderMaster> query = SessionHibernate.getSession().createQuery(hql, OrderMaster.class);
             orderMasters = query.getResultList();
@@ -78,7 +78,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
         logger.info("Start create orderMaster by fields ");
         Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().persist(orderMaster);
+            SessionHibernate.getSession().merge(orderMaster);
             transaction.commit();
             logger.info("successful create orderMaster by fields ");
         } catch (Exception e) {

@@ -38,6 +38,7 @@ public class MainMenu {
     }
 
     public void run() {
+        SessionHibernate.getSession();
         builderMenu.setTitle("Добавить данные");
         builderMenu.addItem(1, "Добавить мастера", () -> carRepairViewFunctions.addMaster());
         builderMenu.addItem(2, "Добавить место", () -> carRepairViewFunctions.addPlace());

@@ -136,7 +136,7 @@ public class OrderRepository implements CrudRepository<Order> {
         logger.info("Start create order");
         Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().persist(order);
+            SessionHibernate.getSession().merge(order);
             transaction.commit();
             logger.info("successful create order");
         } catch (Exception e) {
