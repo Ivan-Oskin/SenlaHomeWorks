@@ -1,93 +1,60 @@
 package com.oskin.autoservice.repository;
-
-import com.oskin.annotations.Inject;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.StatusOrder;
-import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.SortType;
+import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.List;
+import java.util.InputMismatchException;
 
 public class OrderRepository implements CrudRepository<Order> {
-    @Inject
-    ConnectionDB connectionDB;
-    @Inject
-    PlaceRepository placeRepository;
     Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);
+    private final Logger loggerFile = LoggerFactory.getLogger("file");
 
     @Override
-    public <G extends SortType> ArrayList<Order> findAll(G sortTypeOrder) {
-        logger.info("start findAll order");
-        ArrayList<Order> orders = new ArrayList<>();
-        String sql = "SELECT * FROM orders ORDER BY " + sortTypeOrder.getStringSortType();
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            ResultSet set = statement.executeQuery();
-            while (set.next()) {
-                int id = set.getInt("id");
-                String name = set.getString("name");
-                StatusOrder status = StatusOrder.ACTIVE;
-                for (StatusOrder statusOrder : StatusOrder.values()) {
-                    if (set.getString("status").equals(statusOrder.getSTATUS())) {
-                        status = statusOrder;
-                        break;
-                    }
-                }
-                LocalDateTime createTime = set.getTimestamp("timeCreate").toLocalDateTime();
-                LocalDateTime startTime = set.getTimestamp("timeStart").toLocalDateTime();
-                LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
-                int cost = set.getInt("cost");
-                int place_id = set.getInt("place_id");
-                Place place = placeRepository.find(place_id);
-                if (place != null) {
-                    orders.add(new Order(id, name, cost, place, createTime, startTime, completeTime, status));
-                } else {
-                    System.out.println("Место с id " + place_id + " не найдено. Заказ " + name + " некоректен");
+    public <G extends SortType> ArrayList<Order> findAll(G sortType) {
+        logger.info("Start findAll order ");
+        List<Order> orders = new ArrayList<>();
+        try {
+            String hql = "SELECT o FROM Order o " +
+                    "LEFT JOIN FETCH o.place p " +
+                    "ORDER BY o." + sortType.getStringSortType();
+            Query<Order> query = SessionHibernate.getSession().createQuery(hql, Order.class);
+            orders = query.getResultList();
+            Iterator<Order> iterator = orders.iterator();
+            while (iterator.hasNext()) {
+                Order order = iterator.next();
+                 if (order.getPlace() == null) {
+                    String sql = "SELECT place_id FROM orders WHERE id = " + order.getId();
+                    NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
+                    List<Integer> listPlaceId = queryPlaceId.getResultList();
+                    logger.error("place_id = {} не найден, order {} не будет выведен", listPlaceId.get(0), order.getName());
+                    loggerFile.error("place_id = {} no found, order {}", listPlaceId.get(0), order.getName());
+                    iterator.remove();
                 }
             }
-            logger.info("successful findAll order");
-        } catch (java.sql.SQLException e) {
-            logger.error("error findAll order {}", e.getMessage());
+            logger.info("successful findAll order ");
+        } catch (Exception e) {
+            loggerFile.error("error findAll order {}", e.getMessage());
         }
-        return orders;
+        return (ArrayList<Order>) orders;
     }
 
     public Order find(String name) {
         logger.info("start findByName order");
-        String sql = "SELECT * FROM orders WHERE name = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setString(1, name);
-            ResultSet set = statement.executeQuery();
-            ArrayList<Order> orders = new ArrayList<>();
-            while (set.next()) {
-                int id = set.getInt("id");
-                StatusOrder status = StatusOrder.ACTIVE;
-                for (StatusOrder statusOrder : StatusOrder.values()) {
-                    if (set.getString("status").equals(statusOrder.getSTATUS())) {
-                        status = statusOrder;
-                        break;
-                    }
-                }
-                LocalDateTime createTime = set.getTimestamp("timeCreate").toLocalDateTime();
-                LocalDateTime startTime = set.getTimestamp("timeStart").toLocalDateTime();
-                LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
-                int cost = set.getInt("cost");
-                int place_id = set.getInt("place_id");
-                Place place = placeRepository.find(place_id);
-                if (place != null) {
-                    orders.add(new Order(id, name, cost, place, createTime, startTime, completeTime, status));
-                }
-            }
+        try {
+            Query<Order> query = SessionHibernate.getSession().createQuery("From Order WHERE name = :name", Order.class);
+            query.setParameter("name", name);
+            List<Order> orders = query.getResultList();
             if (orders.size() > 1) {
                 while (true) {
                     System.out.println("Было найдено несколько записей. Выберите какую запись выбрать: ");
@@ -115,42 +82,24 @@ public class OrderRepository implements CrudRepository<Order> {
                 logger.info("successful findByName without choice order");
                 return orders.get(0);
             }
-        } catch (java.sql.SQLException e) {
-            logger.error("error findByName order {}", e.getMessage());
+        } catch (Exception e) {
+            loggerFile.error("error findByName order {}", e.getMessage());
         }
         logger.info("No found but successful findByName order");
         return null;
     }
 
     @Override
-    public Order find(int idOrder) {
-        logger.info("start findById order");
-        String sql = "SELECT * FROM orders WHERE id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, idOrder);
-            ResultSet set = statement.executeQuery();
-            while (set.next()) {
-                String name = set.getString("name");
-                StatusOrder status = StatusOrder.ACTIVE;
-                for (StatusOrder statusOrder : StatusOrder.values()) {
-                    if (set.getString("status").equals(statusOrder.getSTATUS())) {
-                        status = statusOrder;
-                        break;
-                    }
-                }
-                LocalDateTime createTime = set.getTimestamp("timeCreate").toLocalDateTime();
-                LocalDateTime startTime = set.getTimestamp("timeStart").toLocalDateTime();
-                LocalDateTime completeTime = set.getTimestamp("timeComplete").toLocalDateTime();
-                int cost = set.getInt("cost");
-                int place_id = set.getInt("place_id");
-                Place place = placeRepository.find(place_id);
-                if (place != null) {
-                    logger.info("successful findById order");
-                    return new Order(idOrder, name, cost, place, createTime, startTime, completeTime, status);
-                }
+    public Order find(int id) {
+        logger.info("Start findById order ");
+        try {
+            Order order = SessionHibernate.getSession().find(Order.class, id);
+            if (order != null) {
+                logger.info("successful findById order ");
+                return order;
             }
-        } catch (java.sql.SQLException e) {
-            logger.error("error findById order {}", e.getMessage());
+        } catch (Exception e) {
+            loggerFile.error("error findById {}", e.getMessage());
         }
         logger.info("No found but successful findById order");
         return null;
@@ -167,103 +116,96 @@ public class OrderRepository implements CrudRepository<Order> {
 
     @Override
     public boolean delete(int id) {
-        logger.info("start delete order");
-        String sql = "DELETE FROM orders WHERE id = ?;";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, id);
-            int result = statement.executeUpdate();
-            if (result > 0) {
-                connectionDB.commit();
-                logger.info("successful delete order");
+        logger.info("Start delete order ");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            Order order = find(id);
+            if (order != null) {
+                SessionHibernate.getSession().remove(order);
+                logger.info("successful delete order ");
+                transaction.commit();
                 return true;
             }
-        } catch (java.sql.SQLException e) {
-            connectionDB.rollback();
-            logger.error("error delete order {}", e.getMessage());
+        } catch (Exception e) {
+            loggerFile.error("error delete order {}", e.getMessage());
+            transaction.rollback();
         }
         return false;
     }
 
     @Override
     public void create(Order order) {
-        logger.info("start create order");
-        String sql = "INSERT INTO orders (id, name, status, timeCreate, timeStart, timeComplete, cost, place_id) VALUES (?,?,?,?,?,?,?,?)";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setInt(1, order.getId());
-            statement.setString(2, order.getName());
-            statement.setString(3, order.getStatus().getSTATUS());
-            statement.setTimestamp(4, Timestamp.valueOf(order.getTimeCreate()));
-            statement.setTimestamp(5, Timestamp.valueOf(order.getTimeStart()));
-            statement.setTimestamp(6, Timestamp.valueOf(order.getTimeComplete()));
-            statement.setInt(7, order.getCost());
-            statement.setInt(8, order.getPlace().getId());
-            statement.executeUpdate();
+        logger.info("Start create order");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            SessionHibernate.getSession().merge(order);
+            transaction.commit();
             logger.info("successful create order");
-            connectionDB.commit();
-        } catch (java.sql.SQLException e) {
-            logger.error("error create order {}", e.getMessage());
-            connectionDB.rollback();
+        } catch (Exception e) {
+            transaction.rollback();
+            loggerFile.error("error create order {}", e.getMessage());
         }
     }
 
     public boolean changeStatusInDb(String name, StatusOrder statusOrder) {
         logger.info("start changeStatus order");
-        String sql = "UPDATE orders SET status = ? WHERE name = ?;";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setString(1, statusOrder.getSTATUS());
-            statement.setString(2, name);
-            int change = statement.executeUpdate();
-            System.out.println(change);
-            if (change > 0) {
+        String hql = "UPDATE Order o SET o.status = :status WHERE o.name = :name";
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            Query<?> query = SessionHibernate.getSession().createQuery(hql);
+            query.setParameter("status", statusOrder);
+            query.setParameter("name", name);
+            int changed = query.executeUpdate();
+            if (changed > 0) {
                 logger.info("successful changeStatus order");
-                connectionDB.commit();
+                transaction.commit();
+                if (SessionHibernate.getSession().getSessionFactory().getCache() != null) {
+                    SessionHibernate.getSession().clear();
+                }
                 return true;
             }
-        } catch (java.sql.SQLException e) {
-            logger.error("error changeStatus order {}", e.getMessage());
-            connectionDB.rollback();
+        } catch (Exception e) {
+            loggerFile.error("error changeStatus order {}", e.getMessage());
+            transaction.rollback();
         }
         return false;
     }
 
     public boolean offsetInDb(String name, LocalDateTime timeStart, LocalDateTime timeComplete) {
         logger.info("start offset order");
-        String sql = "UPDATE orders SET timeStart = ?, timeComplete = ? WHERE name = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setTimestamp(1, Timestamp.valueOf(timeStart));
-            statement.setTimestamp(2, Timestamp.valueOf(timeComplete));
-            statement.setString(3, name);
-            int inf = statement.executeUpdate();
-            System.out.println(inf);
-            if (inf > 0) {
+        String hql = "UPDATE Order o SET o.timeStart = :timeStart, timeComplete = :timeComplete WHERE name = :name";
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            Query<?> query = SessionHibernate.getSession().createQuery(hql);
+            query.setParameter("timeStart", timeStart);
+            query.setParameter("timeComplete", timeComplete);
+            query.setParameter("name", name);
+            int changed = query.executeUpdate();
+            if (changed > 0) {
                 logger.info("successful offset order");
-                connectionDB.commit();
+                transaction.commit();
+                if (SessionHibernate.getSession().getSessionFactory().getCache() != null) {
+                    SessionHibernate.getSession().clear();
+                }
                 return true;
             }
-        } catch (java.sql.SQLException e) {
-            logger.error("error offset order {}", e.getMessage());
-            connectionDB.rollback();
+        } catch (Exception e) {
+            loggerFile.error("error offset order {}", e.getMessage());
+            transaction.rollback();
         }
         return false;
     }
 
     public void update(Order order) {
-        logger.info("start update order");
-        String sql = "UPDATE orders SET name = ?, status = ?, timeCreate = ?, timeStart, timeComplete = ?, cost = ?, place_id = ? WHERE id = ?";
-        try (PreparedStatement statement = connectionDB.getConnection().prepareStatement(sql)) {
-            statement.setString(1, order.getName());
-            statement.setString(2, order.getStatus().getSTATUS());
-            statement.setTimestamp(3, Timestamp.valueOf(order.getTimeCreate()));
-            statement.setTimestamp(4, Timestamp.valueOf(order.getTimeStart()));
-            statement.setTimestamp(5, Timestamp.valueOf(order.getTimeComplete()));
-            statement.setInt(6, order.getCost());
-            statement.setInt(7, order.getPlace().getId());
-            statement.executeUpdate();
-            logger.info("successful update order");
-            connectionDB.commit();
-        } catch (SQLException e) {
-            logger.error("error update order {}", e.getMessage());
-            connectionDB.rollback();
+        logger.info("Start update order ");
+        Transaction transaction = SessionHibernate.getSession().beginTransaction();
+        try {
+            SessionHibernate.getSession().merge(order);
+            logger.info("successful update order ");
+            transaction.commit();
+        } catch (Exception e) {
+            loggerFile.error("error update order {}", e.getMessage());
+            transaction.rollback();
         }
     }
 }

@@ -1,15 +1,37 @@
 package com.oskin.autoservice.model;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 
 import java.time.LocalDateTime;
 
+
+@Entity
+@Table(name = "orders")
 public class Order implements IIndentified {
+    @Id
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private StatusOrder status;
+    @Column(name = "timeCreate")
     private LocalDateTime timeCreate;
+    @Column(name = "timeStart")
     private LocalDateTime timeStart;
+    @Column(name = "timeComplete")
     private LocalDateTime timeComplete;
+    @Column(name = "cost")
     private int cost;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "place_id")
     private Place place;
 
 

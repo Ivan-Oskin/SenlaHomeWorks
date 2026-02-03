@@ -45,7 +45,7 @@ public class CarRepairOrderMaster {
     public boolean setOrderMaster(String nameMaster, String nameOrder) {
         Master master = masterRepository.find(nameMaster);
         Order order = orderRepository.find(nameOrder);
-        if (master != null &&  order != null) {
+        if (master != null && order != null) {
             ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
             ArrayList<Order> orders = getOrderFromOrderMaster(orderMasters);
             Order findOrder = orders.stream().filter(order1 -> order1.getId() == order.getId()).findFirst().orElse(null);

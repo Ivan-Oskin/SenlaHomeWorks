@@ -27,7 +27,7 @@ public class CarRepairDate {
         ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
         for (int i = 0; i < ordersByTime.size(); i++) {
             if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
-                countMaster -= CarRepairMaster.getInstance().getMastersByOrder(ordersByTime.get(i).getName()).size();
+                countMaster -= carRepairMaster.getMastersByOrder(ordersByTime.get(i).getName()).size();
             }
         }
         if (countPlace > countMaster) {

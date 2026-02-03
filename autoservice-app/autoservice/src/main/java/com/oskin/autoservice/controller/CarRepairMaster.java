@@ -11,10 +11,7 @@ import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
-
-import static org.postgresql.hostchooser.HostRequirement.master;
 
 @Singleton
 public final class CarRepairMaster {
@@ -48,8 +45,8 @@ public final class CarRepairMaster {
     public boolean deleteMaster(String name) {
         Master master = masterRepository.find(name);
         if (master != null) {
-            masterRepository.delete(master.getId());
             carRepairOrderMaster.deleteByMaster(master.getId());
+            masterRepository.delete(master.getId());
             return true;
         }
         return false;
@@ -61,7 +58,7 @@ public final class CarRepairMaster {
 
     public ArrayList<Master> getMastersByOrder(String name) {
         Order order = orderRepository.find(name);
-        if (master != null) {
+        if (order != null) {
             ArrayList<OrderMaster> orderMasters = orderMasterRepository.getMastersByOrderInDB(order.getId());
             return carRepairOrderMaster.getMasterFromOrderMaster(orderMasters);
         }

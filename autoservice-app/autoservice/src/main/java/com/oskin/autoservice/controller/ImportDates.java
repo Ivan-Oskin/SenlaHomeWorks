@@ -212,9 +212,9 @@ public class ImportDates {
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
+            logger.info("File found and opened successfully");
             for (ArrayList<String> line : data) {
                 if (line.size() != 3) {
-                    logger.info("File found and opened successfully");
                     System.out.println("Неправильная таблица данных");
                     return;
                 } else {
