@@ -1,31 +1,44 @@
 package com.oskin.autoservice.controller;
-import com.oskin.annotations.Inject;
+import com.oskin.autoservice.model.Master;
+import com.oskin.autoservice.model.Order;
+import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.autoservice.model.SortTypeOrderMaster;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
-import com.oskin.autoservice.model.Master;
-import com.oskin.autoservice.model.Order;
-import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-
+@Component
 public class CarRepairOrderMaster {
-    @Inject
     MasterRepository masterRepository;
-    @Inject
     OrderRepository orderRepository;
-    @Inject
     OrderMasterRepository orderMasterRepository;
-    @Inject
     WorkWithFile workWithFile;
-    @Inject
     Config config;
+
     Logger logger = LoggerFactory.getLogger(CarRepairOrderMaster.class);
+
+    @Autowired
+    public CarRepairOrderMaster(MasterRepository masterRepository, OrderRepository orderRepository, OrderMasterRepository orderMasterRepository,
+                                WorkWithFile workWithFile, Config config) {
+        this.masterRepository = masterRepository;
+        this.orderRepository = orderRepository;
+        this.orderMasterRepository = orderMasterRepository;
+        this.workWithFile = workWithFile;
+        this.config = config;
+    }
+
+    public void addOrderMaster(int id, int masterId, int orderId) {
+        Master master = masterRepository.find(masterId);
+        Order order = orderRepository.find(orderId);
+        orderMasterRepository.create(new OrderMaster(id, order, master));
+    }
 
     public ArrayList<Order> getOrderFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
         ArrayList<Order> orders = new ArrayList<>(orderMasters.size());
@@ -74,5 +87,12 @@ public class CarRepairOrderMaster {
 
     public void deleteByMaster(int idMaster) {
         orderMasterRepository.deleteByMaster(idMaster);
+    }
+    public OrderMaster findOrderMaster(int id) {
+        return orderMasterRepository.find(id);
+    }
+
+    public void updateOrderMaster(OrderMaster orderMaster) {
+        orderMasterRepository.update(orderMaster);
     }
 }

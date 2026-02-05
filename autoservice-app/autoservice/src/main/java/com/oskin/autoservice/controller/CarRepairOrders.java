@@ -1,7 +1,4 @@
 package com.oskin.autoservice.controller;
-
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
@@ -14,37 +11,33 @@ import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@Singleton
-public final class CarRepairOrders {
-    @Inject
+@Component
+public class CarRepairOrders {
     OrderRepository orderRepository;
-    @Inject
-    WorkWithFile workWithFile;
-    @Inject
-    Config config;
-    @Inject
     MasterRepository masterRepository;
-    @Inject
     OrderMasterRepository orderMasterRepository;
-    @Inject
     CarRepairOrderMaster carRepairOrderMaster;
+    WorkWithFile workWithFile;
+    Config config;
+
     private final Logger logger = LoggerFactory.getLogger(CarRepairOrders.class);
 
-    private static CarRepairOrders instance;
-
-    private CarRepairOrders() {
-    }
-
-    public static CarRepairOrders getInstance() {
-        if (instance == null) {
-            instance = new CarRepairOrders();
-        }
-        return instance;
+    @Autowired
+    public CarRepairOrders(OrderRepository orderRepository, MasterRepository masterRepository, OrderMasterRepository orderMasterRepository,
+                           CarRepairOrderMaster carRepairOrderMaster, WorkWithFile workWithFile, Config config) {
+        this.orderRepository = orderRepository;
+        this.masterRepository = masterRepository;
+        this.orderMasterRepository = orderMasterRepository;
+        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.workWithFile = workWithFile;
+        this.config = config;
     }
 
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete) {
@@ -64,6 +57,14 @@ public final class CarRepairOrders {
             return orderRepository.delete(name);
         }
         return false;
+    }
+
+    public Order findOrder(int id) {
+        return orderRepository.find(id);
+    }
+
+    public void updateOrder(Order order) {
+        orderRepository.update(order);
     }
 
     public boolean completeOrder(String name) {

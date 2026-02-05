@@ -1,21 +1,27 @@
 package com.oskin.autoservice.controller;
 
-import com.oskin.annotations.Inject;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.SortTypeMaster;
 import com.oskin.autoservice.model.SortTypeOrder;
 import com.oskin.autoservice.model.StatusOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+@Component
 public class CarRepairDate {
-    @Inject
     CarRepairOrders carRepairOrders;
-    @Inject
     CarRepairMaster carRepairMaster;
-    @Inject
     CarRepairGarage carRepairGarage;
+
+    @Autowired
+    public CarRepairDate(CarRepairOrders carRepairOrders, CarRepairMaster carRepairMaster, CarRepairGarage carRepairGarage) {
+        this.carRepairOrders = carRepairOrders;
+        this.carRepairMaster = carRepairMaster;
+        this.carRepairGarage = carRepairGarage;
+    }
 
     //Количество свободных мест на любую дату
     public int getCountFreeTime(LocalDateTime date) {

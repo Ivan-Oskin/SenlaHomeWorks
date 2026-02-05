@@ -1,10 +1,4 @@
 package com.oskin.autoservice.controller;
-
-import com.oskin.annotations.Inject;
-import com.oskin.autoservice.repository.MasterRepository;
-import com.oskin.autoservice.repository.OrderRepository;
-import com.oskin.autoservice.repository.PlaceRepository;
-import com.oskin.autoservice.repository.OrderMasterRepository;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.Order;
@@ -13,6 +7,8 @@ import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,27 +17,27 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+@Component
 public class ImportDates {
-
-    @Inject
     CarRepairOrders carRepairOrders;
-    @Inject
-    WorkWithFile workWithFile;
-    @Inject
-    Config config;
-    @Inject
-    OrderRepository orderRepository;
-    @Inject
     CarRepairGarage carRepairGarage;
-    @Inject
     CarRepairMaster carRepairMaster;
-    @Inject
-    MasterRepository masterRepository;
-    @Inject
-    PlaceRepository placeRepository;
-    @Inject
-    OrderMasterRepository orderMasterRepository;
+    CarRepairOrderMaster carRepairOrderMaster;
+    WorkWithFile workWithFile;
+    Config config;
+
     Logger logger = LoggerFactory.getLogger(ImportDates.class);
+
+    @Autowired
+    public ImportDates(CarRepairOrders carRepairOrders, CarRepairGarage carRepairGarage, CarRepairMaster carRepairMaster,
+                       CarRepairOrderMaster carRepairOrderMaster, WorkWithFile workWithFile, Config config) {
+        this.carRepairOrders = carRepairOrders;
+        this.carRepairMaster = carRepairMaster;
+        this.carRepairGarage = carRepairGarage;
+        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.config = config;
+        this.workWithFile = workWithFile;
+    }
 
     public int inputInt() {
         Scanner scanner = new Scanner(System.in);
@@ -104,7 +100,7 @@ public class ImportDates {
                             continue;
                         }
                         int PlaceId = Integer.parseInt(line.get(7));
-                        place = placeRepository.find(PlaceId);
+                        place = carRepairGarage.findPlace(PlaceId);
                         if (place == null) {
                             System.out.println("место с id " + PlaceId + " Не найдено.");
                             System.out.println("Заказ " + name + "не будет добавлен");
@@ -123,9 +119,9 @@ public class ImportDates {
                         System.err.println("произошла ошибка при парсинге времени заказа " + name);
                         continue;
                     }
-                    Order order = orderRepository.find(id);
+                    Order order = carRepairOrders.findOrder(id);
                     if (order != null && replace) {
-                        orderRepository.update(new Order(id, name, cost, place, create, start, complete, status));
+                        carRepairOrders.updateOrder(new Order(id, name, cost, place, create, start, complete, status));
                     } else if (order == null) {
                         carRepairOrders.addOrder(id, name, cost, place, create, start, complete, status);
                     }
@@ -153,9 +149,9 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        Place place = placeRepository.find(id);
+                        Place place = carRepairGarage.findPlace(id);
                         if (place != null && replace) {
-                            placeRepository.update(new Place(id, name));
+                            carRepairGarage.updatePlace(new Place(id, name));
                         } else if (place == null) {
                             carRepairGarage.addPlace(id, name);
                         }
@@ -187,9 +183,9 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        Master master = masterRepository.find(id);
+                        Master master = carRepairMaster.findMaster(id);
                         if (master != null && replace) {
-                            masterRepository.update(new Master(id, name));
+                            carRepairMaster.updateMaster(new Master(id, name));
                         } else if (master == null) {
                             carRepairMaster.addMaster(id, name);
                         }
@@ -222,11 +218,11 @@ public class ImportDates {
                         int id = Integer.parseInt(line.get(0));
                         int master_id = Integer.parseInt(line.get(1));
                         int order_id = Integer.parseInt(line.get(2));
-                        OrderMaster orderMaster = orderMasterRepository.find(id);
+                        OrderMaster orderMaster = carRepairOrderMaster.findOrderMaster(id);
                         if (orderMaster != null && replace) {
-                            orderMasterRepository.update(new OrderMaster(id, orderRepository.find(order_id), masterRepository.find(master_id)));
+                            carRepairOrderMaster.updateOrderMaster(new OrderMaster(id, carRepairOrders.findOrder(order_id), carRepairMaster.findMaster(master_id)));
                         } else if (orderMaster == null) {
-                            orderMasterRepository.create(id, master_id, order_id);
+                            carRepairOrderMaster.addOrderMaster(id, master_id, order_id);
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");

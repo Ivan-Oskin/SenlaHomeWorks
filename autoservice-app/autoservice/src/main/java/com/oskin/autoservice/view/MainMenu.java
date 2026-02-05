@@ -1,37 +1,35 @@
 package com.oskin.autoservice.view;
-
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
 import com.oskin.autoservice.controller.CarRepairOrderMaster;
 import com.oskin.autoservice.controller.CarRepairGarage;
 import com.oskin.autoservice.controller.CarRepairMaster;
 import com.oskin.autoservice.controller.CarRepairOrders;
 import com.oskin.autoservice.controller.ImportDates;
 import com.oskin.autoservice.repository.SessionHibernate;
+import com.oskin.di.BuilderObject;
+import com.oskin.di.DIContainer;
+import com.oskin.di.InjectObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-@Singleton
+@Component
 public class MainMenu {
-    @Inject
-    private BuilderMenu builderMenu;
-    @Inject
-    private Navigator navigator;
-
-
-    @Inject
+    DIContainer di = new DIContainer(new BuilderObject(), new InjectObject());
+    private BuilderMenu builderMenu = di.getDependecy(BuilderMenu.class);
+    private Navigator navigator = di.getDependecy(Navigator.class);
     CarRepairGarage carRepairGarage;
-    @Inject
-    CarRepairMaster carRepairMaster;
-    @Inject
-    CarRepairOrders carRepairOrders;
-    @Inject
-    CarRepairViewFunctions carRepairViewFunctions;
-    @Inject
-    ImportDates importDates;
-    @Inject
-    CarRepairOrderMaster carRepairOrderMaster;
+    CarRepairMaster carRepairMaster = di.getDependecy(CarRepairMaster.class);
+    CarRepairOrders carRepairOrders = di.getDependecy(CarRepairOrders.class);
+    CarRepairViewFunctions carRepairViewFunctions = di.getDependecy(CarRepairViewFunctions.class);
+    ImportDates importDates = di.getDependecy(ImportDates.class);
+    CarRepairOrderMaster carRepairOrderMaster = di.getDependecy(CarRepairOrderMaster.class);
+
+    @Autowired
+    public MainMenu(CarRepairGarage carRepairGarage) {
+        this.carRepairGarage = carRepairGarage;
+    }
 
     public MainMenu() {
     }

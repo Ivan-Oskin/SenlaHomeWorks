@@ -1,11 +1,10 @@
 package com.oskin.autoservice.controller;
-
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
 import com.oskin.autoservice.view.CarRepairInput;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,15 +19,20 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 
-@Singleton
+@Component
 public class WorkWithFile {
-    @Inject
-    private CarRepairInput carRepairInput;
-    @Inject
-    private Config config;
+    private final CarRepairInput carRepairInput;
+    private final Config config;
+
     private final Logger logger = LoggerFactory.getLogger(WorkWithFile.class);
 
-    public void exportData(ArrayList<String> dataString, String fileName, boolean isStandart) {
+    @Autowired
+    public WorkWithFile(CarRepairInput carRepairInput, Config config) {
+        this.carRepairInput = carRepairInput;
+        this.config = config;
+    }
+
+    public void exportData(ArrayList<String> dataString, String fileName, boolean isStandard) {
         String name;
         if (!fileName.endsWith(".csv")) {
             name = fileName + ".csv";
@@ -36,7 +40,7 @@ public class WorkWithFile {
             name = fileName;
         }
         File file;
-        if (isStandart) {
+        if (isStandard) {
             Path path = Paths.get(config.getStandardPathToData() + name);
             file = path.toFile();
         } else {
@@ -54,7 +58,7 @@ public class WorkWithFile {
     public void whereExport(ArrayList<String> dataList, String nameObject) {
         System.out.println("Куда экспортировать данные " + nameObject + "?\n" +
                 "1. " + nameObject + " 2. Выбрать другой файл 0. Выход");
-        int input = 0;
+        int input;
         while (true) {
             input = carRepairInput.inputInt();
             if (input >= 0 && input < 3) break;
@@ -73,8 +77,6 @@ public class WorkWithFile {
                 System.out.println("Данные экспортированы");
                 logger.info("successfully export");
                 break;
-            default:
-                return;
         }
     }
 
@@ -96,7 +98,7 @@ public class WorkWithFile {
     public String whereFromImport(String fileName) {
         System.out.println("Откуда импортировать данные " + fileName + "?\n" +
                 "1. " + fileName + " 2. Другой файл формата .csv 0. Выход");
-        int input = 0;
+        int input;
         while (true) {
             input = carRepairInput.inputInt();
             if (input >= 0 && input < 3) break;
