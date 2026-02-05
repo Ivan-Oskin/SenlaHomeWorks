@@ -21,7 +21,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
     MasterRepository masterRepository;
 
     private final Logger logger = LoggerFactory.getLogger(OrderMasterRepository.class);
-    private Logger loggerFile = LoggerFactory.getLogger("file");
+    private final Logger loggerFile = LoggerFactory.getLogger("file");
 
     @Autowired
     public OrderMasterRepository(OrderRepository orderRepository, MasterRepository masterRepository) {
@@ -74,7 +74,7 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
             logger.info("successful create orderMaster ");
         } catch (Exception e) {
             transaction.rollback();
-            loggerFile.error("error create orderMaster {}", e.getMessage());
+            loggerFile.error("create orderMaster error {}", e.getMessage());
         }
     }
 

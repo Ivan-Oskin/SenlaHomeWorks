@@ -109,8 +109,7 @@ public class CarRepairInput {
                 }
                 logger.error("Неправильный ввод");
             }
-            LocalDateTime time = LocalDateTime.of(year, month, day, hour, 0);
-            return time;
+            return LocalDateTime.of(year, month, day, hour, 0);
         } catch (InputMismatchException e) {
             scanner.nextLine();
             logger.error("Неправильный ввод, нужно вводить только цифры");

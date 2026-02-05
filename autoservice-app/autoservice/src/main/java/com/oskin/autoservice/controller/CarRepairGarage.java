@@ -61,8 +61,8 @@ public class CarRepairGarage {
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
         ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
         for (Order order : ordersByTime) {
-            if (order.getTimeStart().compareTo(date) <= 0 && order.getTimeComplete().compareTo(date) >= 0) {
-               newList.removeIf(place -> place.getId() == order.getPlace().getId());
+            if (!order.getTimeStart().isAfter(date) && !order.getTimeComplete().isBefore(date)) {
+                newList.removeIf(place -> place.getId() == order.getPlace().getId());
             }
         }
         return newList;

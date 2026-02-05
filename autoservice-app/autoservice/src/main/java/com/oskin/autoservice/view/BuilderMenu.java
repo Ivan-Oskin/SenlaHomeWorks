@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 @Component
 public class BuilderMenu {
-    private ArrayList<MenuItem> items = new ArrayList<>();
+    private final  ArrayList<MenuItem> items = new ArrayList<>();
     private String title = "";
 
     public void setTitle(String name) {
@@ -19,7 +19,7 @@ public class BuilderMenu {
     }
 
     public Menu build() {
-        String newTitle = new String(this.title);
+        String newTitle = this.title;
         ArrayList<MenuItem> newItems = new ArrayList<>(this.items);
         Menu menu = new Menu(newTitle, newItems);
         this.title = "";

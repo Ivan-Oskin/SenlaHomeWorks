@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
-public class Order implements IIndentified {
+public class Order implements IIdentified {
     @Id
     private int id;
     @Column(name = "name")
@@ -33,15 +33,6 @@ public class Order implements IIndentified {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
     private Place place;
-
-
-    public void close() {
-        this.status = StatusOrder.CLOSE;
-    }
-
-    public void cancel() {
-        this.status = StatusOrder.CANCEL;
-    }
 
     public String getName() {
         return this.name;

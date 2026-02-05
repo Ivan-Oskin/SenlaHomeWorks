@@ -1,10 +1,10 @@
 package com.oskin.autoservice.repository;
 
-import com.oskin.autoservice.model.IIndentified;
+import com.oskin.autoservice.model.IIdentified;
 import com.oskin.autoservice.model.SortType;
 import java.util.ArrayList;
 
-public interface CrudRepository<T extends IIndentified> {
+public interface CrudRepository<T extends IIdentified> {
 
     boolean delete(int id);
 

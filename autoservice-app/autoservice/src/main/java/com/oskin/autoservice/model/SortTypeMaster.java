@@ -5,7 +5,7 @@ public enum SortTypeMaster implements SortType {
     ALPHABET("name"),
     BUSYNESS("busy");
 
-    String sortType;
+    private final String sortType;
 
     SortTypeMaster(String sortType) {
         this.sortType = sortType;

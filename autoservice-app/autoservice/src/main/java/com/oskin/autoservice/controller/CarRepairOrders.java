@@ -40,13 +40,13 @@ public class CarRepairOrders {
         this.config = config;
     }
 
-    public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete) {
-        Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete);
+    public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete) {
+        Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeComplete);
         orderRepository.create(order);
     }
 
-    public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeCopmlete, StatusOrder status) {
-        Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeCopmlete, status);
+    public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete, StatusOrder status) {
+        Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeComplete, status);
         orderRepository.create(order);
     }
 
@@ -110,7 +110,7 @@ public class CarRepairOrders {
         ArrayList<Order> orders = orderRepository.findAll(sortType);
         ArrayList<Order> newList = new ArrayList<>();
         for (Order order : orders) {
-            if (order.getTimeStart().compareTo(endDate) <= 0 && order.getTimeComplete().compareTo(startDate) >= 0 && order.getStatus().equals(status)) {
+            if (!order.getTimeStart().isAfter(endDate) && !order.getTimeComplete().isBefore(startDate) && order.getStatus().equals(status)) {
                 newList.add(order);
             }
         }

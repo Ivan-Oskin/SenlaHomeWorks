@@ -27,23 +27,23 @@ public class CarRepairDate {
         int countPlace = carRepairGarage.getFreePlace(date).size();
         if (countPlace == 0) return 0;
         int countMaster = carRepairMaster.getListOfMasters(SortTypeMaster.ID).size();
-        LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
-        LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
+        LocalDateTime start = date.toLocalDate().atStartOfDay();
+        LocalDateTime finish = date.toLocalDate().atTime(23, 0);
+
         ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
-        for (int i = 0; i < ordersByTime.size(); i++) {
-            if (ordersByTime.get(i).getTimeStart().compareTo(date) <= 0 && ordersByTime.get(i).getTimeComplete().compareTo(date) >= 0) {
-                countMaster -= carRepairMaster.getMastersByOrder(ordersByTime.get(i).getName()).size();
+        for (Order order : ordersByTime) {
+            LocalDateTime timeStart = order.getTimeStart();
+            LocalDateTime timeComplete = order.getTimeComplete();
+
+            if (!timeStart.isAfter(date) && !timeComplete.isBefore(date)) {
+                countMaster -= carRepairMaster.getMastersByOrder(order.getName()).size();
             }
         }
-        if (countPlace > countMaster) {
-            return countMaster;
-        } else {
-            return countPlace;
-        }
+        return Math.min(countMaster, countPlace);
     }
 
     public LocalDateTime getNearestDate(LocalDateTime fromDate) {
-        LocalDateTime date = LocalDateTime.from(fromDate);
+        LocalDateTime date = fromDate;
         if (carRepairMaster.getListOfMasters(SortTypeMaster.ID).isEmpty() ||
                 carRepairOrders.getListOfOrders(SortTypeOrder.ID).isEmpty()) {
             return null;

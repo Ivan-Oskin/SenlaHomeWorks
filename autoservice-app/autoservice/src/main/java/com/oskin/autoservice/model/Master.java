@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "masters")
-public class Master implements IIndentified {
+public class Master implements IIdentified {
     @Id
     private int id;
     @Column(name = "name")

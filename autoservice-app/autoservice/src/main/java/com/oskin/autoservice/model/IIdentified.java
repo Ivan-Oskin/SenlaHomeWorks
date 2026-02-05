@@ -1,5 +1,5 @@
 package com.oskin.autoservice.model;
 
-public interface IIndentified {
+public interface IIdentified {
     int getId();
 }

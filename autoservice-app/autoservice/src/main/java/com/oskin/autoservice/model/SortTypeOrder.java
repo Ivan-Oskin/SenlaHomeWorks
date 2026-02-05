@@ -7,7 +7,7 @@ public enum SortTypeOrder implements SortType {
     COST("cost"),
     ID("id");
 
-    private String sortType;
+    private final String sortType;
 
     SortTypeOrder(String sortType) {
         this.sortType = sortType;

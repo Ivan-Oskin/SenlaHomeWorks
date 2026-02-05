@@ -70,7 +70,7 @@ public class ImportDates {
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
-            logger.info("File found and opened successfully");
+            logger.info("File Order found and opened successfully");
             for (ArrayList<String> line : data) {
                 if (line.size() != 8) {
                     System.out.println("Неправильная таблица данных");
@@ -140,7 +140,7 @@ public class ImportDates {
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
-            logger.info("File found and opened successfully");
+            logger.info("File Garage found and opened successfully");
             for (ArrayList<String> line : data) {
                 if (line.size() != 2) {
                     System.out.println("Неправильная таблица данных");
@@ -175,7 +175,7 @@ public class ImportDates {
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
             for (ArrayList<String> line : data) {
-                logger.info("File found and opened successfully");
+                logger.info("File Master found and opened successfully");
                 if (line.size() != 2) {
                     System.out.println("Неправильная таблица данных");
                     return;
@@ -208,7 +208,7 @@ public class ImportDates {
         }
         ArrayList<ArrayList<String>> data = workWithFile.importData(nameFile);
         if (!data.isEmpty()) {
-            logger.info("File found and opened successfully");
+            logger.info("File OrderMaster found and opened successfully");
             for (ArrayList<String> line : data) {
                 if (line.size() != 3) {
                     System.out.println("Неправильная таблица данных");

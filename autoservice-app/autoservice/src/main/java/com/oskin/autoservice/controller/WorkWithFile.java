@@ -69,15 +69,14 @@ public class WorkWithFile {
         System.out.println("Куда экспортировать данные " + nameObject + "?\n" +
                 "1. " + nameObject + " 2. Выбрать другой файл 0. Выход");
         int input;
-        while (true) {
+        do {
             input = inputInt();
-            if (input >= 0 && input < 3) break;
-        }
+        } while (!(input >= 0 && input < 3));
         switch (input) {
             case 1:
                 exportData(dataList, nameObject, true);
                 System.out.println("Данные экспортированы");
-                logger.info("successfully export");
+                logger.info("successfully export Standard file");
                 break;
             case 2:
                 Scanner scanner = new Scanner(System.in);
@@ -85,7 +84,7 @@ public class WorkWithFile {
                 String nameFile = scanner.nextLine();
                 exportData(dataList, nameFile, false);
                 System.out.println("Данные экспортированы");
-                logger.info("successfully export");
+                logger.info("successfully export with choice");
                 break;
         }
     }
@@ -109,10 +108,9 @@ public class WorkWithFile {
         System.out.println("Откуда импортировать данные " + fileName + "?\n" +
                 "1. " + fileName + " 2. Другой файл формата .csv 0. Выход");
         int input;
-        while (true) {
+        do {
             input = inputInt();
-            if (input >= 0 && input < 3) break;
-        }
+        } while (!(input >= 0 && input < 3));
         switch (input) {
             case 1:
                 return config.getStandardPathToData() + fileName;
@@ -120,12 +118,13 @@ public class WorkWithFile {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Введите имя файла");
                 String nextFileName;
-                while (true) {
+                do {
                     nextFileName = scanner.nextLine();
-                    if (nextFileName.endsWith(".csv")) break;
-                    System.out.println("Файл должен быть расширения .csv");
-                    return nextFileName;
-                }
+                    if (!nextFileName.endsWith(".csv")) {
+                        System.out.println("Файл должен быть расширения .csv");
+                    }
+                } while (!nextFileName.endsWith(".csv"));
+                return nextFileName;
             default:
                 return "???";
         }

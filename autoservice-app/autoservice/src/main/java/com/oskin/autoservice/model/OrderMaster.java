@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "order_master")
-public class OrderMaster implements IIndentified {
+public class OrderMaster implements IIdentified {
     @Id
     private int id;
     @ManyToOne

@@ -52,7 +52,7 @@ public class MasterRepository implements CrudRepository<Master> {
                 masters = query.getResultList();
                 logger.info("successful findAll master and order by count orders");
             } catch (Exception e) {
-                loggerFile.error("error findAll master and order by count orders {}", e.getMessage());
+                loggerFile.error("findAll master and order by count orders error {}", e.getMessage());
             }
         }
         return (ArrayList<Master>) masters;
