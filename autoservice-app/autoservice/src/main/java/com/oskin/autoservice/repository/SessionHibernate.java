@@ -1,4 +1,5 @@
 package com.oskin.autoservice.repository;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
@@ -11,9 +12,9 @@ import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.OrderMaster;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 public class SessionHibernate {
     private final static Logger logger = LoggerFactory.getLogger(SessionHibernate.class);
     private final static Logger loggerFile = LoggerFactory.getLogger("file");

@@ -1,4 +1,5 @@
 package com.oskin.autoservice.controller;
+
 import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.Order;
@@ -11,10 +12,10 @@ import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 
-@Component
+@Controller
 public class CarRepairGarage {
     WorkWithFile workWithFile;
     Config config;

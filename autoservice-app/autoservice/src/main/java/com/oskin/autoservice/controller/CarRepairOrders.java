@@ -1,4 +1,5 @@
 package com.oskin.autoservice.controller;
+
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
@@ -12,13 +13,12 @@ import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@Component
+@Controller
 public class CarRepairOrders {
     OrderRepository orderRepository;
     MasterRepository masterRepository;

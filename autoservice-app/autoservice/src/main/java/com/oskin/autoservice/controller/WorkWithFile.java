@@ -1,15 +1,13 @@
 package com.oskin.autoservice.controller;
-import com.oskin.autoservice.view.CarRepairInput;
+
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Controller;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,7 +18,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
-@Component
+@Controller
 public class WorkWithFile {
     private final Config config;
 

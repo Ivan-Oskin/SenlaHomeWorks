@@ -5,12 +5,11 @@ import com.oskin.autoservice.model.SortTypeMaster;
 import com.oskin.autoservice.model.SortTypeOrder;
 import com.oskin.autoservice.model.StatusOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-@Component
+@Controller
 public class CarRepairDate {
     CarRepairOrders carRepairOrders;
     CarRepairMaster carRepairMaster;

@@ -35,7 +35,7 @@ public class CarRepairViewFunctions {
 
     public CarRepairViewFunctions(CarRepairGarage carRepairGarage, CarRepairOrders carRepairOrders, CarRepairMaster carRepairMaster,
                                   CarRepairOutput carRepairOutput, CarRepairOrderMaster carRepairOrderMaster, CarRepairInput carRepairInput,
-                                  Config config, CarRepairDate carRepairDate){
+                                  Config config, CarRepairDate carRepairDate) {
         this.carRepairGarage = carRepairGarage;
         this.carRepairOrders = carRepairOrders;
         this.carRepairMaster = carRepairMaster;

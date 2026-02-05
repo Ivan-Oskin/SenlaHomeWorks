@@ -1,4 +1,5 @@
 package com.oskin.autoservice.repository;
+
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.SortType;
@@ -7,8 +8,7 @@ import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.InputMismatchException;
 
-@Component
+@Repository
 public class OrderRepository implements CrudRepository<Order> {
     Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);

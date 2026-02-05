@@ -8,12 +8,12 @@ import java.util.ArrayList;
 @Component
 public class Navigator {
     private Menu currentMenu;
-    private ArrayList<Menu> menu = new ArrayList<>();
+    private final ArrayList<Menu> menu = new ArrayList<>();
 
-    private CarRepairInput carRepairInput;
+    private final CarRepairInput carRepairInput;
 
     @Autowired
-    public Navigator(CarRepairInput carRepairInput){
+    public Navigator(CarRepairInput carRepairInput) {
         this.carRepairInput = carRepairInput;
     }
 
@@ -41,8 +41,7 @@ public class Navigator {
             int input;
             printMenu();
             input = carRepairInput.inputInt();
-            if (input == 0) return;
-            else this.currentMenu.executeOfNumber(input - 1);
+            if (input != 0) this.currentMenu.executeOfNumber(input - 1);
         } else System.out.println("Такой команды нет");
     }
 }

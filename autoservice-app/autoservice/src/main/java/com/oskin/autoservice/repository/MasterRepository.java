@@ -1,4 +1,5 @@
 package com.oskin.autoservice.repository;
+
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.SortType;
 import com.oskin.autoservice.model.SortTypeMaster;
@@ -6,14 +7,13 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-@Component
+@Repository
 public class MasterRepository implements CrudRepository<Master> {
     private final Logger logger = LoggerFactory.getLogger(MasterRepository.class);
     private final Logger loggerFile = LoggerFactory.getLogger("file");
