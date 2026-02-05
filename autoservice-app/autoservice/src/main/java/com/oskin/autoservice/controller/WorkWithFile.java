@@ -16,20 +16,32 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
 @Component
 public class WorkWithFile {
-    private final CarRepairInput carRepairInput;
     private final Config config;
 
     private final Logger logger = LoggerFactory.getLogger(WorkWithFile.class);
+    private final Scanner scanner = new Scanner(System.in);
 
     @Autowired
-    public WorkWithFile(CarRepairInput carRepairInput, Config config) {
-        this.carRepairInput = carRepairInput;
+    public WorkWithFile(Config config) {
         this.config = config;
+    }
+
+    public int inputInt() {
+        int input = 0;
+        try {
+            input = scanner.nextInt();
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            scanner.nextLine();
+            logger.error("Надо ввести только цифру!!!");
+        }
+        return input;
     }
 
     public void exportData(ArrayList<String> dataString, String fileName, boolean isStandard) {
@@ -60,7 +72,7 @@ public class WorkWithFile {
                 "1. " + nameObject + " 2. Выбрать другой файл 0. Выход");
         int input;
         while (true) {
-            input = carRepairInput.inputInt();
+            input = inputInt();
             if (input >= 0 && input < 3) break;
         }
         switch (input) {
@@ -100,7 +112,7 @@ public class WorkWithFile {
                 "1. " + fileName + " 2. Другой файл формата .csv 0. Выход");
         int input;
         while (true) {
-            input = carRepairInput.inputInt();
+            input = inputInt();
             if (input >= 0 && input < 3) break;
         }
         switch (input) {

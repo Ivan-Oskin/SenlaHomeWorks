@@ -2,7 +2,6 @@ package com.oskin.autoservice.repository;
 
 import com.oskin.autoservice.model.IIndentified;
 import com.oskin.autoservice.model.SortType;
-
 import java.util.ArrayList;
 
 public interface CrudRepository<T extends IIndentified> {

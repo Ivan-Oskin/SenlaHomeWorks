@@ -1,6 +1,4 @@
 package com.oskin.autoservice.repository;
-
-import com.oskin.annotations.Inject;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
@@ -10,17 +8,26 @@ import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Component
 public class OrderMasterRepository implements CrudRepository<OrderMaster> {
-    @Inject
     OrderRepository orderRepository;
-    @Inject
     MasterRepository masterRepository;
+
     private final Logger logger = LoggerFactory.getLogger(OrderMasterRepository.class);
     private Logger loggerFile = LoggerFactory.getLogger("file");
+
+    @Autowired
+    public OrderMasterRepository(OrderRepository orderRepository, MasterRepository masterRepository){
+        this.orderRepository = orderRepository;
+        this.masterRepository = masterRepository;
+    }
 
     @Override
     public <G extends SortType> ArrayList<OrderMaster> findAll(G sortType) {

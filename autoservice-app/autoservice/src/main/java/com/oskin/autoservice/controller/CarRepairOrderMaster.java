@@ -95,4 +95,8 @@ public class CarRepairOrderMaster {
     public void updateOrderMaster(OrderMaster orderMaster) {
         orderMasterRepository.update(orderMaster);
     }
+
+    public ArrayList<OrderMaster> getOrdersByMasterInDB(int masterId){
+        return orderMasterRepository.getOrdersByMasterInDB(masterId);
+    }
 }

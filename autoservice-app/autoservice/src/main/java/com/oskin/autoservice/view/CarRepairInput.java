@@ -1,27 +1,26 @@
 package com.oskin.autoservice.view;
-
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
 import com.oskin.autoservice.model.SortTypeMaster;
 import com.oskin.autoservice.model.SortTypeOrder;
 import com.oskin.autoservice.model.StatusOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-@Singleton
+@Component
 public class CarRepairInput {
     Scanner scanner = new Scanner(System.in);
     Logger logger = LoggerFactory.getLogger(CarRepairInput.class);
-    private static CarRepairInput instance;
 
-    @Inject
     CarRepairOutput carRepairOutput;
 
-    public CarRepairInput() {
+    @Autowired
+    public CarRepairInput(CarRepairOutput carRepairOutput) {
+        this.carRepairOutput = carRepairOutput;
     }
 
     public int inputInt() {

@@ -7,6 +7,8 @@ import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.InputMismatchException;
 
+@Component
 public class OrderRepository implements CrudRepository<Order> {
     Scanner scanner = new Scanner(System.in);
     private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);
