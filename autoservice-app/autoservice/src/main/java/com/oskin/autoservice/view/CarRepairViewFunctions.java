@@ -1,8 +1,4 @@
 package com.oskin.autoservice.view;
-
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
-
 import com.oskin.autoservice.controller.CarRepairDate;
 import com.oskin.autoservice.controller.CarRepairGarage;
 import com.oskin.autoservice.controller.CarRepairMaster;
@@ -17,31 +13,38 @@ import com.oskin.autoservice.model.Order;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@Singleton
+@Component
 public class CarRepairViewFunctions {
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
-    private Logger logger = LoggerFactory.getLogger(CarRepairViewFunctions.class);
-    @Inject
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+    private final Logger logger = LoggerFactory.getLogger(CarRepairViewFunctions.class);
+
     CarRepairGarage carRepairGarage;
-    @Inject
     CarRepairOrders carRepairOrders;
-    @Inject
     CarRepairMaster carRepairMaster;
-    @Inject
-    CarRepairOutput carRepairOutput;
-    @Inject
-    CarRepairInput carRepairInput;
-    @Inject
-    Config config;
-    @Inject
-    CarRepairDate carRepairDate;
-    @Inject
     CarRepairOrderMaster carRepairOrderMaster;
+    CarRepairOutput carRepairOutput;
+    CarRepairInput carRepairInput;
+    Config config;
+    CarRepairDate carRepairDate;
+
+    public CarRepairViewFunctions(CarRepairGarage carRepairGarage, CarRepairOrders carRepairOrders, CarRepairMaster carRepairMaster,
+                                  CarRepairOutput carRepairOutput, CarRepairOrderMaster carRepairOrderMaster, CarRepairInput carRepairInput,
+                                  Config config, CarRepairDate carRepairDate){
+        this.carRepairGarage = carRepairGarage;
+        this.carRepairOrders = carRepairOrders;
+        this.carRepairMaster = carRepairMaster;
+        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.carRepairOutput = carRepairOutput;
+        this.carRepairInput = carRepairInput;
+        this.config = config;
+        this.carRepairDate = carRepairDate;
+    }
 
     public void getListOrders() {
         carRepairOutput.printOrders(carRepairOrders.getListOfOrders(carRepairInput.whatSortTypeOrder()));

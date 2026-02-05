@@ -3,7 +3,7 @@ package com.oskin.autoservice.view;
 import java.util.ArrayList;
 
 public class Menu {
-    private String title;
+    private final String title;
     private ArrayList<MenuItem> menuItems = new ArrayList<>();
 
     public void executeOfNumber(int number) {

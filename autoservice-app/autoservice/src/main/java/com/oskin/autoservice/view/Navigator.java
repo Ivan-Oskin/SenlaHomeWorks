@@ -1,16 +1,21 @@
 package com.oskin.autoservice.view;
 
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Singleton
+@Component
 public class Navigator {
     private Menu currentMenu;
     private ArrayList<Menu> menu = new ArrayList<>();
-    @Inject
-    CarRepairInput carRepairInput;
+
+    private CarRepairInput carRepairInput;
+
+    @Autowired
+    public Navigator(CarRepairInput carRepairInput){
+        this.carRepairInput = carRepairInput;
+    }
 
     public void addMenu(Menu menu) {
         this.menu.add(menu);
