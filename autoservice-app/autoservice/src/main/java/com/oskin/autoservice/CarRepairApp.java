@@ -1,21 +1,18 @@
 package com.oskin.autoservice;
 import com.oskin.autoservice.view.MainMenu;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 
-@SpringBootApplication
+
 @ComponentScan(basePackages = {"com.oskin.autoservice", "com.oskin.config"})
+@PropertySource("classpath:application.properties")
 public class CarRepairApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(CarRepairApp.class, args);
-    }
-
-    @Bean
-    public CommandLineRunner runApp(MainMenu mainMenu) {
-        return args -> mainMenu.run();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CarRepairApp.class);
+        MainMenu mainMenu = context.getBean(MainMenu.class);
+        mainMenu.run();
+        context.close();
     }
 }

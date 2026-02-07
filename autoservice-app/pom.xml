@@ -23,7 +23,7 @@
         <postgresql-version>42.7.9</postgresql-version>
         <jpa-version>2.2</jpa-version>
         <hibernate-version>7.2.2.Final</hibernate-version>
-        <spring-boot-version>4.0.0</spring-boot-version>
+        <spring-version>7.0.0</spring-version>
     </properties>
 
     <dependencies>
@@ -43,9 +43,19 @@
             <version>${logback-version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-            <version>${spring-boot-version}</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring-version}</version>
         </dependency>
     </dependencies>
     <build>
