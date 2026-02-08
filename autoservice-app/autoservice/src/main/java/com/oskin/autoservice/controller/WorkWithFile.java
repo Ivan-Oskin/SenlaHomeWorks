@@ -1,34 +1,48 @@
 package com.oskin.autoservice.controller;
 
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
-import com.oskin.autoservice.view.CarRepairInput;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
-@Singleton
+@Controller
 public class WorkWithFile {
-    @Inject
-    private CarRepairInput carRepairInput;
-    @Inject
-    private Config config;
-    private final Logger logger = LoggerFactory.getLogger(WorkWithFile.class);
+    private final Config config;
 
-    public void exportData(ArrayList<String> dataString, String fileName, boolean isStandart) {
+    private final Logger logger = LoggerFactory.getLogger(WorkWithFile.class);
+    private final Scanner scanner = new Scanner(System.in);
+
+    @Autowired
+    public WorkWithFile(Config config) {
+        this.config = config;
+    }
+
+    public int inputInt() {
+        int input = 0;
+        try {
+            input = scanner.nextInt();
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            scanner.nextLine();
+            logger.error("Надо ввести только цифру!!!");
+        }
+        return input;
+    }
+
+    public void exportData(ArrayList<String> dataString, String fileName, boolean isStandard) {
         String name;
         if (!fileName.endsWith(".csv")) {
             name = fileName + ".csv";
@@ -36,7 +50,7 @@ public class WorkWithFile {
             name = fileName;
         }
         File file;
-        if (isStandart) {
+        if (isStandard) {
             Path path = Paths.get(config.getStandardPathToData() + name);
             file = path.toFile();
         } else {
@@ -54,16 +68,15 @@ public class WorkWithFile {
     public void whereExport(ArrayList<String> dataList, String nameObject) {
         System.out.println("Куда экспортировать данные " + nameObject + "?\n" +
                 "1. " + nameObject + " 2. Выбрать другой файл 0. Выход");
-        int input = 0;
-        while (true) {
-            input = carRepairInput.inputInt();
-            if (input >= 0 && input < 3) break;
-        }
+        int input;
+        do {
+            input = inputInt();
+        } while (!(input >= 0 && input < 3));
         switch (input) {
             case 1:
                 exportData(dataList, nameObject, true);
                 System.out.println("Данные экспортированы");
-                logger.info("successfully export");
+                logger.info("successfully export Standard file");
                 break;
             case 2:
                 Scanner scanner = new Scanner(System.in);
@@ -71,10 +84,8 @@ public class WorkWithFile {
                 String nameFile = scanner.nextLine();
                 exportData(dataList, nameFile, false);
                 System.out.println("Данные экспортированы");
-                logger.info("successfully export");
+                logger.info("successfully export with choice");
                 break;
-            default:
-                return;
         }
     }
 
@@ -96,11 +107,10 @@ public class WorkWithFile {
     public String whereFromImport(String fileName) {
         System.out.println("Откуда импортировать данные " + fileName + "?\n" +
                 "1. " + fileName + " 2. Другой файл формата .csv 0. Выход");
-        int input = 0;
-        while (true) {
-            input = carRepairInput.inputInt();
-            if (input >= 0 && input < 3) break;
-        }
+        int input;
+        do {
+            input = inputInt();
+        } while (!(input >= 0 && input < 3));
         switch (input) {
             case 1:
                 return config.getStandardPathToData() + fileName;
@@ -108,12 +118,13 @@ public class WorkWithFile {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Введите имя файла");
                 String nextFileName;
-                while (true) {
+                do {
                     nextFileName = scanner.nextLine();
-                    if (nextFileName.endsWith(".csv")) break;
-                    System.out.println("Файл должен быть расширения .csv");
-                    return nextFileName;
-                }
+                    if (!nextFileName.endsWith(".csv")) {
+                        System.out.println("Файл должен быть расширения .csv");
+                    }
+                } while (!nextFileName.endsWith(".csv"));
+                return nextFileName;
             default:
                 return "???";
         }

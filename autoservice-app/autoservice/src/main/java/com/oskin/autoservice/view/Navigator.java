@@ -1,16 +1,21 @@
 package com.oskin.autoservice.view;
 
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Singleton
+@Component
 public class Navigator {
     private Menu currentMenu;
-    private ArrayList<Menu> menu = new ArrayList<>();
-    @Inject
-    CarRepairInput carRepairInput;
+    private final ArrayList<Menu> menu = new ArrayList<>();
+
+    private final CarRepairInput carRepairInput;
+
+    @Autowired
+    public Navigator(CarRepairInput carRepairInput) {
+        this.carRepairInput = carRepairInput;
+    }
 
     public void addMenu(Menu menu) {
         this.menu.add(menu);
@@ -36,8 +41,7 @@ public class Navigator {
             int input;
             printMenu();
             input = carRepairInput.inputInt();
-            if (input == 0) return;
-            else this.currentMenu.executeOfNumber(input - 1);
+            if (input != 0) this.currentMenu.executeOfNumber(input - 1);
         } else System.out.println("Такой команды нет");
     }
 }

@@ -9,9 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>di</module>
         <module>autoservice</module>
-        <module>annotations</module>
     </modules>
 
     <properties>
@@ -25,6 +23,7 @@
         <postgresql-version>42.7.9</postgresql-version>
         <jpa-version>2.2</jpa-version>
         <hibernate-version>7.2.2.Final</hibernate-version>
+        <spring-version>7.0.0</spring-version>
     </properties>
 
     <dependencies>
@@ -42,6 +41,21 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring-version}</version>
         </dependency>
     </dependencies>
     <build>

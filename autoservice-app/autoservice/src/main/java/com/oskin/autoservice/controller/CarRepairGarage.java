@@ -1,37 +1,35 @@
 package com.oskin.autoservice.controller;
-import com.oskin.annotations.Inject;
+
 import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.SortTypeOrder;
 import com.oskin.autoservice.model.SortTypePlace;
-import com.oskin.annotations.Singleton;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
-@Singleton
-public final class CarRepairGarage {
-    @Inject
+
+@Controller
+public class CarRepairGarage {
     WorkWithFile workWithFile;
-    @Inject
     Config config;
-    @Inject
     PlaceRepository placeRepository;
-    @Inject
     CarRepairOrders carRepairOrders;
-    Logger logger = LoggerFactory.getLogger(CarRepairGarage.class);
-    private static CarRepairGarage instance;
-    private CarRepairGarage() {
-    }
 
-    public static CarRepairGarage getInstance() {
-        if (instance == null)
-            instance = new  CarRepairGarage();
-        return instance;
+    Logger logger = LoggerFactory.getLogger(CarRepairGarage.class);
+
+    @Autowired
+    public CarRepairGarage(WorkWithFile workWithFile, Config config, PlaceRepository placeRepository, CarRepairOrders carRepairOrders) {
+        this.workWithFile = workWithFile;
+        this.config = config;
+        this.placeRepository = placeRepository;
+        this.carRepairOrders = carRepairOrders;
     }
 
     public void addPlace(int id, String name) {
@@ -43,6 +41,14 @@ public final class CarRepairGarage {
         return placeRepository.delete(name);
     }
 
+    public Place findPlace(int id) {
+        return placeRepository.find(id);
+    }
+
+    public void updatePlace(Place place) {
+        placeRepository.update(place);
+    }
+
     public ArrayList<Place> getListOfPlace() {
         return placeRepository.findAll(SortTypePlace.ID);
     }
@@ -50,13 +56,13 @@ public final class CarRepairGarage {
         return placeRepository.find(name);
     }
     public ArrayList<Place> getFreePlace(LocalDateTime date) {
-        ArrayList<Place> newList = new ArrayList<Place>(getListOfPlace());
+        ArrayList<Place> newList = new ArrayList<>(getListOfPlace());
         LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
         ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
         for (Order order : ordersByTime) {
-            if (order.getTimeStart().compareTo(date) <= 0 && order.getTimeComplete().compareTo(date) >= 0) {
-               newList.removeIf(place -> place.getId() == order.getPlace().getId());
+            if (!order.getTimeStart().isAfter(date) && !order.getTimeComplete().isBefore(date)) {
+                newList.removeIf(place -> place.getId() == order.getPlace().getId());
             }
         }
         return newList;

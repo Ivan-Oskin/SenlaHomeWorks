@@ -1,26 +1,18 @@
 package com.oskin.autoservice;
-
-import com.oskin.di.BuilderObject;
-import com.oskin.di.DIContainer;
-import com.oskin.di.InjectObject;
 import com.oskin.autoservice.view.MainMenu;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 
-public final class CarRepairApp {
-    private static CarRepairApp instance;
 
-    private CarRepairApp() {
-    }
-
-    public static CarRepairApp getInstance() {
-        if (instance == null) {
-            instance = new CarRepairApp();
-        }
-        return instance;
-    }
+@ComponentScan(basePackages = {"com.oskin.autoservice", "com.oskin.config"})
+@PropertySource("classpath:application.properties")
+public class CarRepairApp {
 
     public static void main(String[] args) {
-        DIContainer DI = new DIContainer(new BuilderObject(), new InjectObject());
-        MainMenu mainMenu = DI.getDependecy(MainMenu.class);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(CarRepairApp.class);
+        MainMenu mainMenu = context.getBean(MainMenu.class);
         mainMenu.run();
+        context.close();
     }
 }

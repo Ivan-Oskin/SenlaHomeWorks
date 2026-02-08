@@ -1,20 +1,15 @@
 package com.oskin.autoservice.view;
 
 public class MenuItem {
-    private int number;
-    private String title;
-    private IAction action;
+    private final int number;
+    private final String title;
+    private final IAction action;
 
     public MenuItem(int number, String title, IAction action) {
         this.number = number;
         this.action = action;
         this.title = title;
     }
-
-    public int getNumber() {
-        return number;
-    }
-
     public String getTitle() {
         return title;
     }

@@ -3,8 +3,8 @@ package com.oskin.autoservice.view;
 import java.util.ArrayList;
 
 public class Menu {
-    private String title;
-    private ArrayList<MenuItem> menuItems = new ArrayList<>();
+    private final String title;
+    private final ArrayList<MenuItem> menuItems;
 
     public void executeOfNumber(int number) {
         if (number >= 0 && number < menuItems.size()) {
@@ -26,21 +26,6 @@ public class Menu {
 
     public String getTitle() {
         return title;
-    }
-
-    public void addMenuItem(MenuItem menuItem) {
-        menuItems.add(menuItem);
-    }
-
-    public void execute(int number) {
-        boolean flag = false;
-        for (MenuItem menuItem : menuItems) {
-            if (menuItem.getNumber() == number) {
-                menuItem.execute();
-                flag = true;
-            }
-        }
-        if (!flag) System.out.print("команда не найдена");
     }
 
     public Menu(String title, ArrayList<MenuItem> items) {

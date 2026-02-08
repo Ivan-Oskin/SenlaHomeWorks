@@ -1,27 +1,28 @@
 package com.oskin.autoservice.view;
-
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
+import com.oskin.autoservice.controller.CarRepairOrderMaster;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.autoservice.model.Place;
-import com.oskin.autoservice.repository.OrderMasterRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@Singleton
+@Component
 public class CarRepairOutput {
-    @Inject
-    OrderMasterRepository orderMasterRepository;
+    CarRepairOrderMaster carRepairOrderMaster;
+
     Logger logger = LoggerFactory.getLogger(CarRepairOutput.class);
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
-    public CarRepairOutput() {
+    @Autowired
+    public CarRepairOutput(CarRepairOrderMaster carRepairOrderMaster) {
+        this.carRepairOrderMaster = carRepairOrderMaster;
     }
 
     public void infAboutAdd(String nameObject) {
@@ -60,7 +61,7 @@ public class CarRepairOutput {
     public void printMasters(ArrayList<Master> masters, boolean printOrder) {
         for (Master master : masters) {
             System.out.println(master.getId() + " " + master.getName());
-            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
+            ArrayList<OrderMaster> orderMasters = carRepairOrderMaster.getOrdersByMasterInDB(master.getId());
             if (!orderMasters.isEmpty() && printOrder) {
                 System.out.println("Заказы:");
                 for (OrderMaster orderMaster : orderMasters) {

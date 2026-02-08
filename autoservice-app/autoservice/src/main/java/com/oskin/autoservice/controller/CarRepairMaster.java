@@ -1,43 +1,42 @@
 package com.oskin.autoservice.controller;
-import com.oskin.annotations.Inject;
-import com.oskin.annotations.Singleton;
+
+import com.oskin.autoservice.model.Master;
+import com.oskin.autoservice.model.Order;
+import com.oskin.autoservice.model.OrderMaster;
+import com.oskin.autoservice.model.SortTypeMaster;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
-import com.oskin.autoservice.model.Master;
-import com.oskin.autoservice.model.Order;
-import com.oskin.autoservice.model.SortTypeMaster;
-import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 
-@Singleton
-public final class CarRepairMaster {
-    @Inject
+@Controller
+public class CarRepairMaster {
     WorkWithFile workWithFile;
-    @Inject
     Config config;
-    @Inject
     MasterRepository masterRepository;
-    @Inject
     CarRepairOrderMaster carRepairOrderMaster;
-    @Inject
     OrderMasterRepository orderMasterRepository;
-    @Inject
     OrderRepository orderRepository;
-    private final Logger logger = LoggerFactory.getLogger(CarRepairMaster.class);
-    private static CarRepairMaster instance;
-    private CarRepairMaster() {
 
+    private final Logger logger = LoggerFactory.getLogger(CarRepairMaster.class);
+
+    @Autowired
+    public CarRepairMaster(WorkWithFile workWithFile, Config config, MasterRepository masterRepository,
+                                    CarRepairOrderMaster carRepairOrderMaster, OrderMasterRepository orderMasterRepository,
+                                    OrderRepository orderRepository) {
+        this.workWithFile = workWithFile;
+        this.config = config;
+        this.masterRepository = masterRepository;
+        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.orderMasterRepository = orderMasterRepository;
+        this.orderRepository = orderRepository;
     }
-    public static CarRepairMaster getInstance() {
-        if (instance == null) {
-            instance = new CarRepairMaster();
-        }
-        return instance;
-    }
+
     public void addMaster(int id, String name) {
         Master master = new Master(id, name);
         masterRepository.create(master);
@@ -51,9 +50,17 @@ public final class CarRepairMaster {
         }
         return false;
     }
+
+    public Master findMaster(int id) {
+        return masterRepository.find(id);
+    }
+
+    public void updateMaster(Master master) {
+        masterRepository.update(master);
+    }
+
     public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
-        ArrayList<Master> masters = masterRepository.findAll(sortType);
-        return masters;
+        return masterRepository.findAll(sortType);
     }
 
     public ArrayList<Master> getMastersByOrder(String name) {

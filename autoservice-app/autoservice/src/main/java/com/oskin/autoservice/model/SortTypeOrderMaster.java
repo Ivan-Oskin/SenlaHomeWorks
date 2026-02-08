@@ -5,7 +5,7 @@ public enum SortTypeOrderMaster implements SortType {
     MASTER_ID("master_id"),
     ORDER_ID("order_id");
 
-    private String sortType;
+    private final String sortType;
 
     SortTypeOrderMaster(String sortType) {
         this.sortType = sortType;

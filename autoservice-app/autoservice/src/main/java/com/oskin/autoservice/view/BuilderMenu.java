@@ -1,13 +1,12 @@
 package com.oskin.autoservice.view;
 
-import com.oskin.annotations.Singleton;
-
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Singleton
+@Component
 public class BuilderMenu {
-    private ArrayList<MenuItem> items = new ArrayList<>();
+    private final  ArrayList<MenuItem> items = new ArrayList<>();
     private String title = "";
 
     public void setTitle(String name) {
@@ -20,7 +19,7 @@ public class BuilderMenu {
     }
 
     public Menu build() {
-        String newTitle = new String(this.title);
+        String newTitle = this.title;
         ArrayList<MenuItem> newItems = new ArrayList<>(this.items);
         Menu menu = new Menu(newTitle, newItems);
         this.title = "";
