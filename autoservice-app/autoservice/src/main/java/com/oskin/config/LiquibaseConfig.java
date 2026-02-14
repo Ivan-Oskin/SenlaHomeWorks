@@ -12,12 +12,12 @@ public class LiquibaseConfig {
     Config config;
 
     @Autowired
-    public LiquibaseConfig(Config config){
+    public LiquibaseConfig(Config config) {
         this.config = config;
     }
 
     @Bean
-    public SpringLiquibase liquibase(DataSource dataSource){
+    public SpringLiquibase liquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setChangeLog(config.getChangelog());
         liquibase.setDataSource(dataSource);

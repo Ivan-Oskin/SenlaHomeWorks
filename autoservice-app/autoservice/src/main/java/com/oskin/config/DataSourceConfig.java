@@ -11,7 +11,7 @@ public class DataSourceConfig {
     Config config;
 
     @Autowired
-    public DataSourceConfig(Config config){
+    public DataSourceConfig(Config config) {
         this.config = config;
     }
 
