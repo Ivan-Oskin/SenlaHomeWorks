@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: v1.0/01-changeset-place.yml
+      relativeToChangelogFile: true
+  - include:
+      file: v1.0/02-changeset-master.yml
+      relativeToChangelogFile: true
+  - include:
+      file: v1.0/03-changeset-order.yml
+      relativeToChangelogFile: true
+  - include:
+      file: v1.0/04-changeset-order_master.yml
+      relativeToChangelogFile: true

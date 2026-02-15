@@ -22,11 +22,11 @@ public class Order implements IIdentified {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private StatusOrder status;
-    @Column(name = "timeCreate")
+    @Column(name = "time_create")
     private LocalDateTime timeCreate;
-    @Column(name = "timeStart")
+    @Column(name = "time_start")
     private LocalDateTime timeStart;
-    @Column(name = "timeComplete")
+    @Column(name = "time_complete")
     private LocalDateTime timeComplete;
     @Column(name = "cost")
     private int cost;
