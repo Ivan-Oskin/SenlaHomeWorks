@@ -3,11 +3,12 @@ package com.oskin.autoservice.repository;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.SortType;
 import com.oskin.autoservice.model.SortTypeMaster;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -108,49 +109,43 @@ public class MasterRepository implements CrudRepository<Master> {
     }
 
     @Override
+    @Transactional
     public boolean delete(int id) {
         logger.info("Start delete master ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Master master = find(id);
             if (master != null) {
                 SessionHibernate.getSession().remove(master);
                 logger.info("successful delete master");
-                transaction.commit();
                 return true;
             }
         } catch (Exception e) {
             loggerFile.error("error delete master {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
 
     @Override
+    @Transactional
     public void create(Master master) {
         logger.info("Start create master");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(master);
-            transaction.commit();
             logger.info("successful create master ");
         } catch (Exception e) {
-            transaction.rollback();
             loggerFile.error("error create master {}", e.getMessage());
         }
     }
 
     @Override
+    @Transactional
     public void update(Master master) {
         logger.info("Start update master ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(master);
             logger.info("successful update master ");
-            transaction.commit();
         } catch (Exception e) {
             loggerFile.error("error update master {}", e.getMessage());
-            transaction.rollback();
         }
     }
 }

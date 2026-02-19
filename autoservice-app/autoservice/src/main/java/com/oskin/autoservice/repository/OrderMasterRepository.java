@@ -4,13 +4,14 @@ import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.autoservice.model.SortType;
-import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,32 +66,27 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
         return (ArrayList<OrderMaster>) orderMasters;
     }
     @Override
+    @Transactional
     public void create(OrderMaster orderMaster) {
         logger.info("Start create orderMaster");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().persist(orderMaster);
-            transaction.commit();
             logger.info("successful create orderMaster ");
         } catch (Exception e) {
-            transaction.rollback();
             loggerFile.error("create orderMaster error {}", e.getMessage());
         }
     }
 
-
+    @Transactional
     public void create(int id, int idMaster, int idOrder) {
         Order order = orderRepository.find(idOrder);
         Master master = masterRepository.find(idMaster);
         OrderMaster orderMaster = new OrderMaster(id, order, master);
         logger.info("Start create orderMaster by fields ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(orderMaster);
-            transaction.commit();
             logger.info("successful create orderMaster by fields ");
         } catch (Exception e) {
-            transaction.rollback();
             loggerFile.error("error create orderMaster by fields {}", e.getMessage());
         }
     }
@@ -127,56 +123,51 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
         return (ArrayList<OrderMaster>) orderMasters;
     }
 
+    @Transactional
     public void deleteByMaster(int idMaster) {
         logger.info("start deleteByMaster orderMaster");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         String hql = "DELETE FROM OrderMaster om WHERE om.master.id = :masterId";
         try {
             Query<?> query = SessionHibernate.getSession().createQuery(hql);
             query.setParameter("masterId", idMaster);
             int deleted = query.executeUpdate();
             if (deleted > 0) {
-                transaction.commit();
                 logger.info("successful deleteByMaster orderMaster ");
             }
         } catch (Exception e) {
             loggerFile.error("error deleteByMaster orderMaster {}", e.getMessage());
-            transaction.rollback();
         }
     }
+
+    @Transactional
     public void deleteByOrder(int idOrder) {
         logger.info("start deleteByOrder orderMaster");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         String hql = "DELETE FROM OrderMaster om WHERE om.order.id = :orderId";
         try {
             Query<?> query = SessionHibernate.getSession().createQuery(hql);
             query.setParameter("orderId", idOrder);
             int deleted = query.executeUpdate();
             if (deleted > 0) {
-                transaction.commit();
                 logger.info("successful deleteByOrder orderMaster ");
             }
         } catch (Exception e) {
             loggerFile.error("error deleteByOrder orderMaster {}", e.getMessage());
-            transaction.rollback();
         }
     }
 
     @Override
+    @Transactional
     public boolean delete(int id) {
         logger.info("Start delete orderMaster ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             OrderMaster orderMaster = find(id);
             if (orderMaster != null) {
                 SessionHibernate.getSession().remove(orderMaster);
                 logger.info("successful delete orderMaster");
-                transaction.commit();
                 return true;
             }
         } catch (Exception e) {
             loggerFile.error("error delete orderMaster {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
@@ -216,16 +207,14 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
     }
 
     @Override
+    @Transactional
     public void update(OrderMaster orderMaster) {
         logger.info("Start update orderMaster ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(orderMaster);
             logger.info("successful update orderMaster ");
-            transaction.commit();
         } catch (Exception e) {
             loggerFile.error("error update orderMaster {}", e.getMessage());
-            transaction.rollback();
         }
     }
 }

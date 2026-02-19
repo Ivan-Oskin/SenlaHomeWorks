@@ -3,12 +3,13 @@ package com.oskin.autoservice.repository;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.SortType;
-import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -118,42 +119,38 @@ public class OrderRepository implements CrudRepository<Order> {
     }
 
     @Override
+    @Transactional
     public boolean delete(int id) {
         logger.info("Start delete order ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Order order = find(id);
             if (order != null) {
                 SessionHibernate.getSession().remove(order);
                 logger.info("successful delete order ");
-                transaction.commit();
                 return true;
             }
         } catch (Exception e) {
             loggerFile.error("error delete order {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
 
     @Override
+    @Transactional
     public void create(Order order) {
         logger.info("Start create order");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(order);
-            transaction.commit();
             logger.info("successful create order");
         } catch (Exception e) {
-            transaction.rollback();
             loggerFile.error("error create order {}", e.getMessage());
         }
     }
 
+    @Transactional
     public boolean changeStatusInDb(String name, StatusOrder statusOrder) {
         logger.info("start changeStatus order");
         String hql = "UPDATE Order o SET o.status = :status WHERE o.name = :name";
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Query<?> query = SessionHibernate.getSession().createQuery(hql);
             query.setParameter("status", statusOrder);
@@ -161,7 +158,6 @@ public class OrderRepository implements CrudRepository<Order> {
             int changed = query.executeUpdate();
             if (changed > 0) {
                 logger.info("successful changeStatus order");
-                transaction.commit();
                 if (SessionHibernate.getSession().getSessionFactory().getCache() != null) {
                     SessionHibernate.getSession().clear();
                 }
@@ -169,15 +165,14 @@ public class OrderRepository implements CrudRepository<Order> {
             }
         } catch (Exception e) {
             loggerFile.error("error changeStatus order {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
 
+    @Transactional
     public boolean offsetInDb(String name, LocalDateTime timeStart, LocalDateTime timeComplete) {
         logger.info("start offset order");
         String hql = "UPDATE Order o SET o.timeStart = :timeStart, timeComplete = :timeComplete WHERE name = :name";
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Query<?> query = SessionHibernate.getSession().createQuery(hql);
             query.setParameter("timeStart", timeStart);
@@ -186,7 +181,6 @@ public class OrderRepository implements CrudRepository<Order> {
             int changed = query.executeUpdate();
             if (changed > 0) {
                 logger.info("successful offset order");
-                transaction.commit();
                 if (SessionHibernate.getSession().getSessionFactory().getCache() != null) {
                     SessionHibernate.getSession().clear();
                 }
@@ -194,21 +188,18 @@ public class OrderRepository implements CrudRepository<Order> {
             }
         } catch (Exception e) {
             loggerFile.error("error offset order {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
 
+    @Transactional
     public void update(Order order) {
         logger.info("Start update order ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(order);
             logger.info("successful update order ");
-            transaction.commit();
         } catch (Exception e) {
             loggerFile.error("error update order {}", e.getMessage());
-            transaction.rollback();
         }
     }
 }

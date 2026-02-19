@@ -3,11 +3,12 @@ package com.oskin.autoservice.repository;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.SortType;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -35,23 +36,21 @@ public class PlaceRepository implements CrudRepository<Place> {
     }
 
     @Override
+    @Transactional
     public void create(Place place) {
         logger.info("Start create place");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(place);
-            transaction.commit();
             logger.info("successful create place ");
         } catch (Exception e) {
-            transaction.rollback();
             loggerFile.error("error create place {}", e.getMessage());
         }
     }
 
     @Override
+    @Transactional
     public boolean delete(int id) {
         logger.info("Start delete place ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Place place = find(id);
             if (place != null) {
@@ -62,7 +61,6 @@ public class PlaceRepository implements CrudRepository<Place> {
                 if (ordersWithThisPlace.isEmpty()) {
                     SessionHibernate.getSession().remove(place);
                     logger.info("successful delete place ");
-                    transaction.commit();
                     return true;
                 } else {
                     loggerFile.error("error delete place because place have orders");
@@ -77,7 +75,6 @@ public class PlaceRepository implements CrudRepository<Place> {
             }
         } catch (Exception e) {
             loggerFile.error("error delete place {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
@@ -106,16 +103,14 @@ public class PlaceRepository implements CrudRepository<Place> {
     }
 
     @Override
+    @Transactional
     public void update(Place place) {
         logger.info("Start update place ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             SessionHibernate.getSession().merge(place);
             logger.info("successful update place ");
-            transaction.commit();
         } catch (Exception e) {
             loggerFile.error("error update place {}", e.getMessage());
-            transaction.rollback();
         }
     }
     public Place find(String name) {
