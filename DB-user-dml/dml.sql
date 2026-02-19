@@ -8,7 +8,7 @@ INSERT INTO masters (id, name) VALUES
 (2, 'master2'),
 (3, 'master3');
 
-INSERT INTO orders (id, name, status, timeCreate, timeStart, timeComplete, cost, place_id) VALUES
+INSERT INTO orders (id, name, status, time_create, time_start, time_complete, cost, place_id) VALUES
 (1, 'order1', 'ACTIVE', 
  '2026-01-01 12:00:00', '2026-01-02 13:00:00', '2026-01-02 14:00:00', 5000, 1),
 
