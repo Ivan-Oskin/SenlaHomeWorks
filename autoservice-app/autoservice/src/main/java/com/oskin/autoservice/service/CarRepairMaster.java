@@ -1,4 +1,4 @@
-package com.oskin.autoservice.controller;
+package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
@@ -11,10 +11,12 @@ import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 
-@Controller
+@Service
 public class CarRepairMaster {
     WorkWithFile workWithFile;
     Config config;
@@ -37,10 +39,12 @@ public class CarRepairMaster {
         this.orderRepository = orderRepository;
     }
 
+    @Transactional
     public void addMaster(int id, String name) {
         Master master = new Master(id, name);
         masterRepository.create(master);
     }
+    @Transactional
     public boolean deleteMaster(String name) {
         Master master = masterRepository.find(name);
         if (master != null) {
@@ -55,6 +59,7 @@ public class CarRepairMaster {
         return masterRepository.find(id);
     }
 
+    @Transactional
     public void updateMaster(Master master) {
         masterRepository.update(master);
     }

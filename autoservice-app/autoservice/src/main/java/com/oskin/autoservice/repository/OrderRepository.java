@@ -7,9 +7,8 @@ import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,6 +23,12 @@ public class OrderRepository implements CrudRepository<Order> {
     private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);
     private final Logger loggerFile = LoggerFactory.getLogger("file");
 
+    SessionHibernate session;
+    @Autowired
+    OrderRepository(SessionHibernate session) {
+        this.session = session;
+    }
+
     @Override
     public <G extends SortType> ArrayList<Order> findAll(G sortType) {
         logger.info("Start findAll order ");
@@ -32,14 +37,14 @@ public class OrderRepository implements CrudRepository<Order> {
             String hql = "SELECT o FROM Order o " +
                     "LEFT JOIN FETCH o.place p " +
                     "ORDER BY o." + sortType.getStringSortType();
-            Query<Order> query = SessionHibernate.getSession().createQuery(hql, Order.class);
+            Query<Order> query = session.getSession().createQuery(hql, Order.class);
             orders = query.getResultList();
             Iterator<Order> iterator = orders.iterator();
             while (iterator.hasNext()) {
                 Order order = iterator.next();
                  if (order.getPlace() == null) {
                     String sql = "SELECT place_id FROM orders WHERE id = " + order.getId();
-                    NativeQuery<Integer> queryPlaceId = SessionHibernate.getSession().createNativeQuery(sql, Integer.class);
+                    NativeQuery<Integer> queryPlaceId = session.getSession().createNativeQuery(sql, Integer.class);
                     List<Integer> listPlaceId = queryPlaceId.getResultList();
                     logger.error("place_id = {} не найден, order {} не будет выведен", listPlaceId.get(0), order.getName());
                     loggerFile.error("place_id = {} no found, order {}", listPlaceId.get(0), order.getName());
@@ -56,7 +61,7 @@ public class OrderRepository implements CrudRepository<Order> {
     public Order find(String name) {
         logger.info("start findByName order");
         try {
-            Query<Order> query = SessionHibernate.getSession().createQuery("From Order WHERE name = :name", Order.class);
+            Query<Order> query = session.getSession().createQuery("From Order WHERE name = :name", Order.class);
             query.setParameter("name", name);
             List<Order> orders = query.getResultList();
             if (orders.size() > 1) {
@@ -97,7 +102,7 @@ public class OrderRepository implements CrudRepository<Order> {
     public Order find(int id) {
         logger.info("Start findById order ");
         try {
-            Order order = SessionHibernate.getSession().find(Order.class, id);
+            Order order = session.getSession().find(Order.class, id);
             if (order != null) {
                 logger.info("successful findById order ");
                 return order;
@@ -119,13 +124,13 @@ public class OrderRepository implements CrudRepository<Order> {
     }
 
     @Override
-    @Transactional
+
     public boolean delete(int id) {
         logger.info("Start delete order ");
         try {
             Order order = find(id);
             if (order != null) {
-                SessionHibernate.getSession().remove(order);
+                session.getSession().remove(order);
                 logger.info("successful delete order ");
                 return true;
             }
@@ -136,30 +141,30 @@ public class OrderRepository implements CrudRepository<Order> {
     }
 
     @Override
-    @Transactional
+
     public void create(Order order) {
         logger.info("Start create order");
         try {
-            SessionHibernate.getSession().merge(order);
+            session.getSession().merge(order);
             logger.info("successful create order");
         } catch (Exception e) {
             loggerFile.error("error create order {}", e.getMessage());
         }
     }
 
-    @Transactional
+
     public boolean changeStatusInDb(String name, StatusOrder statusOrder) {
         logger.info("start changeStatus order");
         String hql = "UPDATE Order o SET o.status = :status WHERE o.name = :name";
         try {
-            Query<?> query = SessionHibernate.getSession().createQuery(hql);
+            Query<?> query = session.getSession().createQuery(hql);
             query.setParameter("status", statusOrder);
             query.setParameter("name", name);
             int changed = query.executeUpdate();
             if (changed > 0) {
                 logger.info("successful changeStatus order");
-                if (SessionHibernate.getSession().getSessionFactory().getCache() != null) {
-                    SessionHibernate.getSession().clear();
+                if (session.getSession().getSessionFactory().getCache() != null) {
+                    session.getSession().clear();
                 }
                 return true;
             }
@@ -169,20 +174,20 @@ public class OrderRepository implements CrudRepository<Order> {
         return false;
     }
 
-    @Transactional
+
     public boolean offsetInDb(String name, LocalDateTime timeStart, LocalDateTime timeComplete) {
         logger.info("start offset order");
         String hql = "UPDATE Order o SET o.timeStart = :timeStart, timeComplete = :timeComplete WHERE name = :name";
         try {
-            Query<?> query = SessionHibernate.getSession().createQuery(hql);
+            Query<?> query = session.getSession().createQuery(hql);
             query.setParameter("timeStart", timeStart);
             query.setParameter("timeComplete", timeComplete);
             query.setParameter("name", name);
             int changed = query.executeUpdate();
             if (changed > 0) {
                 logger.info("successful offset order");
-                if (SessionHibernate.getSession().getSessionFactory().getCache() != null) {
-                    SessionHibernate.getSession().clear();
+                if (session.getSession().getSessionFactory().getCache() != null) {
+                    session.getSession().clear();
                 }
                 return true;
             }
@@ -192,11 +197,11 @@ public class OrderRepository implements CrudRepository<Order> {
         return false;
     }
 
-    @Transactional
+
     public void update(Order order) {
         logger.info("Start update order ");
         try {
-            SessionHibernate.getSession().merge(order);
+            session.getSession().merge(order);
             logger.info("successful update order ");
         } catch (Exception e) {
             loggerFile.error("error update order {}", e.getMessage());

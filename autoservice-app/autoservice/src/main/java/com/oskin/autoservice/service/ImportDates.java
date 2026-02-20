@@ -1,4 +1,4 @@
-package com.oskin.autoservice.controller;
+package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.StatusOrder;
@@ -9,7 +9,9 @@ import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-@Controller
+@Service
 public class ImportDates {
     CarRepairOrders carRepairOrders;
     CarRepairGarage carRepairGarage;
@@ -60,7 +62,7 @@ public class ImportDates {
             else if (x == 2) return false;
         }
     }
-
+    @Transactional
     public void importOrder() {
         logger.info("Start import order");
         boolean replace = replaceAgree();
@@ -130,7 +132,7 @@ public class ImportDates {
             logger.info("successfully import order");
         }
     }
-
+    @Transactional
     public void importGarage() {
         logger.info("Start import garage");
         boolean replace = replaceAgree();
@@ -164,7 +166,7 @@ public class ImportDates {
             logger.info("successfully import place");
         }
     }
-
+    @Transactional
     public void importMaster() {
         logger.info("Start import master");
         boolean replace = replaceAgree();
@@ -198,7 +200,7 @@ public class ImportDates {
             logger.info("successfully import master");
         }
     }
-
+    @Transactional
     public void importOrderMaster() {
         logger.info("Start import orderMaster");
         boolean replace = replaceAgree();

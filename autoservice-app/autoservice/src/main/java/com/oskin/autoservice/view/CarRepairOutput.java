@@ -1,5 +1,5 @@
 package com.oskin.autoservice.view;
-import com.oskin.autoservice.controller.CarRepairOrderMaster;
+import com.oskin.autoservice.service.CarRepairOrderMaster;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;

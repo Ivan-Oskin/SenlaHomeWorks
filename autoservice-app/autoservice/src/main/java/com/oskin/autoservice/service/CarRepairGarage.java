@@ -1,4 +1,4 @@
-package com.oskin.autoservice.controller;
+package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.model.Place;
@@ -12,10 +12,11 @@ import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
-@Controller
+@Service
 public class CarRepairGarage {
     WorkWithFile workWithFile;
     Config config;
@@ -32,11 +33,13 @@ public class CarRepairGarage {
         this.carRepairOrders = carRepairOrders;
     }
 
+    @Transactional
     public void addPlace(int id, String name) {
         Place place = new Place(id, name);
         placeRepository.create(place);
     }
 
+    @Transactional
     public boolean deletePlace(String name) {
         return placeRepository.delete(name);
     }
@@ -45,6 +48,7 @@ public class CarRepairGarage {
         return placeRepository.find(id);
     }
 
+    @Transactional
     public void updatePlace(Place place) {
         placeRepository.update(place);
     }
@@ -52,6 +56,7 @@ public class CarRepairGarage {
     public ArrayList<Place> getListOfPlace() {
         return placeRepository.findAll(SortTypePlace.ID);
     }
+
     public Place findPlace(String name) {
         return placeRepository.find(name);
     }

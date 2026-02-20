@@ -1,4 +1,4 @@
-package com.oskin.autoservice.controller;
+package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
@@ -11,10 +11,12 @@ import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 
-@Controller
+@Service
 public class CarRepairOrderMaster {
     MasterRepository masterRepository;
     OrderRepository orderRepository;
@@ -34,6 +36,7 @@ public class CarRepairOrderMaster {
         this.config = config;
     }
 
+    @Transactional
     public void addOrderMaster(int id, int masterId, int orderId) {
         Master master = masterRepository.find(masterId);
         Order order = orderRepository.find(orderId);
@@ -55,6 +58,7 @@ public class CarRepairOrderMaster {
         }
         return masters;
     }
+    @Transactional
     public boolean setOrderMaster(String nameMaster, String nameOrder) {
         Master master = masterRepository.find(nameMaster);
         Order order = orderRepository.find(nameOrder);
@@ -84,14 +88,15 @@ public class CarRepairOrderMaster {
         }
         workWithFile.whereExport(dataList, config.getStandardFileCsvOrderMaster());
     }
-
+    @Transactional
     public void deleteByMaster(int idMaster) {
         orderMasterRepository.deleteByMaster(idMaster);
     }
+
     public OrderMaster findOrderMaster(int id) {
         return orderMasterRepository.find(id);
     }
-
+    @Transactional
     public void updateOrderMaster(OrderMaster orderMaster) {
         orderMasterRepository.update(orderMaster);
     }

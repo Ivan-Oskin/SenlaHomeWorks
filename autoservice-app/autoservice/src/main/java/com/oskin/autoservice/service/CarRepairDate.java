@@ -1,15 +1,16 @@
-package com.oskin.autoservice.controller;
+package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.SortTypeMaster;
 import com.oskin.autoservice.model.SortTypeOrder;
 import com.oskin.autoservice.model.StatusOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-@Controller
+@Service
 public class CarRepairDate {
     CarRepairOrders carRepairOrders;
     CarRepairMaster carRepairMaster;

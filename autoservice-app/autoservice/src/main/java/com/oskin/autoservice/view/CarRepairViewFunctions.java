@@ -1,9 +1,9 @@
 package com.oskin.autoservice.view;
-import com.oskin.autoservice.controller.CarRepairDate;
-import com.oskin.autoservice.controller.CarRepairGarage;
-import com.oskin.autoservice.controller.CarRepairMaster;
-import com.oskin.autoservice.controller.CarRepairOrders;
-import com.oskin.autoservice.controller.CarRepairOrderMaster;
+import com.oskin.autoservice.service.CarRepairDate;
+import com.oskin.autoservice.service.CarRepairGarage;
+import com.oskin.autoservice.service.CarRepairMaster;
+import com.oskin.autoservice.service.CarRepairOrders;
+import com.oskin.autoservice.service.CarRepairOrderMaster;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.SortTypeOrder;

@@ -1,4 +1,4 @@
-package com.oskin.autoservice.controller;
+package com.oskin.autoservice.service;
 
 import com.oskin.config.Config;
 import org.slf4j.Logger;

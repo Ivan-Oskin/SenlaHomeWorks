@@ -1,4 +1,4 @@
-package com.oskin.autoservice.controller;
+package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
@@ -13,12 +13,14 @@ import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-@Controller
+@Service
 public class CarRepairOrders {
     OrderRepository orderRepository;
     MasterRepository masterRepository;
@@ -39,17 +41,17 @@ public class CarRepairOrders {
         this.workWithFile = workWithFile;
         this.config = config;
     }
-
+    @Transactional
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeComplete);
         orderRepository.create(order);
     }
-
+    @Transactional
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete, StatusOrder status) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeComplete, status);
         orderRepository.create(order);
     }
-
+    @Transactional
     public boolean deleteOrder(String name) {
         Order order = orderRepository.find(name);
         if (order != null) {
@@ -62,19 +64,19 @@ public class CarRepairOrders {
     public Order findOrder(int id) {
         return orderRepository.find(id);
     }
-
+    @Transactional
     public void updateOrder(Order order) {
         orderRepository.update(order);
     }
-
+    @Transactional
     public boolean completeOrder(String name) {
         return orderRepository.changeStatusInDb(name, StatusOrder.CLOSE);
     }
-
+    @Transactional
     public boolean cancelOrder(String name) {
         return orderRepository.changeStatusInDb(name, StatusOrder.CANCEL);
     }
-
+    @Transactional
     public boolean offset(String name, int countDay, int countHour) {
         Order order = orderRepository.find(name);
         if (order == null) {
@@ -125,7 +127,6 @@ public class CarRepairOrders {
         }
         return new ArrayList<>();
     }
-
     public void exportOrder() {
         logger.info("Start export order");
         ArrayList<Order> orders = getListOfOrders(SortTypeOrder.ID);

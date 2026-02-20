@@ -1,9 +1,9 @@
 package com.oskin.autoservice.view;
-import com.oskin.autoservice.controller.CarRepairOrderMaster;
-import com.oskin.autoservice.controller.CarRepairGarage;
-import com.oskin.autoservice.controller.CarRepairMaster;
-import com.oskin.autoservice.controller.CarRepairOrders;
-import com.oskin.autoservice.controller.ImportDates;
+import com.oskin.autoservice.service.CarRepairOrderMaster;
+import com.oskin.autoservice.service.CarRepairGarage;
+import com.oskin.autoservice.service.CarRepairMaster;
+import com.oskin.autoservice.service.CarRepairOrders;
+import com.oskin.autoservice.service.ImportDates;
 import com.oskin.autoservice.repository.SessionHibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,11 +21,12 @@ public class MainMenu {
     private final CarRepairOrderMaster carRepairOrderMaster;
     private final CarRepairViewFunctions carRepairViewFunctions;
     private final ImportDates importDates;
+    private final SessionHibernate sessionHibernate;
 
     @Autowired
     public MainMenu(BuilderMenu builderMenu, Navigator navigator, CarRepairGarage carRepairGarage, CarRepairMaster carRepairMaster,
                     CarRepairOrders carRepairOrders, CarRepairOrderMaster carRepairOrderMaster, CarRepairViewFunctions carRepairViewFunctions,
-                    ImportDates importDates) {
+                    ImportDates importDates, SessionHibernate sessionHibernate) {
         this.builderMenu = builderMenu;
         this.navigator = navigator;
         this.carRepairGarage = carRepairGarage;
@@ -34,10 +35,11 @@ public class MainMenu {
         this.carRepairOrderMaster = carRepairOrderMaster;
         this.carRepairViewFunctions = carRepairViewFunctions;
         this.importDates = importDates;
+        this.sessionHibernate = sessionHibernate;
     }
 
     public void run() {
-        SessionHibernate.getSession();
+        sessionHibernate.getSession();
         builderMenu.setTitle("Добавить данные");
         builderMenu.addItem(1, "Добавить мастера", carRepairViewFunctions::addMaster);
         builderMenu.addItem(2, "Добавить место", carRepairViewFunctions::addPlace);
