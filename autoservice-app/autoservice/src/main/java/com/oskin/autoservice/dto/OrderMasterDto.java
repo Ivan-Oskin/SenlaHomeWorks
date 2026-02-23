@@ -5,23 +5,22 @@ public class OrderMasterDto {
     private MasterDto masterDto;
     private OrderDto orderDto;
 
-    public int getId(){
+    public int getId() {
         return this.id;
     }
-    public MasterDto getMasterDto(){
+    public MasterDto getMasterDto() {
         return this.masterDto;
     }
-    public OrderDto getOrderDto(){
+    public OrderDto getOrderDto() {
         return this.orderDto;
     }
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
-    public void setMasterDto(MasterDto masterDto){
+    public void setMasterDto(MasterDto masterDto) {
         this.masterDto = masterDto;
     }
-    public void setOrderDto(OrderDto orderDto){
+    public void setOrderDto(OrderDto orderDto) {
         this.orderDto = orderDto;
     }
-
 }

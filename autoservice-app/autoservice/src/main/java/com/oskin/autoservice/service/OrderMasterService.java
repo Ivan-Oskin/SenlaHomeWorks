@@ -3,7 +3,6 @@ package com.oskin.autoservice.service;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
-import com.oskin.autoservice.model.SortTypeOrderMaster;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;

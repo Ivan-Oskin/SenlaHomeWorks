@@ -1,7 +1,5 @@
 package com.oskin.autoservice.dto;
 import com.oskin.autoservice.model.StatusOrder;
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 public class OrderDto {
@@ -14,52 +12,52 @@ public class OrderDto {
     private int cost;
     private PlaceDto placeDto;
 
-    public int getId(){
+    public int getId() {
         return this.id;
     }
-    public String getName(){
+    public String getName() {
         return this.name;
     }
-    public String getStatus(){
+    public String getStatus() {
         return this.status;
     }
-    public LocalDateTime getTimeCreate(){
+    public LocalDateTime getTimeCreate() {
         return this.timeCreate;
     }
-    public LocalDateTime getTimeStart(){
+    public LocalDateTime getTimeStart() {
         return this.timeStart;
     }
-    public LocalDateTime getTimeComplete(){
+    public LocalDateTime getTimeComplete() {
         return this.timeComplete;
     }
-    public int getCost(){
+    public int getCost() {
         return this.cost;
     }
-    public PlaceDto getPlaceDto(){
+    public PlaceDto getPlaceDto() {
         return this.placeDto;
     }
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
-    public void setStatus(StatusOrder statusOrder){
+    public void setStatus(StatusOrder statusOrder) {
         this.status = statusOrder.getSTATUS();
     }
-    public void setTimeCreate(LocalDateTime timeCreate){
+    public void setTimeCreate(LocalDateTime timeCreate) {
         this.timeCreate = timeCreate;
     }
-    public void setTimeStart(LocalDateTime timeStart){
+    public void setTimeStart(LocalDateTime timeStart) {
         this.timeCreate = timeStart;
     }
-    public void setTimeComplete(LocalDateTime timeComplete){
+    public void setTimeComplete(LocalDateTime timeComplete) {
         this.timeComplete = timeComplete;
     }
-    public void setCost(int cost){
+    public void setCost(int cost) {
         this.cost = cost;
     }
-    public void setPlaceDto(PlaceDto placeDto){
+    public void setPlaceDto(PlaceDto placeDto) {
         this.placeDto = placeDto;
     }
 }

@@ -3,15 +3,15 @@ package com.oskin.autoservice.dto.request;
 public class PlaceRequest {
     private String name;
 
-    public PlaceRequest(String name){
+    public PlaceRequest(String name) {
         this.name = name;
     }
-    public PlaceRequest(){
+    public PlaceRequest() {
     }
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 }

@@ -18,7 +18,7 @@ public class SessionHibernate {
     }
 
     public Session getSession() {
-        try{
+        try {
             logger.info("Начало подключения");
             Session session = hibernateConfig.getSessionFactory().getCurrentSession();
             logger.info("Подключение успешно");
