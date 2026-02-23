@@ -7,12 +7,16 @@ import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.autoservice.model.Place;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+
+@Component
 public class MapperToDto {
     public PlaceDto mapToPlaceDto(Place placeEntity){
         PlaceDto placeDto = new PlaceDto();
         placeDto.setId(placeEntity.getId());
-        placeDto.setName(placeDto.getName());
+        placeDto.setName(placeEntity.getName());
         return placeDto;
     }
     public MasterDto mapToMasterDto(Master masterEntity){
