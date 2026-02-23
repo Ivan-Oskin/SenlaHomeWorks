@@ -17,18 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 
 @Service
-public class CarRepairOrderMaster {
+public class OrderMasterService {
     MasterRepository masterRepository;
     OrderRepository orderRepository;
     OrderMasterRepository orderMasterRepository;
     WorkWithFile workWithFile;
     Config config;
 
-    Logger logger = LoggerFactory.getLogger(CarRepairOrderMaster.class);
+    Logger logger = LoggerFactory.getLogger(OrderMasterService.class);
 
     @Autowired
-    public CarRepairOrderMaster(MasterRepository masterRepository, OrderRepository orderRepository, OrderMasterRepository orderMasterRepository,
-                                WorkWithFile workWithFile, Config config) {
+    public OrderMasterService(MasterRepository masterRepository, OrderRepository orderRepository, OrderMasterRepository orderMasterRepository,
+                              WorkWithFile workWithFile, Config config) {
         this.masterRepository = masterRepository;
         this.orderRepository = orderRepository;
         this.orderMasterRepository = orderMasterRepository;

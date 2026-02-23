@@ -1,9 +1,9 @@
 package com.oskin.autoservice.view;
 import com.oskin.autoservice.service.CarRepairDate;
-import com.oskin.autoservice.service.CarRepairGarage;
-import com.oskin.autoservice.service.CarRepairMaster;
-import com.oskin.autoservice.service.CarRepairOrders;
-import com.oskin.autoservice.service.CarRepairOrderMaster;
+import com.oskin.autoservice.service.PlaceService;
+import com.oskin.autoservice.service.MasterService;
+import com.oskin.autoservice.service.OrderService;
+import com.oskin.autoservice.service.OrderMasterService;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.SortTypeOrder;
@@ -24,22 +24,22 @@ public class CarRepairViewFunctions {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
     private final Logger logger = LoggerFactory.getLogger(CarRepairViewFunctions.class);
 
-    CarRepairGarage carRepairGarage;
-    CarRepairOrders carRepairOrders;
-    CarRepairMaster carRepairMaster;
-    CarRepairOrderMaster carRepairOrderMaster;
+    PlaceService placeService;
+    OrderService orderService;
+    MasterService masterService;
+    OrderMasterService orderMasterService;
     CarRepairOutput carRepairOutput;
     CarRepairInput carRepairInput;
     Config config;
     CarRepairDate carRepairDate;
 
-    public CarRepairViewFunctions(CarRepairGarage carRepairGarage, CarRepairOrders carRepairOrders, CarRepairMaster carRepairMaster,
-                                  CarRepairOutput carRepairOutput, CarRepairOrderMaster carRepairOrderMaster, CarRepairInput carRepairInput,
+    public CarRepairViewFunctions(PlaceService placeService, OrderService orderService, MasterService masterService,
+                                  CarRepairOutput carRepairOutput, OrderMasterService orderMasterService, CarRepairInput carRepairInput,
                                   Config config, CarRepairDate carRepairDate) {
-        this.carRepairGarage = carRepairGarage;
-        this.carRepairOrders = carRepairOrders;
-        this.carRepairMaster = carRepairMaster;
-        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.placeService = placeService;
+        this.orderService = orderService;
+        this.masterService = masterService;
+        this.orderMasterService = orderMasterService;
         this.carRepairOutput = carRepairOutput;
         this.carRepairInput = carRepairInput;
         this.config = config;
@@ -47,7 +47,7 @@ public class CarRepairViewFunctions {
     }
 
     public void getListOrders() {
-        carRepairOutput.printOrders(carRepairOrders.getListOfOrders(carRepairInput.whatSortTypeOrder()));
+        carRepairOutput.printOrders(orderService.getListOfOrders(carRepairInput.whatSortTypeOrder()));
     }
 
     public void getFreePlace() {
@@ -56,25 +56,25 @@ public class CarRepairViewFunctions {
             logger.error("произошла ошибка при вводе данных");
             return;
         }
-        carRepairOutput.printPlace(carRepairGarage.getFreePlace(time));
+        carRepairOutput.printPlace(placeService.getFreePlace(time));
     }
 
     public void getMasters() {
-        carRepairOutput.printMasters(carRepairMaster.getListOfMasters(carRepairInput.whatSortTypeMaster()), true);
+        carRepairOutput.printMasters(masterService.getListOfMasters(carRepairInput.whatSortTypeMaster()), true);
     }
 
     public void getCurrentOrders() {
-        carRepairOutput.printOrders(carRepairOrders.getListOfActiveOrders(carRepairInput.whatSortTypeOrder()));
+        carRepairOutput.printOrders(orderService.getListOfActiveOrders(carRepairInput.whatSortTypeOrder()));
     }
 
     public void getOrderByMaster() {
         String name = carRepairInput.inputName("Имя мастера");
-        carRepairOutput.printOrders(carRepairOrders.getOrderByMaster(name));
+        carRepairOutput.printOrders(orderService.getOrderByMaster(name));
     }
 
     public void getMastersByOrder() {
         String name = carRepairInput.inputName("Имя заказа");
-        carRepairOutput.printMasters(carRepairMaster.getMastersByOrder(name), false);
+        carRepairOutput.printMasters(masterService.getMastersByOrder(name), false);
     }
 
     public void getOrdersInTime() {
@@ -92,7 +92,7 @@ public class CarRepairViewFunctions {
         }
         StatusOrder status = carRepairInput.whatStatus();
         SortTypeOrder sortType = carRepairInput.whatSortTypeOrder();
-        carRepairOutput.printOrders(carRepairOrders.getOrdersInTime(status, startTime, endTime, sortType));
+        carRepairOutput.printOrders(orderService.getOrdersInTime(status, startTime, endTime, sortType));
     }
 
     public void getCountInTime() {
@@ -116,9 +116,9 @@ public class CarRepairViewFunctions {
 
     public void addMaster() {
         String name = carRepairInput.inputName("имя");
-        ArrayList<Master> list = carRepairMaster.getListOfMasters(SortTypeMaster.ID);
+        ArrayList<Master> list = masterService.getListOfMasters(SortTypeMaster.ID);
         int id = !list.isEmpty() ? ((list.get(list.size() - 1).getId()) + 1) : 1;
-        carRepairMaster.addMaster(id, name);
+        masterService.addMaster(id, name);
         carRepairOutput.infAboutAdd(name);
     }
 
@@ -128,9 +128,9 @@ public class CarRepairViewFunctions {
             return;
         }
         String name = carRepairInput.inputName("имя");
-        ArrayList<Place> list = carRepairGarage.getListOfPlace();
+        ArrayList<Place> list = placeService.getListOfPlace();
         int id = !list.isEmpty() ? list.get(list.size() - 1).getId() + 1 : 1;
-        carRepairGarage.addPlace(id, name);
+        placeService.addPlace(id, name);
         carRepairOutput.infAboutAdd(name);
     }
 
@@ -143,7 +143,7 @@ public class CarRepairViewFunctions {
             if (cost <= 0) System.out.println("Введите число больше 0");
         }
         String namePlace = carRepairInput.inputName("наименование места");
-        Place place = carRepairGarage.findPlace(namePlace);
+        Place place = placeService.findPlace(namePlace);
         if (place == null) {
             carRepairOutput.noFound();
             return;
@@ -162,14 +162,14 @@ public class CarRepairViewFunctions {
             logger.error("произошла ошибка при вводе данных");
             return;
         }
-        ArrayList<Order> list = carRepairOrders.getListOfOrders(SortTypeOrder.ID);
+        ArrayList<Order> list = orderService.getListOfOrders(SortTypeOrder.ID);
         int id = !list.isEmpty() ? list.get(list.size() - 1).getId() + 1 : 1;
-        carRepairOrders.addOrder(id, name, cost, place, LocalDateTime.now().withMinute(0), timeStart, timeComplete);
+        orderService.addOrder(id, name, cost, place, LocalDateTime.now().withMinute(0), timeStart, timeComplete);
     }
 
     public void cancelOrder() {
         String name = carRepairInput.inputName("имя");
-        boolean inf = carRepairOrders.cancelOrder(name);
+        boolean inf = orderService.cancelOrder(name);
         if (inf) {
             logger.info("{} - отменен", name);
         } else {
@@ -179,7 +179,7 @@ public class CarRepairViewFunctions {
 
     public void completeOrder() {
         String name = carRepairInput.inputName("имя");
-        boolean inf = carRepairOrders.completeOrder(name);
+        boolean inf = orderService.completeOrder(name);
         if (inf) {
             logger.info("{} - закрыт", name);
         } else {
@@ -197,7 +197,7 @@ public class CarRepairViewFunctions {
         int day = carRepairInput.inputInt();
         carRepairOutput.infAboutInput("на сколько часов сместить заказ");
         int hour = carRepairInput.inputInt();
-        boolean inf = carRepairOrders.offset(name, day, hour);
+        boolean inf = orderService.offset(name, day, hour);
         if (inf) {
             System.out.println(name + " - время выполнения смещено");
         } else {
@@ -207,7 +207,7 @@ public class CarRepairViewFunctions {
 
     public void deleteMaster() {
         String name = carRepairInput.inputName("имя");
-        boolean inf = carRepairMaster.deleteMaster(name);
+        boolean inf = masterService.deleteMaster(name);
         carRepairOutput.infAboutDelete(name, inf);
     }
 
@@ -217,7 +217,7 @@ public class CarRepairViewFunctions {
             return;
         }
         String name = carRepairInput.inputName("имя");
-        boolean inf = carRepairOrders.deleteOrder(name);
+        boolean inf = orderService.deleteOrder(name);
         carRepairOutput.infAboutDelete(name, inf);
     }
 
@@ -227,14 +227,14 @@ public class CarRepairViewFunctions {
             return;
         }
         String name = carRepairInput.inputName("имя");
-        boolean inf = carRepairGarage.deletePlace(name);
+        boolean inf = placeService.deletePlace(name);
         carRepairOutput.infAboutDelete(name, inf);
     }
 
     public void setOrderToMaster() {
         String nameMaster = carRepairInput.inputName("имя мастера");
         String nameOrder = carRepairInput.inputName("название заказа");
-        boolean inf = carRepairOrderMaster.setOrderMaster(nameMaster, nameOrder);
+        boolean inf = orderMasterService.setOrderMaster(nameMaster, nameOrder);
         if (inf) logger.info("Заказ {} добавлен к мастеру {}", nameOrder, nameMaster);
         else logger.error("не получилось добавить заказ мастеру");
     }

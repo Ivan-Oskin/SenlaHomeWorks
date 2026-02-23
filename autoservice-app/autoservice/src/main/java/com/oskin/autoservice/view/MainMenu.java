@@ -1,8 +1,8 @@
 package com.oskin.autoservice.view;
-import com.oskin.autoservice.service.CarRepairOrderMaster;
-import com.oskin.autoservice.service.CarRepairGarage;
-import com.oskin.autoservice.service.CarRepairMaster;
-import com.oskin.autoservice.service.CarRepairOrders;
+import com.oskin.autoservice.service.OrderMasterService;
+import com.oskin.autoservice.service.PlaceService;
+import com.oskin.autoservice.service.MasterService;
+import com.oskin.autoservice.service.OrderService;
 import com.oskin.autoservice.service.ImportDates;
 import com.oskin.autoservice.repository.SessionHibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +15,24 @@ import java.util.Scanner;
 public class MainMenu {
     private final BuilderMenu builderMenu;
     private final Navigator navigator;
-    private final CarRepairGarage carRepairGarage;
-    private final CarRepairMaster carRepairMaster;
-    private final CarRepairOrders carRepairOrders;
-    private final CarRepairOrderMaster carRepairOrderMaster;
+    private final PlaceService placeService;
+    private final MasterService masterService;
+    private final OrderService orderService;
+    private final OrderMasterService orderMasterService;
     private final CarRepairViewFunctions carRepairViewFunctions;
     private final ImportDates importDates;
     private final SessionHibernate sessionHibernate;
 
     @Autowired
-    public MainMenu(BuilderMenu builderMenu, Navigator navigator, CarRepairGarage carRepairGarage, CarRepairMaster carRepairMaster,
-                    CarRepairOrders carRepairOrders, CarRepairOrderMaster carRepairOrderMaster, CarRepairViewFunctions carRepairViewFunctions,
+    public MainMenu(BuilderMenu builderMenu, Navigator navigator, PlaceService placeService, MasterService masterService,
+                    OrderService orderService, OrderMasterService orderMasterService, CarRepairViewFunctions carRepairViewFunctions,
                     ImportDates importDates, SessionHibernate sessionHibernate) {
         this.builderMenu = builderMenu;
         this.navigator = navigator;
-        this.carRepairGarage = carRepairGarage;
-        this.carRepairMaster = carRepairMaster;
-        this.carRepairOrders = carRepairOrders;
-        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.placeService = placeService;
+        this.masterService = masterService;
+        this.orderService = orderService;
+        this.orderMasterService = orderMasterService;
         this.carRepairViewFunctions = carRepairViewFunctions;
         this.importDates = importDates;
         this.sessionHibernate = sessionHibernate;
@@ -69,16 +69,16 @@ public class MainMenu {
         builderMenu.addItem(9, "Ближайшая свободна дата", carRepairViewFunctions::getNearestDate);
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Экспорт данных");
-        builderMenu.addItem(1, "Экспортировать места", carRepairGarage::exportGarage);
-        builderMenu.addItem(2, "Экспортировать мастеров", carRepairMaster::exportMaster);
-        builderMenu.addItem(3, "Экспортировать заказы", carRepairOrders::exportOrder);
-        builderMenu.addItem(4, "Экспортировать связи заказов и мастеров", carRepairOrderMaster::exportOrderMaster);
+        builderMenu.addItem(1, "Экспортировать места", placeService::exportGarage);
+        builderMenu.addItem(2, "Экспортировать мастеров", masterService::exportMaster);
+        builderMenu.addItem(3, "Экспортировать заказы", orderService::exportOrder);
+        builderMenu.addItem(4, "Экспортировать связи заказов и мастеров", orderMasterService::exportOrderMaster);
         builderMenu.addItem(5, "Сделать экспорт всех сущностей",
                 () -> {
-                    carRepairGarage.exportGarage();
-                    carRepairMaster.exportMaster();
-                    carRepairOrders.exportOrder();
-                    carRepairOrderMaster.exportOrderMaster();
+                    placeService.exportGarage();
+                    masterService.exportMaster();
+                    orderService.exportOrder();
+                    orderMasterService.exportOrderMaster();
                 });
         navigator.addMenu(builderMenu.build());
         builderMenu.setTitle("Импорт данных");

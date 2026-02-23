@@ -17,24 +17,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 
 @Service
-public class CarRepairMaster {
+public class MasterService {
     WorkWithFile workWithFile;
     Config config;
     MasterRepository masterRepository;
-    CarRepairOrderMaster carRepairOrderMaster;
+    OrderMasterService orderMasterService;
     OrderMasterRepository orderMasterRepository;
     OrderRepository orderRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(CarRepairMaster.class);
+    private final Logger logger = LoggerFactory.getLogger(MasterService.class);
 
     @Autowired
-    public CarRepairMaster(WorkWithFile workWithFile, Config config, MasterRepository masterRepository,
-                                    CarRepairOrderMaster carRepairOrderMaster, OrderMasterRepository orderMasterRepository,
-                                    OrderRepository orderRepository) {
+    public MasterService(WorkWithFile workWithFile, Config config, MasterRepository masterRepository,
+                         OrderMasterService orderMasterService, OrderMasterRepository orderMasterRepository,
+                         OrderRepository orderRepository) {
         this.workWithFile = workWithFile;
         this.config = config;
         this.masterRepository = masterRepository;
-        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.orderMasterService = orderMasterService;
         this.orderMasterRepository = orderMasterRepository;
         this.orderRepository = orderRepository;
     }
@@ -48,7 +48,7 @@ public class CarRepairMaster {
     public boolean deleteMaster(String name) {
         Master master = masterRepository.find(name);
         if (master != null) {
-            carRepairOrderMaster.deleteByMaster(master.getId());
+            orderMasterService.deleteByMaster(master.getId());
             masterRepository.delete(master.getId());
             return true;
         }
@@ -72,7 +72,7 @@ public class CarRepairMaster {
         Order order = orderRepository.find(name);
         if (order != null) {
             ArrayList<OrderMaster> orderMasters = orderMasterRepository.getMastersByOrderInDB(order.getId());
-            return carRepairOrderMaster.getMasterFromOrderMaster(orderMasters);
+            return orderMasterService.getMasterFromOrderMaster(orderMasters);
         }
         return new ArrayList<>();
     }

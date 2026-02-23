@@ -1,5 +1,6 @@
 package com.oskin.autoservice.service;
 
+import com.oskin.autoservice.dto.PlaceDto;
 import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.Order;
@@ -8,6 +9,10 @@ import com.oskin.autoservice.model.SortTypeOrder;
 import com.oskin.autoservice.model.SortTypePlace;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.oskin.autoservice.utils.MapperToDto;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,20 +22,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class CarRepairGarage {
+public class PlaceService {
     WorkWithFile workWithFile;
     Config config;
     PlaceRepository placeRepository;
-    CarRepairOrders carRepairOrders;
+    OrderService orderService;
+    MapperToDto mapperToDto;
 
-    Logger logger = LoggerFactory.getLogger(CarRepairGarage.class);
+    Logger logger = LoggerFactory.getLogger(PlaceService.class);
 
     @Autowired
-    public CarRepairGarage(WorkWithFile workWithFile, Config config, PlaceRepository placeRepository, CarRepairOrders carRepairOrders) {
+    public PlaceService(WorkWithFile workWithFile, Config config, PlaceRepository placeRepository, OrderService orderService, MapperToDto mapperToDto) {
         this.workWithFile = workWithFile;
         this.config = config;
         this.placeRepository = placeRepository;
-        this.carRepairOrders = carRepairOrders;
+        this.orderService = orderService;
+        this.mapperToDto = mapperToDto;
     }
 
     @Transactional
@@ -56,6 +63,11 @@ public class CarRepairGarage {
     public ArrayList<Place> getListOfPlace() {
         return placeRepository.findAll(SortTypePlace.ID);
     }
+    public List<PlaceDto> getListOfPlace(int i) {
+        List<PlaceDto> places = placeRepository.findAll(SortTypePlace.ID).stream().map(place ->
+                mapperToDto.mapToPlaceDto(place)).collect(Collectors.toList());
+        return places;
+    }
 
     public Place findPlace(String name) {
         return placeRepository.find(name);
@@ -64,7 +76,7 @@ public class CarRepairGarage {
         ArrayList<Place> newList = new ArrayList<>(getListOfPlace());
         LocalDateTime start = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 0, 0);
         LocalDateTime finish = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), 23, 0);
-        ArrayList<Order> ordersByTime = carRepairOrders.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
+        ArrayList<Order> ordersByTime = orderService.getOrdersInTime(StatusOrder.ACTIVE, start, finish, SortTypeOrder.START);
         for (Order order : ordersByTime) {
             if (!order.getTimeStart().isAfter(date) && !order.getTimeComplete().isBefore(date)) {
                 newList.removeIf(place -> place.getId() == order.getPlace().getId());

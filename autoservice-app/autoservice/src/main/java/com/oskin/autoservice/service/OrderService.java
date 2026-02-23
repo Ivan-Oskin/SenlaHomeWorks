@@ -21,23 +21,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 @Service
-public class CarRepairOrders {
+public class OrderService {
     OrderRepository orderRepository;
     MasterRepository masterRepository;
     OrderMasterRepository orderMasterRepository;
-    CarRepairOrderMaster carRepairOrderMaster;
+    OrderMasterService orderMasterService;
     WorkWithFile workWithFile;
     Config config;
 
-    private final Logger logger = LoggerFactory.getLogger(CarRepairOrders.class);
+    private final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
-    public CarRepairOrders(OrderRepository orderRepository, MasterRepository masterRepository, OrderMasterRepository orderMasterRepository,
-                           CarRepairOrderMaster carRepairOrderMaster, WorkWithFile workWithFile, Config config) {
+    public OrderService(OrderRepository orderRepository, MasterRepository masterRepository, OrderMasterRepository orderMasterRepository,
+                        OrderMasterService orderMasterService, WorkWithFile workWithFile, Config config) {
         this.orderRepository = orderRepository;
         this.masterRepository = masterRepository;
         this.orderMasterRepository = orderMasterRepository;
-        this.carRepairOrderMaster = carRepairOrderMaster;
+        this.orderMasterService = orderMasterService;
         this.workWithFile = workWithFile;
         this.config = config;
     }
@@ -123,7 +123,7 @@ public class CarRepairOrders {
         Master master = masterRepository.find(name);
         if (master != null) {
             ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
-            return carRepairOrderMaster.getOrderFromOrderMaster(orderMasters);
+            return orderMasterService.getOrderFromOrderMaster(orderMasters);
         }
         return new ArrayList<>();
     }

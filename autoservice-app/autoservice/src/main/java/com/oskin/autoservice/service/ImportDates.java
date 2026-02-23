@@ -21,22 +21,22 @@ import java.util.Scanner;
 
 @Service
 public class ImportDates {
-    CarRepairOrders carRepairOrders;
-    CarRepairGarage carRepairGarage;
-    CarRepairMaster carRepairMaster;
-    CarRepairOrderMaster carRepairOrderMaster;
+    OrderService orderService;
+    PlaceService placeService;
+    MasterService masterService;
+    OrderMasterService orderMasterService;
     WorkWithFile workWithFile;
     Config config;
 
     Logger logger = LoggerFactory.getLogger(ImportDates.class);
 
     @Autowired
-    public ImportDates(CarRepairOrders carRepairOrders, CarRepairGarage carRepairGarage, CarRepairMaster carRepairMaster,
-                       CarRepairOrderMaster carRepairOrderMaster, WorkWithFile workWithFile, Config config) {
-        this.carRepairOrders = carRepairOrders;
-        this.carRepairMaster = carRepairMaster;
-        this.carRepairGarage = carRepairGarage;
-        this.carRepairOrderMaster = carRepairOrderMaster;
+    public ImportDates(OrderService orderService, PlaceService placeService, MasterService masterService,
+                       OrderMasterService orderMasterService, WorkWithFile workWithFile, Config config) {
+        this.orderService = orderService;
+        this.masterService = masterService;
+        this.placeService = placeService;
+        this.orderMasterService = orderMasterService;
         this.config = config;
         this.workWithFile = workWithFile;
     }
@@ -102,7 +102,7 @@ public class ImportDates {
                             continue;
                         }
                         int PlaceId = Integer.parseInt(line.get(7));
-                        place = carRepairGarage.findPlace(PlaceId);
+                        place = placeService.findPlace(PlaceId);
                         if (place == null) {
                             System.out.println("место с id " + PlaceId + " Не найдено.");
                             System.out.println("Заказ " + name + "не будет добавлен");
@@ -121,11 +121,11 @@ public class ImportDates {
                         System.err.println("произошла ошибка при парсинге времени заказа " + name);
                         continue;
                     }
-                    Order order = carRepairOrders.findOrder(id);
+                    Order order = orderService.findOrder(id);
                     if (order != null && replace) {
-                        carRepairOrders.updateOrder(new Order(id, name, cost, place, create, start, complete, status));
+                        orderService.updateOrder(new Order(id, name, cost, place, create, start, complete, status));
                     } else if (order == null) {
-                        carRepairOrders.addOrder(id, name, cost, place, create, start, complete, status);
+                        orderService.addOrder(id, name, cost, place, create, start, complete, status);
                     }
                 }
             }
@@ -151,11 +151,11 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        Place place = carRepairGarage.findPlace(id);
+                        Place place = placeService.findPlace(id);
                         if (place != null && replace) {
-                            carRepairGarage.updatePlace(new Place(id, name));
+                            placeService.updatePlace(new Place(id, name));
                         } else if (place == null) {
-                            carRepairGarage.addPlace(id, name);
+                            placeService.addPlace(id, name);
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");
@@ -185,11 +185,11 @@ public class ImportDates {
                     try {
                         int id = Integer.parseInt(line.get(0));
                         String name = line.get(1);
-                        Master master = carRepairMaster.findMaster(id);
+                        Master master = masterService.findMaster(id);
                         if (master != null && replace) {
-                            carRepairMaster.updateMaster(new Master(id, name));
+                            masterService.updateMaster(new Master(id, name));
                         } else if (master == null) {
-                            carRepairMaster.addMaster(id, name);
+                            masterService.addMaster(id, name);
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");
@@ -220,11 +220,11 @@ public class ImportDates {
                         int id = Integer.parseInt(line.get(0));
                         int master_id = Integer.parseInt(line.get(1));
                         int order_id = Integer.parseInt(line.get(2));
-                        OrderMaster orderMaster = carRepairOrderMaster.findOrderMaster(id);
+                        OrderMaster orderMaster = orderMasterService.findOrderMaster(id);
                         if (orderMaster != null && replace) {
-                            carRepairOrderMaster.updateOrderMaster(new OrderMaster(id, carRepairOrders.findOrder(order_id), carRepairMaster.findMaster(master_id)));
+                            orderMasterService.updateOrderMaster(new OrderMaster(id, orderService.findOrder(order_id), masterService.findMaster(master_id)));
                         } else if (orderMaster == null) {
-                            carRepairOrderMaster.addOrderMaster(id, master_id, order_id);
+                            orderMasterService.addOrderMaster(id, master_id, order_id);
                         }
                     } catch (NumberFormatException e) {
                         System.err.println("Неправильные данные");

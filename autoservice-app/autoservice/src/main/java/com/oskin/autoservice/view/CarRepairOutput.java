@@ -1,5 +1,5 @@
 package com.oskin.autoservice.view;
-import com.oskin.autoservice.service.CarRepairOrderMaster;
+import com.oskin.autoservice.service.OrderMasterService;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
@@ -14,15 +14,15 @@ import java.util.ArrayList;
 
 @Component
 public class CarRepairOutput {
-    CarRepairOrderMaster carRepairOrderMaster;
+    OrderMasterService orderMasterService;
 
     Logger logger = LoggerFactory.getLogger(CarRepairOutput.class);
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
     @Autowired
-    public CarRepairOutput(CarRepairOrderMaster carRepairOrderMaster) {
-        this.carRepairOrderMaster = carRepairOrderMaster;
+    public CarRepairOutput(OrderMasterService orderMasterService) {
+        this.orderMasterService = orderMasterService;
     }
 
     public void infAboutAdd(String nameObject) {
@@ -61,7 +61,7 @@ public class CarRepairOutput {
     public void printMasters(ArrayList<Master> masters, boolean printOrder) {
         for (Master master : masters) {
             System.out.println(master.getId() + " " + master.getName());
-            ArrayList<OrderMaster> orderMasters = carRepairOrderMaster.getOrdersByMasterInDB(master.getId());
+            ArrayList<OrderMaster> orderMasters = orderMasterService.getOrdersByMasterInDB(master.getId());
             if (!orderMasters.isEmpty() && printOrder) {
                 System.out.println("Заказы:");
                 for (OrderMaster orderMaster : orderMasters) {
