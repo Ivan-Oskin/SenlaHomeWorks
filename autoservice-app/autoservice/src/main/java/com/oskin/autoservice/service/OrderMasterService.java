@@ -21,18 +21,16 @@ public class OrderMasterService {
     MasterRepository masterRepository;
     OrderRepository orderRepository;
     OrderMasterRepository orderMasterRepository;
-    WorkWithFile workWithFile;
     Config config;
 
     Logger logger = LoggerFactory.getLogger(OrderMasterService.class);
 
     @Autowired
-    public OrderMasterService(MasterRepository masterRepository, OrderRepository orderRepository, OrderMasterRepository orderMasterRepository,
-                              WorkWithFile workWithFile, Config config) {
+    public OrderMasterService(MasterRepository masterRepository, OrderRepository orderRepository,
+                              OrderMasterRepository orderMasterRepository, Config config) {
         this.masterRepository = masterRepository;
         this.orderRepository = orderRepository;
         this.orderMasterRepository = orderMasterRepository;
-        this.workWithFile = workWithFile;
         this.config = config;
     }
 
@@ -58,6 +56,7 @@ public class OrderMasterService {
         }
         return masters;
     }
+
     @Transactional
     public boolean setOrderMaster(String nameMaster, String nameOrder) {
         Master master = masterRepository.find(nameMaster);
@@ -75,19 +74,7 @@ public class OrderMasterService {
         }
         return false;
     }
-    public void exportOrderMaster() {
-        logger.info("Start export orderMaster");
-        ArrayList<OrderMaster> orderMastersArray = orderMasterRepository.findAll(SortTypeOrderMaster.ID);
-        ArrayList<String> dataList = new ArrayList<>(orderMastersArray.size() + 1);
-        dataList.add("id,id_master,id_order\n");
-        for (OrderMaster orderMaster : orderMastersArray) {
-            int id = orderMaster.getId();
-            int master_id = orderMaster.getMaster().getId();
-            int order_id = orderMaster.getOrder().getId();
-            dataList.add(id + "," + master_id + "," + order_id + "," + "\n");
-        }
-        workWithFile.whereExport(dataList, config.getStandardFileCsvOrderMaster());
-    }
+
     @Transactional
     public void deleteByMaster(int idMaster) {
         orderMasterRepository.deleteByMaster(idMaster);

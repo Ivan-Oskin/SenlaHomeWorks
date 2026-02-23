@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Service
-public class CarRepairDate {
+public class DateService {
     OrderService orderService;
     MasterService masterService;
     PlaceService placeService;
 
     @Autowired
-    public CarRepairDate(OrderService orderService, MasterService masterService, PlaceService placeService) {
+    public DateService(OrderService orderService, MasterService masterService, PlaceService placeService) {
         this.orderService = orderService;
         this.masterService = masterService;
         this.placeService = placeService;

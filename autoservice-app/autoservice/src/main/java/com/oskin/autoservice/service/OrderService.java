@@ -26,19 +26,17 @@ public class OrderService {
     MasterRepository masterRepository;
     OrderMasterRepository orderMasterRepository;
     OrderMasterService orderMasterService;
-    WorkWithFile workWithFile;
     Config config;
 
     private final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
     public OrderService(OrderRepository orderRepository, MasterRepository masterRepository, OrderMasterRepository orderMasterRepository,
-                        OrderMasterService orderMasterService, WorkWithFile workWithFile, Config config) {
+                        OrderMasterService orderMasterService, Config config) {
         this.orderRepository = orderRepository;
         this.masterRepository = masterRepository;
         this.orderMasterRepository = orderMasterRepository;
         this.orderMasterService = orderMasterService;
-        this.workWithFile = workWithFile;
         this.config = config;
     }
     @Transactional
@@ -126,28 +124,6 @@ public class OrderService {
             return orderMasterService.getOrderFromOrderMaster(orderMasters);
         }
         return new ArrayList<>();
-    }
-    public void exportOrder() {
-        logger.info("Start export order");
-        ArrayList<Order> orders = getListOfOrders(SortTypeOrder.ID);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
-        ArrayList<String> dataList = new ArrayList<>(orders.size() + 1);
-        dataList.add("ID,NAME,COST,STATUS,CREATE_TIME,START_TIME,COMPLETE_TIME,PLACE\n");
-        for (Order order : orders) {
-            int id = order.getId();
-            String name = order.getName();
-            int cost = order.getCost();
-            String status = order.getStatus().getSTATUS();
-            LocalDateTime createTime = order.getTimeCreate();
-            String create = createTime.format(formatter);
-            LocalDateTime startTime = order.getTimeStart();
-            String start = startTime.format(formatter);
-            LocalDateTime completeTime = order.getTimeComplete();
-            String complete = completeTime.format(formatter);
-            int placeId = order.getPlace().getId();
-            dataList.add(id + "," + name + "," + cost + "," + status + "," + start + "," + create + "," + complete + "," + placeId + "\n");
-        }
-        workWithFile.whereExport(dataList, config.getStandardFileCsvOrders());
     }
 }
 

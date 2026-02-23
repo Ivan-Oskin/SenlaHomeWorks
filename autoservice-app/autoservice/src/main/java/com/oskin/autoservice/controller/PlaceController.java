@@ -1,20 +1,17 @@
 package com.oskin.autoservice.controller;
 import com.oskin.autoservice.dto.PlaceDto;
+import com.oskin.autoservice.dto.request.PlaceRequest;
 import com.oskin.autoservice.service.PlaceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/place")
+@RestController
+@RequestMapping("/autoservice")
 public class PlaceController {
-    private static final Logger logger = LoggerFactory.getLogger(PlaceController.class);
     private final PlaceService placeService;
 
     @Autowired
@@ -22,10 +19,28 @@ public class PlaceController {
         this.placeService = placeService;
     }
 
-    @ResponseBody
     @GetMapping("/places")
     public List<PlaceDto> findAll(){
-        logger.info("findall");
         return placeService.getListOfPlace(1);
+    }
+
+    @GetMapping("/places/{id}")
+    public PlaceDto findById(@PathVariable("id") int id){
+        return placeService.findPlace(id);
+    }
+
+    @PostMapping("/places")
+    public void save(@RequestBody PlaceRequest placeRequest){
+        placeService.addPlace(placeRequest);
+    }
+
+    @PutMapping("/places/{id}")
+    public void update(@PathVariable("id") int id, @RequestBody PlaceRequest placeRequest){
+        placeService.updatePlace(id, placeRequest);
+    }
+
+    @DeleteMapping("/places/{id}")
+    public void delete(@PathVariable("id") int id){
+        placeService.deletePlace(id);
     }
 }

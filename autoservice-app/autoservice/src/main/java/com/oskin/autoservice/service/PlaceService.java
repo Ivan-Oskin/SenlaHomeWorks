@@ -1,6 +1,7 @@
 package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.dto.PlaceDto;
+import com.oskin.autoservice.dto.request.PlaceRequest;
 import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.Order;
@@ -11,11 +12,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.oskin.autoservice.utils.MapperToDto;
+import com.oskin.autoservice.utils.MapperToEntity;
 import com.oskin.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,26 +22,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PlaceService {
-    WorkWithFile workWithFile;
     Config config;
     PlaceRepository placeRepository;
     OrderService orderService;
     MapperToDto mapperToDto;
-
-    Logger logger = LoggerFactory.getLogger(PlaceService.class);
+    MapperToEntity mapperToEntity;
 
     @Autowired
-    public PlaceService(WorkWithFile workWithFile, Config config, PlaceRepository placeRepository, OrderService orderService, MapperToDto mapperToDto) {
-        this.workWithFile = workWithFile;
+    public PlaceService(Config config, PlaceRepository placeRepository, OrderService orderService, MapperToDto mapperToDto, MapperToEntity mapperToEntity) {
         this.config = config;
         this.placeRepository = placeRepository;
         this.orderService = orderService;
         this.mapperToDto = mapperToDto;
+        this.mapperToEntity = mapperToEntity;
     }
 
     @Transactional
-    public void addPlace(int id, String name) {
-        Place place = new Place(id, name);
+    public void addPlace(PlaceRequest placeRequest) {
+        Place place = mapperToEntity.mapToPlaceEntity(placeRequest);
         placeRepository.create(place);
     }
 
@@ -50,13 +47,16 @@ public class PlaceService {
     public boolean deletePlace(String name) {
         return placeRepository.delete(name);
     }
-
-    public Place findPlace(int id) {
-        return placeRepository.find(id);
-    }
-
     @Transactional
-    public void updatePlace(Place place) {
+    public boolean deletePlace(int id) {
+        return placeRepository.delete(id);
+    }
+    public PlaceDto findPlace(int id) {
+        return mapperToDto.mapToPlaceDto(placeRepository.find(id));
+    }
+    @Transactional
+    public void updatePlace(int id, PlaceRequest placeRequest) {
+        Place place = new Place(id, placeRequest.getName());
         placeRepository.update(place);
     }
 
@@ -83,19 +83,5 @@ public class PlaceService {
             }
         }
         return newList;
-    }
-
-    public void exportGarage() {
-        logger.info("Start export place");
-        ArrayList<Place> places = placeRepository.findAll(SortTypePlace.ID);
-        int size = places.size();
-        ArrayList<String> dataList = new ArrayList<>(size + 1);
-        dataList.add("ID,NAME\n");
-        for (int i = 0; i < size; i++) {
-            int id = places.get(i).getId();
-            String name = places.get(i).getName();
-            dataList.add(id + "," + name + "\n");
-        }
-        workWithFile.whereExport(dataList, config.getStandardFileCsvGarage());
     }
 }

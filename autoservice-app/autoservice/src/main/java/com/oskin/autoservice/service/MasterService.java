@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 @Service
 public class MasterService {
-    WorkWithFile workWithFile;
     Config config;
     MasterRepository masterRepository;
     OrderMasterService orderMasterService;
@@ -28,10 +27,9 @@ public class MasterService {
     private final Logger logger = LoggerFactory.getLogger(MasterService.class);
 
     @Autowired
-    public MasterService(WorkWithFile workWithFile, Config config, MasterRepository masterRepository,
+    public MasterService(Config config, MasterRepository masterRepository,
                          OrderMasterService orderMasterService, OrderMasterRepository orderMasterRepository,
                          OrderRepository orderRepository) {
-        this.workWithFile = workWithFile;
         this.config = config;
         this.masterRepository = masterRepository;
         this.orderMasterService = orderMasterService;
@@ -75,17 +73,5 @@ public class MasterService {
             return orderMasterService.getMasterFromOrderMaster(orderMasters);
         }
         return new ArrayList<>();
-    }
-    public void exportMaster() {
-        logger.info("Start export master");
-        ArrayList<Master> masters = getListOfMasters(SortTypeMaster.ID);
-        ArrayList<String> dataList = new ArrayList<>(masters.size() + 1);
-        dataList.add("ID,NAME\n");
-        for (Master master : masters) {
-            int id = master.getId();
-            String name = master.getName();
-            dataList.add(id + "," + name + "\n");
-        }
-        workWithFile.whereExport(dataList, config.getStandardFileCsvMaster());
     }
 }
