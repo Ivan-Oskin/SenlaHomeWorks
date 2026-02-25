@@ -1,4 +1,6 @@
 package com.oskin.autoservice.dto;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.oskin.autoservice.model.StatusOrder;
 import java.time.LocalDateTime;
 
@@ -6,10 +8,17 @@ public class OrderDto {
     private int id;
     private String name;
     private String status;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonProperty("time_create")
     private LocalDateTime timeCreate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonProperty("time_start")
     private LocalDateTime timeStart;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonProperty("time_complete")
     private LocalDateTime timeComplete;
     private int cost;
+    @JsonProperty("place")
     private PlaceDto placeDto;
 
     public int getId() {
@@ -49,7 +58,7 @@ public class OrderDto {
         this.timeCreate = timeCreate;
     }
     public void setTimeStart(LocalDateTime timeStart) {
-        this.timeCreate = timeStart;
+        this.timeStart = timeStart;
     }
     public void setTimeComplete(LocalDateTime timeComplete) {
         this.timeComplete = timeComplete;

@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 public class PlaceService {
     Config config;
@@ -35,27 +34,22 @@ public class PlaceService {
         this.mapperToDto = mapperToDto;
         this.mapperToEntity = mapperToEntity;
     }
-
     @Transactional
     public void addPlace(PlaceRequest placeRequest) {
         Place place = mapperToEntity.mapToPlaceEntity(placeRequest);
         placeRepository.create(place);
     }
+    @Transactional
+    public void deletePlace(int id) {
+        placeRepository.delete(id);
+    }
 
-    @Transactional
-    public boolean deletePlace(String name) {
-        return placeRepository.delete(name);
-    }
-    @Transactional
-    public boolean deletePlace(int id) {
-        return placeRepository.delete(id);
-    }
     public PlaceDto findPlace(int id) {
         return mapperToDto.mapToPlaceDto(placeRepository.find(id));
     }
     @Transactional
     public void updatePlace(int id, PlaceRequest placeRequest) {
-        Place place = new Place(id, placeRequest.getName());
+        Place place = mapperToEntity.mapToPlaceEntity(id, placeRequest);
         placeRepository.update(place);
     }
 

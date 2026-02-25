@@ -1,0 +1,77 @@
+package com.oskin.autoservice.controller;
+
+import com.oskin.autoservice.dto.OrderDto;
+import com.oskin.autoservice.dto.PlaceDto;
+import com.oskin.autoservice.dto.request.OrderRequest;
+import com.oskin.autoservice.model.SortTypeOrder;
+import com.oskin.autoservice.service.OrderService;
+import com.oskin.autoservice.service.PlaceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/autoservice")
+public class OrderController {
+    private final OrderService orderService;
+    private final PlaceService placeService;
+
+    @Autowired
+    public OrderController(OrderService orderService, PlaceService placeService) {
+        this.orderService = orderService;
+        this.placeService = placeService;
+    }
+
+    @GetMapping("/orders")
+    public List<OrderDto> findAll() {
+        return orderService.getListOfOrdersDto(SortTypeOrder.ID);
+    }
+    @GetMapping("/orders/sort_by_time_create")
+    public List<OrderDto> findAllByCreate() {
+        return orderService.getListOfOrdersDto(SortTypeOrder.CREATE);
+    }
+    @GetMapping("/orders/sort_by_time_start")
+    public List<OrderDto> findAllByStart() {
+        return orderService.getListOfOrdersDto(SortTypeOrder.START);
+    }
+    @GetMapping("/orders/sort_by_time_complete")
+    public List<OrderDto> findAllByComplete() {
+        return orderService.getListOfOrdersDto(SortTypeOrder.COMPLETE);
+    }
+    @GetMapping("/orders/sort_by_cost")
+    public List<OrderDto> findAllByCost() {
+        return orderService.getListOfOrdersDto(SortTypeOrder.COST);
+    }
+    @GetMapping("/orders/{id}")
+    public OrderDto findById(@PathVariable("id") int id) {
+        return orderService.findOrder(id);
+    }
+    @PostMapping("/orders")
+    public void save(@RequestBody OrderRequest orderRequest) {
+        PlaceDto place = placeService.findPlace(orderRequest.getPlaceId());
+        if (place != null) {
+            orderService.addOrder(orderRequest, place);
+        }
+    }
+    @PutMapping("/orders/{id}")
+    public void update(@PathVariable("id") int id, @RequestBody OrderRequest orderRequest) {
+        PlaceDto placeDto = placeService.findPlace(orderRequest.getPlaceId());
+        if (placeDto != null) {
+            orderService.updateOrder(id, orderRequest, placeDto);
+        }
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public void delete(@PathVariable("id") int id) {
+        orderService.deleteOrder(id);
+    }
+}

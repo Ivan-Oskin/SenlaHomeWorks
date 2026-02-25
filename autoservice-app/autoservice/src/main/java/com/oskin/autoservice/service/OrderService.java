@@ -1,5 +1,8 @@
 package com.oskin.autoservice.service;
 
+import com.oskin.autoservice.dto.OrderDto;
+import com.oskin.autoservice.dto.PlaceDto;
+import com.oskin.autoservice.dto.request.OrderRequest;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
@@ -9,6 +12,8 @@ import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.SortTypeOrder;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.OrderMaster;
+import com.oskin.autoservice.utils.MapperToDto;
+import com.oskin.autoservice.utils.MapperToEntity;
 import com.oskin.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -25,22 +31,32 @@ public class OrderService {
     MasterRepository masterRepository;
     OrderMasterRepository orderMasterRepository;
     OrderMasterService orderMasterService;
+    MapperToDto mapperToDto;
+    MapperToEntity mapperToEntity;
     Config config;
 
     private final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
     public OrderService(OrderRepository orderRepository, MasterRepository masterRepository, OrderMasterRepository orderMasterRepository,
-                        OrderMasterService orderMasterService, Config config) {
+                        OrderMasterService orderMasterService, Config config, MapperToDto mapperToDto, MapperToEntity mapperToEntity) {
         this.orderRepository = orderRepository;
         this.masterRepository = masterRepository;
         this.orderMasterRepository = orderMasterRepository;
         this.orderMasterService = orderMasterService;
         this.config = config;
+        this.mapperToDto = mapperToDto;
+        this.mapperToEntity = mapperToEntity;
     }
     @Transactional
     public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete) {
         Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeComplete);
+        orderRepository.create(order);
+    }
+    @Transactional
+    public void addOrder(OrderRequest orderRequest, PlaceDto placeDto) {
+        Place place = new Place(placeDto.getId(), placeDto.getName());
+        Order order = mapperToEntity.mapToOrderEntity(orderRequest, place);
         orderRepository.create(order);
     }
     @Transactional
@@ -57,12 +73,37 @@ public class OrderService {
         }
         return false;
     }
-
-    public Order findOrder(int id) {
-        return orderRepository.find(id);
+    @Transactional
+    public void deleteOrder(int id) {
+        Order order = orderRepository.find(id);
+        if (order != null) {
+            orderMasterRepository.deleteByOrder(id);
+            orderRepository.delete(id);
+        }
     }
+
+    public OrderDto findOrder(int id) {
+        return mapperToDto.mapToOrderDto(orderRepository.find(id));
+    }
+
     @Transactional
     public void updateOrder(Order order) {
+        orderRepository.update(order);
+    }
+    @Transactional
+    public void updateOrder(int id, OrderRequest orderRequest, PlaceDto placeDto) {
+        OrderDto orderDto = findOrder(id);
+        Place place = new Place(placeDto.getId(), placeDto.getName());
+        Order order = new Order(
+                id,
+                orderRequest.getName(),
+                orderRequest.getCost(),
+                place,
+                orderDto.getTimeCreate(),
+                orderRequest.getTimeStart(),
+                orderRequest.getTimeComplete()
+        );
+
         orderRepository.update(order);
     }
     @Transactional
@@ -92,6 +133,9 @@ public class OrderService {
 
     public ArrayList<Order> getListOfOrders(SortTypeOrder sortType) {
         return orderRepository.findAll(sortType);
+    }
+    public List<OrderDto> getListOfOrdersDto(SortTypeOrder sortType) {
+        return orderRepository.findAll(sortType).stream().map(order -> mapperToDto.mapToOrderDto(order)).toList();
     }
 
     public ArrayList<Order> getListOfActiveOrders(SortTypeOrder sortType) {

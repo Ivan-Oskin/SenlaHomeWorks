@@ -10,11 +10,11 @@ import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
 import com.oskin.autoservice.utils.MapperToDto;
+import com.oskin.autoservice.utils.MapperToEntity;
 import com.oskin.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,17 +26,19 @@ public class MasterService {
     OrderMasterRepository orderMasterRepository;
     OrderRepository orderRepository;
     MapperToDto mapperToDto;
+    MapperToEntity mapperToEntity;
 
     @Autowired
     public MasterService(Config config, MasterRepository masterRepository,
                          OrderMasterService orderMasterService, OrderMasterRepository orderMasterRepository,
-                         OrderRepository orderRepository, MapperToDto mapperToDto) {
+                         OrderRepository orderRepository, MapperToDto mapperToDto, MapperToEntity mapperToEntity) {
         this.config = config;
         this.masterRepository = masterRepository;
         this.orderMasterService = orderMasterService;
         this.orderMasterRepository = orderMasterRepository;
         this.orderRepository = orderRepository;
         this.mapperToDto = mapperToDto;
+        this.mapperToEntity = mapperToEntity;
     }
 
     @Transactional
@@ -47,19 +49,7 @@ public class MasterService {
 
     @Transactional
     public void addMaster(MasterRequest masterRequest) {
-        Master master = new Master(masterRequest.getName());
-        masterRepository.create(master);
-    }
-
-    @Transactional
-    public boolean deleteMaster(String name) {
-        Master master = masterRepository.find(name);
-        if (master != null) {
-            orderMasterService.deleteByMaster(master.getId());
-            masterRepository.delete(master.getId());
-            return true;
-        }
-        return false;
+        masterRepository.create(mapperToEntity.mapToMasterEntity(masterRequest));
     }
 
     @Transactional
@@ -76,18 +66,15 @@ public class MasterService {
     }
 
     @Transactional
-    public void updateMaster(Master master) {
-        masterRepository.update(master);
-    }
-    @Transactional
     public void updateMaster(int id, MasterRequest masterRequest) {
-        Master master = new Master(id, masterRequest.getName());
+        Master master = mapperToEntity.mapToMasterEntity(id, masterRequest);
         masterRepository.update(master);
     }
 
     public ArrayList<Master> getListOfMasters(SortTypeMaster sortType) {
         return masterRepository.findAll(sortType);
     }
+
     public List<MasterDto> getListOfMastersDto(SortTypeMaster sortType) {
         return masterRepository.findAll(sortType).stream().map(
                 master -> mapperToDto.mapToMasterDto(master)).toList();
