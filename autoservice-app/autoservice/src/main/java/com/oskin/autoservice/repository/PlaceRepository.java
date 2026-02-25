@@ -1,5 +1,6 @@
 package com.oskin.autoservice.repository;
 
+import com.oskin.autoservice.exception.PlaceNotEmptyException;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.SortType;
@@ -69,15 +70,17 @@ public class PlaceRepository implements CrudRepository<Place> {
                     return true;
                 } else {
                     loggerFile.error("error delete place because place have orders");
-                    logger.info("Нельзя удалить место, т.к есть заказы с этим местом");
                     for (Order order : ordersWithThisPlace) {
                         stringBuilder.append(order.getName());
                         stringBuilder.append(" ");
                     }
                     String nameOrders = stringBuilder.toString();
                     logger.info("связанные заказы : {}", nameOrders);
+                    throw new PlaceNotEmptyException("the place has orders: " + nameOrders);
                 }
             }
+        } catch (PlaceNotEmptyException e) {
+            throw e;
         } catch (Exception e) {
             loggerFile.error("error delete place {}", e.getMessage());
         }

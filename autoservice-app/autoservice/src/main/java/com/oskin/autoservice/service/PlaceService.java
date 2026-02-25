@@ -39,7 +39,7 @@ public class PlaceService {
 
     @Transactional
     public void deletePlace(int id) {
-        placeRepository.delete(id);
+        boolean IsDelete = placeRepository.delete(id);
     }
 
     public PlaceDto findPlace(int id) {

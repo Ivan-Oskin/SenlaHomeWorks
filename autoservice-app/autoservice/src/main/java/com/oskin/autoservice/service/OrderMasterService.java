@@ -47,6 +47,7 @@ public class OrderMasterService {
         Master master = masterRepository.find(masterId);
         Order order = orderRepository.find(orderId);
         if (master != null && order != null) orderMasterRepository.create(new OrderMaster(order, master));
+        else throw new NullPointerException();
     }
 
     public ArrayList<Master> getMasterFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
