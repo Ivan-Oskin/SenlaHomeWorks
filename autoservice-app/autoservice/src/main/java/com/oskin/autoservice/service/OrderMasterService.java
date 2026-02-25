@@ -1,43 +1,52 @@
 package com.oskin.autoservice.service;
 
+import com.oskin.autoservice.dto.MasterDto;
+import com.oskin.autoservice.dto.OrderDto;
+import com.oskin.autoservice.dto.OrderMasterDto;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
+import com.oskin.autoservice.model.SortTypeOrderMaster;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
 import com.oskin.autoservice.repository.OrderMasterRepository;
-import com.oskin.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.oskin.autoservice.utils.MapperToDto;
+import com.oskin.autoservice.utils.MapperToEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class OrderMasterService {
-    MasterRepository masterRepository;
-    OrderRepository orderRepository;
-    OrderMasterRepository orderMasterRepository;
-    Config config;
-
-    Logger logger = LoggerFactory.getLogger(OrderMasterService.class);
+    private final MasterRepository masterRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMasterRepository orderMasterRepository;
+    private final MapperToDto mapperToDto;
+    private final MapperToEntity mapperToEntity;
 
     @Autowired
     public OrderMasterService(MasterRepository masterRepository, OrderRepository orderRepository,
-                              OrderMasterRepository orderMasterRepository, Config config) {
+                              OrderMasterRepository orderMasterRepository, MapperToDto mapperToDto, MapperToEntity mapperToEntity) {
         this.masterRepository = masterRepository;
         this.orderRepository = orderRepository;
         this.orderMasterRepository = orderMasterRepository;
-        this.config = config;
+        this.mapperToDto = mapperToDto;
+        this.mapperToEntity = mapperToEntity;
     }
 
+    public List<OrderMasterDto> getListOfOrderMasterDto(){
+        return orderMasterRepository.findAll(SortTypeOrderMaster.ID).stream().map(mapperToDto::mapToOrderMasterDto).toList() ;
+    }
+
+
     @Transactional
-    public void addOrderMaster(int id, int masterId, int orderId) {
+    public void addOrderMaster(int masterId, int orderId) {
         Master master = masterRepository.find(masterId);
         Order order = orderRepository.find(orderId);
-        orderMasterRepository.create(new OrderMaster(id, order, master));
+        if(master != null && order != null) orderMasterRepository.create(new OrderMaster(order, master));
     }
 
     public ArrayList<Order> getOrderFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
@@ -57,37 +66,35 @@ public class OrderMasterService {
     }
 
     @Transactional
-    public boolean setOrderMaster(String nameMaster, String nameOrder) {
-        Master master = masterRepository.find(nameMaster);
-        Order order = orderRepository.find(nameOrder);
-        if (master != null && order != null) {
-            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
-            ArrayList<Order> orders = getOrderFromOrderMaster(orderMasters);
-            Order findOrder = orders.stream().filter(order1 -> order1.getId() == order.getId()).findFirst().orElse(null);
-            if (findOrder == null) {
-                int maxId = orderMasterRepository.getMaxIdLink();
-                int idLink = maxId != -1 ? maxId + 1 : 1;
-                orderMasterRepository.create(idLink, master.getId(), order.getId());
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Transactional
     public void deleteByMaster(int idMaster) {
         orderMasterRepository.deleteByMaster(idMaster);
     }
 
-    public OrderMaster findOrderMaster(int id) {
-        return orderMasterRepository.find(id);
-    }
     @Transactional
-    public void updateOrderMaster(OrderMaster orderMaster) {
+    public void delete(int id) {
+        orderMasterRepository.delete(id);
+    }
+
+    @Transactional
+    public void deleteByOrder(int idOrder) {
+        orderMasterRepository.deleteByOrder(idOrder);
+    }
+
+    public OrderMasterDto findOrderMaster(int id) {
+        return mapperToDto.mapToOrderMasterDto(orderMasterRepository.find(id));
+    }
+
+    @Transactional
+    public void updateOrderMaster(int id, OrderDto orderDto, MasterDto masterDto) {
+        OrderMaster orderMaster = mapperToEntity.mapToOrderMasterEntity(id, orderDto, masterDto);
         orderMasterRepository.update(orderMaster);
     }
 
-    public ArrayList<OrderMaster> getOrdersByMasterInDB(int masterId) {
-        return orderMasterRepository.getOrdersByMasterInDB(masterId);
+    public List<OrderMasterDto> getOrderMasterDtoByMaster(int masterId) {
+        return orderMasterRepository.getOrdersByMasterInDB(masterId).stream().map(mapperToDto::mapToOrderMasterDto).toList();
+    }
+
+    public List<OrderMasterDto> getOrderMasterDtoByOrder(int orderId){
+        return orderMasterRepository.getMastersByOrderInDB(orderId).stream().map(mapperToDto::mapToOrderMasterDto).toList();
     }
 }

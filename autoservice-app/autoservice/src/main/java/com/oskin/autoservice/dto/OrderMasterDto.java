@@ -1,8 +1,12 @@
 package com.oskin.autoservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class OrderMasterDto {
     private int id;
+    @JsonProperty("master")
     private MasterDto masterDto;
+    @JsonProperty("order")
     private OrderDto orderDto;
 
     public int getId() {
