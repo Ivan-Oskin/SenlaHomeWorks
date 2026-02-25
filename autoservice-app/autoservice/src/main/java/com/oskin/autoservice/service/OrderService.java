@@ -2,6 +2,7 @@ package com.oskin.autoservice.service;
 
 import com.oskin.autoservice.dto.OrderDto;
 import com.oskin.autoservice.dto.PlaceDto;
+import com.oskin.autoservice.dto.request.OffsetRequest;
 import com.oskin.autoservice.dto.request.OrderRequest;
 import com.oskin.autoservice.repository.MasterRepository;
 import com.oskin.autoservice.repository.OrderRepository;
@@ -10,13 +11,9 @@ import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.StatusOrder;
 import com.oskin.autoservice.model.SortTypeOrder;
-import com.oskin.autoservice.model.Master;
-import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.autoservice.utils.MapperToDto;
 import com.oskin.autoservice.utils.MapperToEntity;
 import com.oskin.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +32,6 @@ public class OrderService {
     MapperToEntity mapperToEntity;
     Config config;
 
-    private final Logger logger = LoggerFactory.getLogger(OrderService.class);
-
     @Autowired
     public OrderService(OrderRepository orderRepository, MasterRepository masterRepository, OrderMasterRepository orderMasterRepository,
                         OrderMasterService orderMasterService, Config config, MapperToDto mapperToDto, MapperToEntity mapperToEntity) {
@@ -48,31 +43,14 @@ public class OrderService {
         this.mapperToDto = mapperToDto;
         this.mapperToEntity = mapperToEntity;
     }
-    @Transactional
-    public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete) {
-        Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeComplete);
-        orderRepository.create(order);
-    }
+
     @Transactional
     public void addOrder(OrderRequest orderRequest, PlaceDto placeDto) {
         Place place = new Place(placeDto.getId(), placeDto.getName());
         Order order = mapperToEntity.mapToOrderEntity(orderRequest, place);
         orderRepository.create(order);
     }
-    @Transactional
-    public void addOrder(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete, StatusOrder status) {
-        Order order = new Order(id, name, cost, place, timeCreate, timeStart, timeComplete, status);
-        orderRepository.create(order);
-    }
-    @Transactional
-    public boolean deleteOrder(String name) {
-        Order order = orderRepository.find(name);
-        if (order != null) {
-            orderMasterRepository.deleteByOrder(order.getId());
-            return orderRepository.delete(name);
-        }
-        return false;
-    }
+
     @Transactional
     public void deleteOrder(int id) {
         Order order = orderRepository.find(id);
@@ -86,10 +64,6 @@ public class OrderService {
         return mapperToDto.mapToOrderDto(orderRepository.find(id));
     }
 
-    @Transactional
-    public void updateOrder(Order order) {
-        orderRepository.update(order);
-    }
     @Transactional
     public void updateOrder(int id, OrderRequest orderRequest, PlaceDto placeDto) {
         OrderDto orderDto = findOrder(id);
@@ -107,27 +81,31 @@ public class OrderService {
         orderRepository.update(order);
     }
     @Transactional
-    public boolean completeOrder(String name) {
-        return orderRepository.changeStatusInDb(name, StatusOrder.CLOSE);
+    public void closeOrder(int id) {
+        orderRepository.changeStatusInDb(id, StatusOrder.CLOSE);
     }
+
     @Transactional
-    public boolean cancelOrder(String name) {
-        return orderRepository.changeStatusInDb(name, StatusOrder.CANCEL);
+    public void cancelOrder(int id) {
+        orderRepository.changeStatusInDb(id, StatusOrder.CANCEL);
     }
+
     @Transactional
-    public boolean offset(String name, int countDay, int countHour) {
-        Order order = orderRepository.find(name);
-        if (order == null) {
-            System.out.println("не находит");
-            return false;
-        } else {
+    public void activateOrder(int id) {
+        orderRepository.changeStatusInDb(id, StatusOrder.ACTIVE);
+    }
+
+    @Transactional
+    public void offset(int id, OffsetRequest offsetRequest) {
+        Order order = orderRepository.find(id);
+        if (order != null) {
             LocalDateTime startTime = order.getTimeStart();
             LocalDateTime completeTime = order.getTimeComplete();
-            LocalDateTime ChangeStartTime = startTime.plusDays(countDay);
-            LocalDateTime ChangeCompleteTime = completeTime.plusDays(countDay);
-            startTime = ChangeStartTime.plusHours(countHour);
-            completeTime = ChangeCompleteTime.plusHours(countHour);
-            return orderRepository.offsetInDb(name, startTime, completeTime);
+            LocalDateTime ChangeStartTime = startTime.plusDays(offsetRequest.getDay());
+            LocalDateTime ChangeCompleteTime = completeTime.plusDays(offsetRequest.getDay());
+            startTime = ChangeStartTime.plusHours(offsetRequest.getHour());
+            completeTime = ChangeCompleteTime.plusHours(offsetRequest.getHour());
+            orderRepository.offsetInDb(id, startTime, completeTime);
         }
     }
 
@@ -138,35 +116,12 @@ public class OrderService {
         return orderRepository.findAll(sortType).stream().map(order -> mapperToDto.mapToOrderDto(order)).toList();
     }
 
-    public ArrayList<Order> getListOfActiveOrders(SortTypeOrder sortType) {
-        ArrayList<Order> orders = orderRepository.findAll(sortType);
-        ArrayList<Order> newList = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.getStatus().equals(StatusOrder.ACTIVE)) {
-                newList.add(order);
-            }
-        }
-        return newList;
-    }
-
-    public ArrayList<Order> getOrdersInTime(StatusOrder status, LocalDateTime startDate, LocalDateTime endDate, SortTypeOrder sortType) {
-        ArrayList<Order> orders = orderRepository.findAll(sortType);
-        ArrayList<Order> newList = new ArrayList<>();
-        for (Order order : orders) {
-            if (!order.getTimeStart().isAfter(endDate) && !order.getTimeComplete().isBefore(startDate) && order.getStatus().equals(status)) {
-                newList.add(order);
-            }
-        }
-        return newList;
-    }
-
-    public ArrayList<Order> getOrderByMaster(String name) {
-        Master master = masterRepository.find(name);
-        if (master != null) {
-            ArrayList<OrderMaster> orderMasters = orderMasterRepository.getOrdersByMasterInDB(master.getId());
-            return orderMasterService.getOrderFromOrderMaster(orderMasters);
-        }
-        return new ArrayList<>();
+    public List<OrderDto> getListOfActiveOrders(SortTypeOrder sortType) {
+        return orderRepository.findAll(sortType)
+                .stream()
+                .filter(order -> order.getStatus() == StatusOrder.ACTIVE)
+                .map(mapperToDto::mapToOrderDto)
+                .toList();
     }
 }
 

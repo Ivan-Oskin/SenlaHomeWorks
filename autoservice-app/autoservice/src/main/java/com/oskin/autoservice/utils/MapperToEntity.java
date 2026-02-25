@@ -2,10 +2,13 @@ package com.oskin.autoservice.utils;
 import com.oskin.autoservice.dto.MasterDto;
 import com.oskin.autoservice.dto.OrderDto;
 import com.oskin.autoservice.dto.request.MasterRequest;
-import com.oskin.autoservice.dto.request.OrderMasterRequest;
 import com.oskin.autoservice.dto.request.OrderRequest;
 import com.oskin.autoservice.dto.request.PlaceRequest;
-import com.oskin.autoservice.model.*;
+import com.oskin.autoservice.model.Order;
+import com.oskin.autoservice.model.Place;
+import com.oskin.autoservice.model.Master;
+import com.oskin.autoservice.model.OrderMaster;
+import com.oskin.autoservice.model.StatusOrder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -37,10 +40,10 @@ public class MapperToEntity {
         );
     }
 
-    public OrderMaster mapToOrderMasterEntity(int id, OrderDto orderDto, MasterDto masterDto){
-        Place place = new Place(orderDto.getPlaceDto().getId(),orderDto.getPlaceDto().getName());
+    public OrderMaster mapToOrderMasterEntity(int id, OrderDto orderDto, MasterDto masterDto) {
+        Place place = new Place(orderDto.getPlaceDto().getId(), orderDto.getPlaceDto().getName());
         StatusOrder statusOrder = StatusOrder.ACTIVE;
-        switch (orderDto.getStatus()){
+        switch (orderDto.getStatus()) {
             case "Cancel":
                 statusOrder = StatusOrder.CANCEL;
             case "Close":

@@ -1,13 +1,16 @@
 package com.oskin.autoservice.utils;
+import com.oskin.autoservice.dto.PlaceDto;
 import com.oskin.autoservice.dto.MasterDto;
 import com.oskin.autoservice.dto.OrderDto;
 import com.oskin.autoservice.dto.OrderMasterDto;
-import com.oskin.autoservice.dto.PlaceDto;
+import com.oskin.autoservice.dto.DateDto;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.OrderMaster;
 import com.oskin.autoservice.model.Place;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 
 @Component
@@ -42,5 +45,9 @@ public class MapperToDto {
         orderMasterDto.setMasterDto(mapToMasterDto(orderMasterEntity.getMaster()));
         orderMasterDto.setOrderDto(mapToOrderDto(orderMasterEntity.getOrder()));
         return orderMasterDto;
+    }
+
+    public DateDto mapToDateDto(LocalDateTime localDateTime) {
+        return new DateDto(localDateTime);
     }
 }

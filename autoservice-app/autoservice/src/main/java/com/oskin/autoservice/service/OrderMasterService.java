@@ -37,8 +37,8 @@ public class OrderMasterService {
         this.mapperToEntity = mapperToEntity;
     }
 
-    public List<OrderMasterDto> getListOfOrderMasterDto(){
-        return orderMasterRepository.findAll(SortTypeOrderMaster.ID).stream().map(mapperToDto::mapToOrderMasterDto).toList() ;
+    public List<OrderMasterDto> getListOfOrderMasterDto() {
+        return orderMasterRepository.findAll(SortTypeOrderMaster.ID).stream().map(mapperToDto::mapToOrderMasterDto).toList();
     }
 
 
@@ -46,15 +46,7 @@ public class OrderMasterService {
     public void addOrderMaster(int masterId, int orderId) {
         Master master = masterRepository.find(masterId);
         Order order = orderRepository.find(orderId);
-        if(master != null && order != null) orderMasterRepository.create(new OrderMaster(order, master));
-    }
-
-    public ArrayList<Order> getOrderFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
-        ArrayList<Order> orders = new ArrayList<>(orderMasters.size());
-        for (OrderMaster orderMaster : orderMasters) {
-            orders.add(orderMaster.getOrder());
-        }
-        return orders;
+        if (master != null && order != null) orderMasterRepository.create(new OrderMaster(order, master));
     }
 
     public ArrayList<Master> getMasterFromOrderMaster(ArrayList<OrderMaster> orderMasters) {
@@ -94,7 +86,7 @@ public class OrderMasterService {
         return orderMasterRepository.getOrdersByMasterInDB(masterId).stream().map(mapperToDto::mapToOrderMasterDto).toList();
     }
 
-    public List<OrderMasterDto> getOrderMasterDtoByOrder(int orderId){
+    public List<OrderMasterDto> getOrderMasterDtoByOrder(int orderId) {
         return orderMasterRepository.getMastersByOrderInDB(orderId).stream().map(mapperToDto::mapToOrderMasterDto).toList();
     }
 }

@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 public class OrderRequest {
     private String name;
     private int cost;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     @JsonProperty("time_start")
     private LocalDateTime timeStart;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     @JsonProperty("time_complete")
     private LocalDateTime timeComplete;
     @JsonProperty("place_id")

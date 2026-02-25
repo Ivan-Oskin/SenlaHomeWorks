@@ -91,20 +91,6 @@ public class OrderMasterRepository implements CrudRepository<OrderMaster> {
         }
     }
 
-    public int getMaxIdLink() {
-        try {
-            String sql = "SELECT id FROM order_master ORDER BY id DESC LIMIT 1";
-            NativeQuery<Integer> query = session.getSession().createNativeQuery(sql, Integer.class);
-            List<Integer> list = query.getResultList();
-            if (!list.isEmpty()) {
-                return list.get(0);
-            }
-        } catch (Exception e) {
-            loggerFile.error("Error getMaxId OrderMaster");
-        }
-        return -1;
-    }
-
     public ArrayList<OrderMaster> getOrdersByMasterInDB(int idMaster) {
         logger.info("start getOrders orderMaster");
         List<OrderMaster> orderMasters = new ArrayList<>();

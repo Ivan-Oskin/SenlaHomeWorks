@@ -153,48 +153,44 @@ public class OrderRepository implements CrudRepository<Order> {
     }
 
 
-    public boolean changeStatusInDb(String name, StatusOrder statusOrder) {
+    public void changeStatusInDb(int id, StatusOrder statusOrder) {
         logger.info("start changeStatus order");
-        String hql = "UPDATE Order o SET o.status = :status WHERE o.name = :name";
+        String hql = "UPDATE Order o SET o.status = :status WHERE o.id = :id";
         try {
             Query<?> query = session.getSession().createQuery(hql);
             query.setParameter("status", statusOrder);
-            query.setParameter("name", name);
+            query.setParameter("id", id);
             int changed = query.executeUpdate();
             if (changed > 0) {
                 logger.info("successful changeStatus order");
                 if (session.getSession().getSessionFactory().getCache() != null) {
                     session.getSession().clear();
                 }
-                return true;
             }
         } catch (Exception e) {
             loggerFile.error("error changeStatus order {}", e.getMessage());
         }
-        return false;
     }
 
 
-    public boolean offsetInDb(String name, LocalDateTime timeStart, LocalDateTime timeComplete) {
+    public void offsetInDb(int id, LocalDateTime timeStart, LocalDateTime timeComplete) {
         logger.info("start offset order");
-        String hql = "UPDATE Order o SET o.timeStart = :timeStart, timeComplete = :timeComplete WHERE name = :name";
+        String hql = "UPDATE Order o SET o.timeStart = :timeStart, timeComplete = :timeComplete WHERE id = :id";
         try {
             Query<?> query = session.getSession().createQuery(hql);
             query.setParameter("timeStart", timeStart);
             query.setParameter("timeComplete", timeComplete);
-            query.setParameter("name", name);
+            query.setParameter("id", id);
             int changed = query.executeUpdate();
             if (changed > 0) {
                 logger.info("successful offset order");
                 if (session.getSession().getSessionFactory().getCache() != null) {
                     session.getSession().clear();
                 }
-                return true;
             }
         } catch (Exception e) {
             loggerFile.error("error offset order {}", e.getMessage());
         }
-        return false;
     }
 
 

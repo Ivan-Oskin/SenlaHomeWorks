@@ -8,13 +8,13 @@ public class OrderDto {
     private int id;
     private String name;
     private String status;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     @JsonProperty("time_create")
     private LocalDateTime timeCreate;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     @JsonProperty("time_start")
     private LocalDateTime timeStart;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     @JsonProperty("time_complete")
     private LocalDateTime timeComplete;
     private int cost;

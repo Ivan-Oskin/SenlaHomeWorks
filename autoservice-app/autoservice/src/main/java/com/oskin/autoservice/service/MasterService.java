@@ -42,12 +42,6 @@ public class MasterService {
     }
 
     @Transactional
-    public void addMaster(int id, String name) {
-        Master master = new Master(id, name);
-        masterRepository.create(master);
-    }
-
-    @Transactional
     public void addMaster(MasterRequest masterRequest) {
         masterRepository.create(mapperToEntity.mapToMasterEntity(masterRequest));
     }

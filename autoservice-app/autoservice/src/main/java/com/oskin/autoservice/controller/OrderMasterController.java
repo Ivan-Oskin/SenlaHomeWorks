@@ -8,8 +8,15 @@ import com.oskin.autoservice.service.MasterService;
 import com.oskin.autoservice.service.OrderMasterService;
 import com.oskin.autoservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.service.annotation.DeleteExchange;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 
 import java.util.List;
 
@@ -49,14 +56,14 @@ public class OrderMasterController {
         orderMasterService.addOrderMaster(orderMasterRequest.getMasterId(), orderMasterRequest.getOrderId());
     }
     @PutMapping("/order_master/{id}")
-    public void update(@PathVariable("id") int id, @RequestBody OrderMasterRequest orderMasterRequest){
+    public void update(@PathVariable("id") int id, @RequestBody OrderMasterRequest orderMasterRequest) {
         OrderDto orderDto = orderService.findOrder(orderMasterRequest.getOrderId());
         MasterDto masterDto = masterService.findMaster(orderMasterRequest.getMasterId());
         orderMasterService.updateOrderMaster(id, orderDto, masterDto);
     }
 
     @DeleteMapping("/order_master/{id}")
-    public void delete(@PathVariable("id") int id){
+    public void delete(@PathVariable("id") int id) {
         orderMasterService.delete(id);
     }
 }
