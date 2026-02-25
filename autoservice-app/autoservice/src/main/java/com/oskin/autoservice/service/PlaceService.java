@@ -11,7 +11,6 @@ import com.oskin.autoservice.model.SortTypePlace;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import com.oskin.autoservice.utils.MapperToDto;
 import com.oskin.autoservice.utils.MapperToEntity;
 import com.oskin.config.Config;
@@ -63,10 +62,9 @@ public class PlaceService {
     public ArrayList<Place> getListOfPlace() {
         return placeRepository.findAll(SortTypePlace.ID);
     }
-    public List<PlaceDto> getListOfPlace(int i) {
-        List<PlaceDto> places = placeRepository.findAll(SortTypePlace.ID).stream().map(place ->
-                mapperToDto.mapToPlaceDto(place)).collect(Collectors.toList());
-        return places;
+    public List<PlaceDto> getListOfPlaceDto() {
+        return placeRepository.findAll(SortTypePlace.ID).stream().map(place ->
+                mapperToDto.mapToPlaceDto(place)).toList();
     }
 
     public Place findPlace(String name) {
