@@ -3,11 +3,12 @@ package com.oskin.autoservice.repository;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.SortType;
 import com.oskin.autoservice.model.SortTypeMaster;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -17,6 +18,14 @@ import java.util.Scanner;
 public class MasterRepository implements CrudRepository<Master> {
     private final Logger logger = LoggerFactory.getLogger(MasterRepository.class);
     private final Logger loggerFile = LoggerFactory.getLogger("file");
+
+    SessionHibernate session;
+
+    @Autowired
+    MasterRepository(SessionHibernate session) {
+        this.session = session;
+    }
+
     public int inputInt() {
         Scanner scanner = new Scanner(System.in);
         int input = 0;
@@ -36,7 +45,7 @@ public class MasterRepository implements CrudRepository<Master> {
         List<Master> masters = new ArrayList<>();
         if (!sortTypeMaster.getStringSortType().equals(SortTypeMaster.BUSYNESS.getStringSortType())) {
             try {
-                Query<Master> query = SessionHibernate.getSession().createQuery("FROM Master ORDER by " + sortTypeMaster.getStringSortType(), Master.class);
+                Query<Master> query = session.getSession().createQuery("FROM Master ORDER by " + sortTypeMaster.getStringSortType(), Master.class);
                 masters = query.getResultList();
                 logger.info("successful findAll master ");
             } catch (Exception e) {
@@ -48,7 +57,7 @@ public class MasterRepository implements CrudRepository<Master> {
                     "GROUP BY m.id " +
                     "ORDER BY COUNT(om) DESC ";
             try {
-                Query<Master> query = SessionHibernate.getSession().createQuery(hql, Master.class);
+                Query<Master> query = session.getSession().createQuery(hql, Master.class);
                 masters = query.getResultList();
                 logger.info("successful findAll master and order by count orders");
             } catch (Exception e) {
@@ -61,7 +70,7 @@ public class MasterRepository implements CrudRepository<Master> {
     public Master find(String name) {
         logger.info("start findByName master");
         try {
-            Query<Master> query = SessionHibernate.getSession().createQuery("From Master WHERE name = :name", Master.class);
+            Query<Master> query = session.getSession().createQuery("From Master WHERE name = :name", Master.class);
             query.setParameter("name", name);
             List<Master> masters = query.getResultList();
             if (masters.size() > 1) {
@@ -95,7 +104,7 @@ public class MasterRepository implements CrudRepository<Master> {
     public Master find(int id) {
         logger.info("Start findById master");
         try {
-            Master master = SessionHibernate.getSession().find(Master.class, id);
+            Master master = session.getSession().find(Master.class, id);
             if (master != null) {
                 logger.info("successful findById master ");
                 return master;
@@ -110,18 +119,15 @@ public class MasterRepository implements CrudRepository<Master> {
     @Override
     public boolean delete(int id) {
         logger.info("Start delete master ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Master master = find(id);
             if (master != null) {
-                SessionHibernate.getSession().remove(master);
+                session.getSession().remove(master);
                 logger.info("successful delete master");
-                transaction.commit();
                 return true;
             }
         } catch (Exception e) {
             loggerFile.error("error delete master {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
@@ -129,13 +135,10 @@ public class MasterRepository implements CrudRepository<Master> {
     @Override
     public void create(Master master) {
         logger.info("Start create master");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().merge(master);
-            transaction.commit();
+            session.getSession().merge(master);
             logger.info("successful create master ");
         } catch (Exception e) {
-            transaction.rollback();
             loggerFile.error("error create master {}", e.getMessage());
         }
     }
@@ -143,14 +146,11 @@ public class MasterRepository implements CrudRepository<Master> {
     @Override
     public void update(Master master) {
         logger.info("Start update master ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().merge(master);
+            session.getSession().merge(master);
             logger.info("successful update master ");
-            transaction.commit();
         } catch (Exception e) {
             loggerFile.error("error update master {}", e.getMessage());
-            transaction.rollback();
         }
     }
 }

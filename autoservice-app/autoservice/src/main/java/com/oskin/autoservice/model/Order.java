@@ -1,8 +1,11 @@
 package com.oskin.autoservice.model;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.ManyToOne;
@@ -16,6 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "orders")
 public class Order implements IIdentified {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "name")
     private String name;
@@ -72,6 +76,16 @@ public class Order implements IIdentified {
 
     public Order(int id, String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete) {
         this.id = id;
+        this.name = name;
+        this.cost = cost;
+        this.timeCreate = timeCreate;
+        this.timeStart = timeStart;
+        this.timeComplete = timeComplete;
+        this.status = StatusOrder.ACTIVE;
+        this.place = place;
+    }
+
+    public Order(String name, int cost, Place place, LocalDateTime timeCreate, LocalDateTime timeStart, LocalDateTime timeComplete) {
         this.name = name;
         this.cost = cost;
         this.timeCreate = timeCreate;

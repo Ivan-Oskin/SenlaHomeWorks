@@ -1,9 +1,10 @@
 package com.oskin.autoservice.model;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 
@@ -11,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 @Table(name = "order_master")
 public class OrderMaster implements IIdentified {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
     @JoinColumn(name = "master_id")
@@ -21,6 +23,11 @@ public class OrderMaster implements IIdentified {
 
     public OrderMaster() {
 
+    }
+
+    public OrderMaster(Order order, Master master) {
+        this.master = master;
+        this.order = order;
     }
 
     public OrderMaster(int id, Order order, Master master) {

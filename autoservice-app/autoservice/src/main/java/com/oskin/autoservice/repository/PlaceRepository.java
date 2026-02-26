@@ -1,13 +1,15 @@
 package com.oskin.autoservice.repository;
 
+import com.oskin.autoservice.exception.PlaceNotEmptyException;
 import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.SortType;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -20,12 +22,19 @@ public class PlaceRepository implements CrudRepository<Place> {
     private final Scanner scanner = new Scanner(System.in);
     StringBuilder stringBuilder = new StringBuilder();
 
+    SessionHibernate session;
+
+    @Autowired
+    PlaceRepository(SessionHibernate session) {
+        this.session = session;
+    }
+
     @Override
     public <G extends SortType> ArrayList<Place> findAll(G sortType) {
         logger.info("Start findAll place ");
         List<Place> places = new ArrayList<>();
         try {
-            Query<Place> query = SessionHibernate.getSession().createQuery("FROM Place ORDER by " + sortType.getStringSortType(), Place.class);
+            Query<Place> query = session.getSession().createQuery("FROM Place ORDER by " + sortType.getStringSortType(), Place.class);
             places = query.getResultList();
             logger.info("successful findAll place ");
         } catch (Exception e) {
@@ -35,52 +44,51 @@ public class PlaceRepository implements CrudRepository<Place> {
     }
 
     @Override
+
     public void create(Place place) {
         logger.info("Start create place");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().merge(place);
-            transaction.commit();
+            session.getSession().merge(place);
             logger.info("successful create place ");
         } catch (Exception e) {
-            transaction.rollback();
             loggerFile.error("error create place {}", e.getMessage());
         }
     }
 
     @Override
+
     public boolean delete(int id) {
         logger.info("Start delete place ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
             Place place = find(id);
             if (place != null) {
                 String hql = "FROM Order o WHERE o.place.id = :placeId";
-                Query<Order> query = SessionHibernate.getSession().createQuery(hql, Order.class);
+                Query<Order> query = session.getSession().createQuery(hql, Order.class);
                 query.setParameter("placeId", place.getId());
                 List<Order> ordersWithThisPlace = query.getResultList();
                 if (ordersWithThisPlace.isEmpty()) {
-                    SessionHibernate.getSession().remove(place);
+                    session.getSession().remove(place);
                     logger.info("successful delete place ");
-                    transaction.commit();
                     return true;
                 } else {
                     loggerFile.error("error delete place because place have orders");
-                    logger.info("Нельзя удалить место, т.к есть заказы с этим местом");
                     for (Order order : ordersWithThisPlace) {
                         stringBuilder.append(order.getName());
                         stringBuilder.append(" ");
                     }
                     String nameOrders = stringBuilder.toString();
                     logger.info("связанные заказы : {}", nameOrders);
+                    throw new PlaceNotEmptyException("the place has orders: " + nameOrders);
                 }
             }
+        } catch (PlaceNotEmptyException e) {
+            throw e;
         } catch (Exception e) {
             loggerFile.error("error delete place {}", e.getMessage());
-            transaction.rollback();
         }
         return false;
     }
+
     public boolean delete(String name) {
         Place place = find(name);
         if (place != null) {
@@ -89,11 +97,12 @@ public class PlaceRepository implements CrudRepository<Place> {
             return false;
         }
     }
+
     @Override
     public Place find(int id) {
         logger.info("Start findById place ");
         try {
-            Place place = SessionHibernate.getSession().find(Place.class, id);
+            Place place = session.getSession().find(Place.class, id);
             if (place != null) {
                 logger.info("successful findById place ");
                 return place;
@@ -106,22 +115,21 @@ public class PlaceRepository implements CrudRepository<Place> {
     }
 
     @Override
+
     public void update(Place place) {
         logger.info("Start update place ");
-        Transaction transaction = SessionHibernate.getSession().beginTransaction();
         try {
-            SessionHibernate.getSession().merge(place);
+            session.getSession().merge(place);
             logger.info("successful update place ");
-            transaction.commit();
         } catch (Exception e) {
             loggerFile.error("error update place {}", e.getMessage());
-            transaction.rollback();
         }
     }
+
     public Place find(String name) {
         logger.info("Start findByName place ");
         try {
-            Query<Place> query = SessionHibernate.getSession().createQuery("From Place WHERE name = :name", Place.class);
+            Query<Place> query = session.getSession().createQuery("From Place WHERE name = :name", Place.class);
             query.setParameter("name", name);
             List<Place> places = query.getResultList();
             if (places.size() > 1) {

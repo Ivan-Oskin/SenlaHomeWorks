@@ -2,7 +2,7 @@ package com.oskin.autoservice.model;
 
 public enum SortTypeMaster implements SortType {
     ID("id"),
-    ALPHABET("name"),
+    NAME("name"),
     BUSYNESS("busy");
 
     private final String sortType;
