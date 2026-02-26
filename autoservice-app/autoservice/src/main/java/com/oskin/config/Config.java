@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class  Config {
+public class Config {
     @Value("${standard.file.csv.garage}")
     private String standardFileCsvGarage;
     @Value("${standard.file.csv.master}")
@@ -78,15 +78,19 @@ public class  Config {
     public String getDriver() {
         return this.driver;
     }
+
     public String getUrl() {
         return this.url;
     }
+
     public String getUsername() {
         return this.username;
     }
+
     public String getPassword() {
         return this.password;
     }
+
     public String getChangelog() {
         return this.changelog;
     }

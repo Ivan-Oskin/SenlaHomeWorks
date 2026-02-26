@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("/autoservice")
+@RequestMapping("/autoservice/masters")
 public class MasterController {
     private final MasterService masterService;
 
@@ -25,32 +25,38 @@ public class MasterController {
     public MasterController(MasterService masterService) {
         this.masterService = masterService;
     }
-    @GetMapping("/masters")
+
+    @GetMapping
     public List<MasterDto> findAll() {
         return masterService.getListOfMastersDto(SortTypeMaster.ID);
     }
-    @GetMapping("/masters/sort_by_busy")
+
+    @GetMapping("/sort_by_busy")
     public List<MasterDto> findAllSortByBusy() {
         return masterService.getListOfMastersDto(SortTypeMaster.BUSYNESS);
     }
-    @GetMapping("/masters/sort_by_name")
+
+    @GetMapping("/sort_by_name")
     public List<MasterDto> findAllSortByName() {
         return masterService.getListOfMastersDto(SortTypeMaster.NAME);
     }
-    @GetMapping("/masters/{id}")
+
+    @GetMapping("/{id}")
     public MasterDto findById(@PathVariable("id") int id) {
         return masterService.findMaster(id);
     }
-    @PostMapping("/masters")
+
+    @PostMapping
     public void save(@RequestBody MasterRequest masterRequest) {
         masterService.addMaster(masterRequest);
     }
-    @PutMapping("/masters/{id}")
+
+    @PutMapping("/{id}")
     public void update(@PathVariable("id") int id, @RequestBody MasterRequest masterRequest) {
         masterService.updateMaster(id, masterRequest);
     }
 
-    @DeleteMapping("/masters/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") int id) {
         masterService.deleteMaster(id);
     }

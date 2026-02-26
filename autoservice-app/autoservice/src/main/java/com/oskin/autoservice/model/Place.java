@@ -23,6 +23,7 @@ public class Place implements IIdentified {
     public Place(String name) {
         this.name = name;
     }
+
     public Place(int id, String name) {
         this.id = id;
         this.name = name;

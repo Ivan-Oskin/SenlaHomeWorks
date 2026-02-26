@@ -1,4 +1,5 @@
 package com.oskin.autoservice;
+
 import com.oskin.autoservice.controller.PlaceController;
 import com.oskin.config.WebConfig;
 import jakarta.servlet.ServletContext;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 
 public class ApplicationInitialize implements WebApplicationInitializer {
     private static final Logger logger = LoggerFactory.getLogger(PlaceController.class);
+
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         logger.info("start app");

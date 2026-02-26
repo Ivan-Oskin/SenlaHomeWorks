@@ -1,4 +1,5 @@
 package com.oskin.autoservice.repository;
+
 import com.oskin.config.HibernateConfig;
 import org.hibernate.Session;
 import org.slf4j.Logger;

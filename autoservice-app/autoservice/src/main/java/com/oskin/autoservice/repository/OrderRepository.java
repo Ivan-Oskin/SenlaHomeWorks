@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class OrderRepository implements CrudRepository<Order> {
     private final Logger loggerFile = LoggerFactory.getLogger("file");
 
     SessionHibernate session;
+
     @Autowired
     OrderRepository(SessionHibernate session) {
         this.session = session;
@@ -42,7 +44,7 @@ public class OrderRepository implements CrudRepository<Order> {
             Iterator<Order> iterator = orders.iterator();
             while (iterator.hasNext()) {
                 Order order = iterator.next();
-                 if (order.getPlace() == null) {
+                if (order.getPlace() == null) {
                     String sql = "SELECT place_id FROM orders WHERE id = " + order.getId();
                     NativeQuery<Integer> queryPlaceId = session.getSession().createNativeQuery(sql, Integer.class);
                     List<Integer> listPlaceId = queryPlaceId.getResultList();

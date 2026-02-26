@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -22,6 +23,7 @@ public class PlaceRepository implements CrudRepository<Place> {
     StringBuilder stringBuilder = new StringBuilder();
 
     SessionHibernate session;
+
     @Autowired
     PlaceRepository(SessionHibernate session) {
         this.session = session;
@@ -86,6 +88,7 @@ public class PlaceRepository implements CrudRepository<Place> {
         }
         return false;
     }
+
     public boolean delete(String name) {
         Place place = find(name);
         if (place != null) {
@@ -94,6 +97,7 @@ public class PlaceRepository implements CrudRepository<Place> {
             return false;
         }
     }
+
     @Override
     public Place find(int id) {
         logger.info("Start findById place ");
@@ -121,6 +125,7 @@ public class PlaceRepository implements CrudRepository<Place> {
             loggerFile.error("error update place {}", e.getMessage());
         }
     }
+
     public Place find(String name) {
         logger.info("Start findByName place ");
         try {

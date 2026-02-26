@@ -1,4 +1,5 @@
 package com.oskin.config;
+
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ public class HibernateConfig {
     HibernateConfig(DataSourceConfig dataSourceConfig) {
         this.dataSourceConfig = dataSourceConfig;
     }
+
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
@@ -36,6 +38,7 @@ public class HibernateConfig {
     public SessionFactory getSessionFactory() {
         return sessionFactory().getObject();
     }
+
     @Bean
     public PlatformTransactionManager transactionManager() {
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();

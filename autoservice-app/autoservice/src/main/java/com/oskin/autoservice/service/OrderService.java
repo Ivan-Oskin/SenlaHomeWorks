@@ -80,6 +80,7 @@ public class OrderService {
 
         orderRepository.update(order);
     }
+
     @Transactional
     public void closeOrder(int id) {
         orderRepository.changeStatusInDb(id, StatusOrder.CLOSE);
@@ -112,6 +113,7 @@ public class OrderService {
     public ArrayList<Order> getListOfOrders(SortTypeOrder sortType) {
         return orderRepository.findAll(sortType);
     }
+
     public List<OrderDto> getListOfOrdersDto(SortTypeOrder sortType) {
         return orderRepository.findAll(sortType).stream().map(order -> mapperToDto.mapToOrderDto(order)).toList();
     }

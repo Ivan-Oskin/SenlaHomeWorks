@@ -1,4 +1,5 @@
 package com.oskin.autoservice.utils;
+
 import com.oskin.autoservice.dto.PlaceDto;
 import com.oskin.autoservice.dto.MasterDto;
 import com.oskin.autoservice.dto.OrderDto;
@@ -21,12 +22,14 @@ public class MapperToDto {
         placeDto.setName(placeEntity.getName());
         return placeDto;
     }
+
     public MasterDto mapToMasterDto(Master masterEntity) {
         MasterDto masterDto = new MasterDto();
         masterDto.setId(masterEntity.getId());
         masterDto.setName(masterEntity.getName());
         return masterDto;
     }
+
     public OrderDto mapToOrderDto(Order orderEntity) {
         OrderDto orderDto = new OrderDto();
         orderDto.setId(orderEntity.getId());
@@ -39,6 +42,7 @@ public class MapperToDto {
         orderDto.setPlaceDto(mapToPlaceDto(orderEntity.getPlace()));
         return orderDto;
     }
+
     public OrderMasterDto mapToOrderMasterDto(OrderMaster orderMasterEntity) {
         OrderMasterDto orderMasterDto = new OrderMasterDto();
         orderMasterDto.setId(orderMasterEntity.getId());

@@ -20,6 +20,7 @@ public class MasterRepository implements CrudRepository<Master> {
     private final Logger loggerFile = LoggerFactory.getLogger("file");
 
     SessionHibernate session;
+
     @Autowired
     MasterRepository(SessionHibernate session) {
         this.session = session;

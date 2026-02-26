@@ -5,8 +5,10 @@ import com.oskin.autoservice.dto.request.PlaceRequest;
 import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.SortTypePlace;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import com.oskin.autoservice.utils.MapperToDto;
 import com.oskin.autoservice.utils.MapperToEntity;
 import com.oskin.config.Config;
@@ -45,6 +47,7 @@ public class PlaceService {
     public PlaceDto findPlace(int id) {
         return mapperToDto.mapToPlaceDto(placeRepository.find(id));
     }
+
     @Transactional
     public void updatePlace(int id, PlaceRequest placeRequest) {
         Place place = mapperToEntity.mapToPlaceEntity(id, placeRequest);
