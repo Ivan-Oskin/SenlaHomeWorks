@@ -1,0 +1,4 @@
+FROM tomcat:10.0
+
+COPY ./autoservice/target/autoservice-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/
+EXPOSE 8080
