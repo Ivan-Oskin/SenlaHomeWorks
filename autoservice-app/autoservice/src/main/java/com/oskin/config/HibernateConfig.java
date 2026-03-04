@@ -24,6 +24,7 @@ public class HibernateConfig {
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
+
         sessionFactoryBean.setDataSource(dataSourceConfig.dataSource());
         sessionFactoryBean.setPackagesToScan("com.oskin.autoservice.model");
         Properties hibernateProperties = new Properties();
