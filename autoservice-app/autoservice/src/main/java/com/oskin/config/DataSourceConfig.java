@@ -1,7 +1,6 @@
 package com.oskin.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -10,16 +9,21 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
-    Logger logger = LoggerFactory.getLogger(DataSourceConfig.class);
+
+    private final Config config;
+
+    @Autowired
+    public DataSourceConfig(Config config) {
+        this.config = config;
+    }
 
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://postgres:5438/carrepairdb");
-        logger.info("!!!!!!!!!!!!!!! URL = " + dataSource.getUrl() + " !!!!!!!!!!!!!!!!!!!!!!!!1");
-        dataSource.setUsername("carrepair_admin");
-        dataSource.setPassword("Admin");
+        dataSource.setDriverClassName(config.getDriver());
+        dataSource.setUrl(config.getUrl());
+        dataSource.setUsername(config.getUsername());
+        dataSource.setPassword(config.getPassword());
         return dataSource;
     }
 }
