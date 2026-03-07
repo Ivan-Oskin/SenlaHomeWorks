@@ -24,12 +24,13 @@ public class HibernateConfig {
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
+
         sessionFactoryBean.setDataSource(dataSourceConfig.dataSource());
         sessionFactoryBean.setPackagesToScan("com.oskin.autoservice.model");
         Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "update");
         hibernateProperties.setProperty("hibernate.show_sql", "true");
+
         sessionFactoryBean.setHibernateProperties(hibernateProperties);
         return sessionFactoryBean;
     }

@@ -9,7 +9,8 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
-    Config config;
+
+    private final Config config;
 
     @Autowired
     public DataSourceConfig(Config config) {
