@@ -44,7 +44,6 @@ public class PlaceRepository implements CrudRepository<Place> {
     }
 
     @Override
-
     public void create(Place place) {
         logger.info("Start create place");
         try {
@@ -56,7 +55,6 @@ public class PlaceRepository implements CrudRepository<Place> {
     }
 
     @Override
-
     public boolean delete(int id) {
         logger.info("Start delete place ");
         try {

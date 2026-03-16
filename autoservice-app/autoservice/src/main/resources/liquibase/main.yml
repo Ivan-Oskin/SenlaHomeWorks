@@ -29,3 +29,6 @@ databaseChangeLog:
   - include:
      file: v1.2/insert_test.yml
      relativeToChangelogFile: true
+  - include:
+      file: v1.3/create_user.yml
+      relativeToChangelogFile: true

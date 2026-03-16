@@ -5,11 +5,16 @@ import com.oskin.autoservice.dto.OrderDto;
 import com.oskin.autoservice.dto.request.MasterRequest;
 import com.oskin.autoservice.dto.request.OrderRequest;
 import com.oskin.autoservice.dto.request.PlaceRequest;
-import com.oskin.autoservice.model.Order;
+import com.oskin.autoservice.dto.request.UserRequest;
+import com.oskin.autoservice.model.User;
 import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.OrderMaster;
+import com.oskin.autoservice.model.Order;
 import com.oskin.autoservice.model.StatusOrder;
+import com.oskin.autoservice.model.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -17,6 +22,13 @@ import java.time.LocalDateTime;
 
 @Component
 public class MapperToEntity {
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public MapperToEntity (PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     public Place mapToPlaceEntity(PlaceRequest placeRequest) {
         return new Place(placeRequest.getName());
     }
@@ -66,5 +78,10 @@ public class MapperToEntity {
         );
         Master master = new Master(masterDto.getId(), masterDto.getName());
         return new OrderMaster(id, order, master);
+    }
+
+    public User mapToUserEntity(UserRequest userRequest) {
+        String passwordHash = passwordEncoder.encode(userRequest.getPassword());
+        return new User(userRequest.getLogin(), passwordHash, UserRole.USER);
     }
 }
