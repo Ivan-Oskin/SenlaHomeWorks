@@ -1,5 +1,6 @@
 package com.oskin.autoservice.repository;
 
+import com.oskin.autoservice.model.Place;
 import com.oskin.autoservice.model.SortType;
 import com.oskin.autoservice.model.User;
 import org.hibernate.query.Query;
@@ -71,6 +72,22 @@ public class UserRepository implements CrudRepository<User> {
             if (user != null) {
                 logger.info("successful findById user");
                 return user;
+            }
+        } catch (Exception e) {
+            loggerFile.error("error findById {}", e.getMessage());
+        }
+        logger.info("No found but successful findById user");
+        return null;
+    }
+
+    public User findByLogin(String login) {
+        logger.info("Start findByLogin user ");
+        try {
+            Query<User> query = session.getSession().createQuery("From User WHERE login = :login", User.class);
+            query.setParameter("login", login);
+            List<User> users = query.getResultList();
+            if (!users.isEmpty()) {
+                return users.get(0);
             }
         } catch (Exception e) {
             loggerFile.error("error findById {}", e.getMessage());

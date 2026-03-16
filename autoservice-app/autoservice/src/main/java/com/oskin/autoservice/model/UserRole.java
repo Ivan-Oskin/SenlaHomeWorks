@@ -1,5 +1,7 @@
 package com.oskin.autoservice.model;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 public enum UserRole {
     USER("USER"),
     ADMIN("ADMIN");
@@ -12,5 +14,9 @@ public enum UserRole {
 
     public String getRole() {
         return role;
+    }
+
+    public SimpleGrantedAuthority toAuthority() {
+        return new SimpleGrantedAuthority(("ROLE_") + this.role);
     }
 }

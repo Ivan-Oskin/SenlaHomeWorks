@@ -20,9 +20,8 @@ public class UserService {
     }
 
     @Transactional
-    public void createUser (UserRequest userRequest) {
+    public void createUser(UserRequest userRequest) {
         User user = mapperToEntity.mapToUserEntity(userRequest);
         userRepository.create(user);
     }
-
 }
