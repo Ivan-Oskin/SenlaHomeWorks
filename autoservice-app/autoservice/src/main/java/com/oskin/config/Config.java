@@ -36,6 +36,7 @@ public class Config {
 
     public Config() {
     }
+
     public boolean getRuleAddPlace() {
         return this.ruleAddPlace;
     }

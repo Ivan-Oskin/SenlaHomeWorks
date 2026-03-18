@@ -1,4 +1,4 @@
-package com.oskin.autoservice.service;
+package com.oskin.autoservice.security;
 
 import com.oskin.autoservice.model.User;
 import com.oskin.autoservice.repository.UserRepository;

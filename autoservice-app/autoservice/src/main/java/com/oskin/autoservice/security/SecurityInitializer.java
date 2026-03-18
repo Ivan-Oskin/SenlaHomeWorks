@@ -1,4 +1,4 @@
-package com.oskin.config.security;
+package com.oskin.autoservice.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

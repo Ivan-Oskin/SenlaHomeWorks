@@ -1,9 +1,11 @@
 package com.oskin.autoservice.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,9 +36,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(responseBody, buildHeaders(), status);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ExceptionResponse> handler(BadCredentialsException exception) {
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handlerUserAlreadyExistsException(UserAlreadyExistsException exception) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ExceptionResponse responseBody = new ExceptionResponse(status.value(), exception.getMessage());
+        return new ResponseEntity<>(responseBody, buildHeaders(), status);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ExceptionResponse> handlerBadCredentialsException(BadCredentialsException exception) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ExceptionResponse responseBody = new ExceptionResponse(status.value(), exception.getMessage());
+        return new ResponseEntity<>(responseBody, buildHeaders(), status);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> AccessDeniedException(AccessDeniedException exception) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
         ExceptionResponse responseBody = new ExceptionResponse(status.value(), exception.getMessage());
         return new ResponseEntity<>(responseBody, buildHeaders(), status);
     }

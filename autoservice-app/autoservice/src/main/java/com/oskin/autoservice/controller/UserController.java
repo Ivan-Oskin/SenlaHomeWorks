@@ -2,7 +2,7 @@ package com.oskin.autoservice.controller;
 
 import com.oskin.autoservice.dto.JwtDto;
 import com.oskin.autoservice.dto.request.UserRequest;
-import com.oskin.autoservice.service.UserDetailService;
+import com.oskin.autoservice.security.UserDetailService;
 import com.oskin.autoservice.service.UserService;
 import com.oskin.autoservice.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,8 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
 
     @Autowired
-    UserController (UserService userService, PasswordEncoder passwordEncoder, JwtUtils jwtUtils,
-                    AuthenticationManager authenticationManager, UserDetailService userDetailService) {
+    UserController(UserService userService, PasswordEncoder passwordEncoder, JwtUtils jwtUtils,
+                   AuthenticationManager authenticationManager, UserDetailService userDetailService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;

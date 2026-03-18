@@ -11,7 +11,7 @@ databaseChangeLog:
                   value: "admin"
               - column:
                   name: password
-                  value: "$2a$12$QQ0aZhJ3zi9ehnZVFtPntOKpRyEmYgPBbMYcxMweFgVlXH2Svu2Re"
+                  value: "$2a$12$QQ0aZhJ3zi9ehnZVFtPntOKpRyEmYgPBbMYcxMweFgVlXH2Svu2Re" #admin
               - column:
                   name: role
                   value: "ADMIN"
