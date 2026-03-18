@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12
+      author: Ivan
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: login
+                  value: "admin"
+              - column:
+                  name: password
+                  value: "$2a$12$QQ0aZhJ3zi9ehnZVFtPntOKpRyEmYgPBbMYcxMweFgVlXH2Svu2Re"
+              - column:
+                  name: role
+                  value: "ADMIN"

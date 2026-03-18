@@ -90,9 +90,9 @@ public class UserRepository implements CrudRepository<User> {
                 return users.get(0);
             }
         } catch (Exception e) {
-            loggerFile.error("error findById {}", e.getMessage());
+            loggerFile.error("error findByLogin {}", e.getMessage());
         }
-        logger.info("No found but successful findById user");
+        logger.info("No found but successful findByLogin user");
         return null;
     }
 
