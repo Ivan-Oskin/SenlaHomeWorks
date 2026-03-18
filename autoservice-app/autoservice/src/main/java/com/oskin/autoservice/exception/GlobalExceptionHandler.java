@@ -1,6 +1,5 @@
 package com.oskin.autoservice.exception;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,7 +50,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponse> AccessDeniedException(AccessDeniedException exception) {
+    public ResponseEntity<ExceptionResponse> accessDeniedException(AccessDeniedException exception) {
         HttpStatus status = HttpStatus.FORBIDDEN;
         ExceptionResponse responseBody = new ExceptionResponse(status.value(), exception.getMessage());
         return new ResponseEntity<>(responseBody, buildHeaders(), status);

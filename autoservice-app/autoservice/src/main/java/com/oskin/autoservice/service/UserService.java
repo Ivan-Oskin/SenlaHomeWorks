@@ -24,10 +24,9 @@ public class UserService {
     public void createUser(UserRequest userRequest) {
         User user = mapperToEntity.mapToUserEntity(userRequest);
         User existingUser = userRepository.findByLogin(user.getLogin());
-        if(existingUser != null) {
+        if (existingUser != null) {
             throw new UserAlreadyExistsException("Пользователь уже существует");
-        }
-        else {
+        } else {
             userRepository.create(user);
         }
     }

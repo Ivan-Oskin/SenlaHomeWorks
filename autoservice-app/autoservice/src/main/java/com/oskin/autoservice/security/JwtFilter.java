@@ -12,7 +12,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,30 +34,40 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
+            if (jwt.isEmpty() || jwt.split("\\.").length != 3) {
+                response.setStatus(401);
+                response.setContentType("application/json");
+                ExceptionResponse exception = new ExceptionResponse(401, "Неверный jwt токен");
+                response.getWriter().write(mapper.writeValueAsString(exception));
+                return;
+            }
             try {
                 username = jwtUtils.getUsername(jwt);
             } catch (SignatureException e) {
                 response.setStatus(401);
                 response.setContentType("application/json");
                 ExceptionResponse exception = new ExceptionResponse(401, "Неверный jwt токен");
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-                mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
                 response.getWriter().write(mapper.writeValueAsString(exception));
                 return;
             } catch (ExpiredJwtException e) {
                 response.setStatus(401);
                 response.setContentType("application/json");
                 ExceptionResponse exception = new ExceptionResponse(401, "Время сессии истекло");
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.registerModule(new JavaTimeModule());
-                mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
                 response.getWriter().write(mapper.writeValueAsString(exception));
                 return;
             }
+        } else {
+            response.setStatus(403);
+            response.setContentType("application/json");
+            ExceptionResponse exception = new ExceptionResponse(403, "Пустой jwt токен");
+            response.getWriter().write(mapper.writeValueAsString(exception));
+            return;
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
