@@ -4,14 +4,10 @@ package com.oskin.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 @Component
 public class Config {
-    @Value("${standard.file.csv.garage}")
-    private String standardFileCsvGarage;
-    @Value("${standard.file.csv.master}")
-    private String standardFileCsvMaster;
-    @Value("${standard.file.csv.orders}")
-    private String standardFileCsvOrders;
     @Value("${rule.add.place}")
     private boolean ruleAddPlace;
     @Value("${rule.delete.place}")
@@ -22,8 +18,6 @@ public class Config {
     private boolean ruleOffset;
     @Value("${standard.path.to.data}")
     private String standardPathToData;
-    @Value("${standard.file.csv.order_master}")
-    private String standardFileCsvOrderMaster;
     @Value("${db.driver}")
     private String driver;
     @Value("${db.url}")
@@ -34,27 +28,14 @@ public class Config {
     private String password;
     @Value("${lb.changelog}")
     private String changelog;
+    @Value("${jwt.secret}")
+    private String secret;
+    @Value("${jwt.lifetime}")
+    private Long lifetime;
 
 
     public Config() {
     }
-
-    public String getStandardFileCsvGarage() {
-        return this.standardFileCsvGarage;
-    }
-
-    public String getStandardFileCsvMaster() {
-        return this.standardFileCsvMaster;
-    }
-
-    public String getStandardFileCsvOrders() {
-        return this.standardFileCsvOrders;
-    }
-
-    public String getStandardFileCsvOrderMaster() {
-        return this.standardFileCsvOrderMaster;
-    }
-
     public boolean getRuleAddPlace() {
         return this.ruleAddPlace;
     }
@@ -93,5 +74,13 @@ public class Config {
 
     public String getChangelog() {
         return this.changelog;
+    }
+
+    public Duration getLifetime() {
+        return Duration.ofMillis(lifetime);
+    }
+
+    public String getSecret() {
+        return this.secret;
     }
 }
