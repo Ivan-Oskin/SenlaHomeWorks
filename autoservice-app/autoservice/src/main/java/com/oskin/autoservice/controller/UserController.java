@@ -6,9 +6,7 @@ import com.oskin.autoservice.service.UserDetailService;
 import com.oskin.autoservice.service.UserService;
 import com.oskin.autoservice.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,10 +42,9 @@ public class UserController {
 
     @PostMapping("/auth")
     public JwtDto createAuthToken(@RequestBody UserRequest userRequest) {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userRequest.getLogin(), userRequest.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userRequest.getLogin(), userRequest.getPassword()));
         UserDetails userDetails = userDetailService.loadUserByUsername(userRequest.getLogin());
         String token = jwtUtils.generateToken(userDetails);
         return new JwtDto(token);
     }
-
 }
