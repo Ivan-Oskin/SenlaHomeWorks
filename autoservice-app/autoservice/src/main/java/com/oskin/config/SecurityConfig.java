@@ -41,7 +41,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
                 )
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exc -> exc.accessDeniedHandler(new CustomAccessDeniedHandler()))

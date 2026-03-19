@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.oskin.autoservice.exception.ExceptionResponse;
 import com.oskin.autoservice.utils.JwtUtils;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,14 +20,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
+    private final List<String> permitAllPaths = Arrays.asList(
+            "/autoservice/auth",
+            "/autoservice/reg"
+    );
 
     @Autowired
     public JwtFilter(JwtUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return permitAllPaths.stream().anyMatch(path::equals);
     }
 
     @Override
@@ -49,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             try {
                 username = jwtUtils.getUsername(jwt);
-            } catch (SignatureException e) {
+            } catch (MalformedJwtException e) {
                 response.setStatus(401);
                 response.setContentType("application/json");
                 ExceptionResponse exception = new ExceptionResponse(401, "Неверный jwt токен");
@@ -69,7 +82,6 @@ public class JwtFilter extends OncePerRequestFilter {
             response.getWriter().write(mapper.writeValueAsString(exception));
             return;
         }
-
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                     username,
