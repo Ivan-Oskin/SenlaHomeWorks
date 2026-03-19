@@ -62,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             try {
                 username = jwtUtils.getUsername(jwt);
-            } catch (MalformedJwtException e) {
+            } catch (MalformedJwtException | SignatureException e) {
                 response.setStatus(401);
                 response.setContentType("application/json");
                 ExceptionResponse exception = new ExceptionResponse(401, "Неверный jwt токен");
@@ -76,9 +76,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
         } else {
-            response.setStatus(403);
+            response.setStatus(401);
             response.setContentType("application/json");
-            ExceptionResponse exception = new ExceptionResponse(403, "Пустой jwt токен");
+            ExceptionResponse exception = new ExceptionResponse(401, "Пустой jwt токен");
             response.getWriter().write(mapper.writeValueAsString(exception));
             return;
         }
