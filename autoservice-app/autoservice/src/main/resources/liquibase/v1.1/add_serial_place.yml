@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: 5
-      author: Ivan
-      changes:
-        - createSequence:
-            sequenceName: places_id_seq
-            startValue: 1
-            incrementBy: 1
