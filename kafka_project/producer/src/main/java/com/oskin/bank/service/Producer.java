@@ -1,9 +1,8 @@
-package com.oskin.bank.Producer;
+package com.oskin.bank.service;
 
 import com.oskin.bank.model.Account;
 import com.oskin.bank.model.Transfer;
 import com.oskin.bank.repository.AccountRepository;
-import io.micrometer.observation.ObservationRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class Producer {
         }
     }
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 200)
     public void sendMessage() {
         logger.info("начало отправки сообщения");
         int firstId = random.nextInt(1001) + firstKey;

@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: creates/create_accounts.yml
+      relativeToChangelogFile: true
+  - include:
+      file: creates/create_transfers.yml
+      relativeToChangelogFile: true
