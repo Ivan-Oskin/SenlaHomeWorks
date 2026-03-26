@@ -19,7 +19,7 @@ public class HibernateConfig {
     private final DataSourceConfig dataSourceConfig;
 
     @Autowired
-    public HibernateConfig(DataSourceConfig dataSourceConfig){
+    public HibernateConfig(DataSourceConfig dataSourceConfig) {
         this.dataSourceConfig = dataSourceConfig;
     }
 

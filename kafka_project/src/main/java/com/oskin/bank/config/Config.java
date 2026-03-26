@@ -15,9 +15,15 @@ public class Config {
     private String username;
     @Value("${db.password}")
     private String password;
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapAddress;
 
     public String getDriver() {
         return driver;
+    }
+
+    public String getBootstrapAddress() {
+        return bootstrapAddress;
     }
 
     public String getUrl() {

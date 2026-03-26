@@ -58,12 +58,13 @@ public class Transfer {
         this.sum = sum;
     }
 
-    public Transfer(int id, int idWithdrawing, int idDepositing, int sum, TransferStatus status) {
-        this.id = id;
+    public Transfer(int idWithdrawing, int idDepositing, int sum) {
         this.idWithdrawing = idWithdrawing;
         this.idDepositing = idDepositing;
         this.sum = sum;
-        this.status = status;
+    }
+
+    public Transfer() {
     }
 
     public TransferStatus getStatus() {
