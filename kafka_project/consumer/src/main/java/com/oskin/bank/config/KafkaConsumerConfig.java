@@ -30,8 +30,9 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "bank-consumer-group");
+        props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "500"); // пачками
 
-        // Важно для JsonDeserializer
         JsonDeserializer<Transfer> deserializer = new JsonDeserializer<>(Transfer.class);
         deserializer.setRemoveTypeHeaders(false);
         deserializer.addTrustedPackages("com.oskin.bank.model");

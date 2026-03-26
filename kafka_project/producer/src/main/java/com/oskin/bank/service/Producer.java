@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,12 +49,18 @@ public class Producer {
     @Scheduled(fixedDelay = 200)
     public void sendMessage() {
         logger.info("начало отправки сообщения");
-        int firstId = random.nextInt(1001) + firstKey;
-        int secondId = random.nextInt(1001) + firstKey;
-        int randSum = random.nextInt(4001) + 1000;
-        Transfer transfer = new Transfer(firstId, secondId, randSum);
-        String partitionKey = String.valueOf(firstId % 3);
-        kafkaTemplate.send("bank.transfers", partitionKey, transfer);
+        kafkaTemplate.executeInTransaction(operations -> {
+            int firstId = random.nextInt(1001) + firstKey;
+            int secondId = random.nextInt(1001) + firstKey;
+            int randSum = random.nextInt(4001) + 1000;
+            Transfer transfer = new Transfer(firstId, secondId, randSum);
+            String partitionKey = String.valueOf(firstId % 3);
+
+            operations.send("bank.transfers", partitionKey, transfer);
+            logger.info("сообщение отправлено: {} -> {} сумма: {}", firstId, secondId, randSum);
+
+            return null;
+        });
         logger.info("конец отправки сообщения");
     }
 }

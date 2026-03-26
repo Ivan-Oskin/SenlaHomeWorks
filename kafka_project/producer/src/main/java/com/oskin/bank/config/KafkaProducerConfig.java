@@ -37,21 +37,33 @@ public class KafkaProducerConfig {
         configProps.put(
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
                 JsonSerializer.class);
-        configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
-        configProps.put(ProducerConfig.ACKS_CONFIG, "1");
-        return new DefaultKafkaProducerFactory<>(configProps);
+        configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        configProps.put(ProducerConfig.ACKS_CONFIG, "all");
+        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "bank-producer-1");
+
+        DefaultKafkaProducerFactory<String, Transfer> factory =
+                new DefaultKafkaProducerFactory<>(configProps);
+
+        factory.setTransactionIdPrefix("bank-producer-");
+
+        return factory;
     }
 
     @Bean
     public KafkaTemplate<String, Transfer> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+        KafkaTemplate<String, Transfer> template = new KafkaTemplate<>(producerFactory());
+
+        template.setObservationEnabled(true);
+
+        return template;
     }
 
     @Bean
     public NewTopic transferTopic() {
         return TopicBuilder.name("bank.transfers")
                 .partitions(3)
-                .replicas(1)
+                .replicas(3)
+                .config("retention.ms", "300000")
                 .build();
     }
 }

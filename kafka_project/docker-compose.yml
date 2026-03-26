@@ -1,6 +1,16 @@
-version: '3.8'
-
 services:
+  postgres:
+    image: postgres:16.8
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: bank_admin
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: bankdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bank-network
   zookeeper:
     image: confluentinc/cp-zookeeper:7.7.0
     container_name: zookeeper
@@ -11,10 +21,11 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     volumes:
       - zookeeper_data:/var/lib/zookeeper/data
-
-  kafka:
+    networks:
+      - bank-network
+  kafka1:
     image: confluentinc/cp-kafka:7.7.0
-    container_name: kafka
+    container_name: kafka1
     depends_on:
       - zookeeper
     ports:
@@ -22,17 +33,98 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_NUM_PARTITIONS: 3
-      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_RETENTION_MS: 300000        # 5 минут
+      KAFKA_MIN_INSYNC_REPLICAS: 2
     volumes:
-      - kafka_data:/var/lib/kafka/data
-
+      - kafka1_data:/var/lib/kafka/data
+    networks:
+      - bank-network
+  kafka2:
+    image: confluentinc/cp-kafka:7.7.0
+    container_name: kafka2
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_RETENTION_MS: 300000
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - kafka2_data:/var/lib/kafka/data
+    networks:
+      - bank-network
+  kafka3:
+    image: confluentinc/cp-kafka:7.7.0
+    container_name: kafka3
+    depends_on:
+      - zookeeper
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_RETENTION_MS: 300000
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - kafka3_data:/var/lib/kafka/data
+    networks:
+      - bank-network
+  producer:
+    build: ./producer
+    container_name: producer-app
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9093,kafka3:9094
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - bank-network
+  consumer:
+    build: ./consumer
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9093,kafka3:9094
+      SPRING_PROFILES_ACTIVE: docker
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+    networks:
+      - bank-network
 volumes:
+  postgres_data:
   zookeeper_data:
-  kafka_data:
+  kafka1_data:
+  kafka2_data:
+  kafka3_data:
+networks:
+  bank-network:
+    driver: bridge

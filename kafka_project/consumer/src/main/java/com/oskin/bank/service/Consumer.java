@@ -45,10 +45,9 @@ public class Consumer {
             if (first.isPresent() && second.isPresent()) {
                 Account accountFirst = first.get();
                 Account accountSecond = second.get();
-                logger.info("{} - {}",accountFirst.getBalance(), transfer.getSum());
                 if(accountFirst.getBalance() >= transfer.getSum()) {
-                    accountSecond.setBalance(accountSecond.getBalance()+transfer.getSum());
                     accountFirst.setBalance(accountFirst.getBalance()-transfer.getSum());
+                    accountSecond.setBalance(accountSecond.getBalance()+transfer.getSum());
                     transfer.setStatus(TransferStatus.SUCCESSFULLY);
                     accountRepository.save(accountFirst);
                     accountRepository.save(accountSecond);
