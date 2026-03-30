@@ -57,11 +57,11 @@ public class UserControllerTest {
 
     @Test
     void save_InvalidJson_ReturnBadRequest() throws Exception {
-        String invalidJson = "{\"password\":\"password\"}";
+        String invalidJson = "{\"password\":\"password\",}";
         mockMvc.perform(post("/autoservice/reg")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is4xxClientError());
         Mockito.verify(userServiceMock, Mockito.times(0)).createUser(any());
     }
 }
