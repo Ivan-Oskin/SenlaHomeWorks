@@ -1,3 +1,5 @@
+package serviceTest;
+
 import com.oskin.autoservice.dto.DateDto;
 import com.oskin.autoservice.model.Master;
 import com.oskin.autoservice.model.Order;

@@ -1,3 +1,5 @@
+package serviceTest;
+
 import com.oskin.autoservice.dto.request.UserRequest;
 import com.oskin.autoservice.exception.UserAlreadyExistsException;
 import com.oskin.autoservice.model.User;
