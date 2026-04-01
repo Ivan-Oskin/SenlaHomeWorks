@@ -8,6 +8,7 @@ import com.oskin.autoservice.repository.PlaceRepository;
 import com.oskin.autoservice.service.PlaceService;
 import com.oskin.autoservice.utils.MapperToDto;
 import com.oskin.autoservice.utils.MapperToEntity;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,10 +31,19 @@ public class PlaceServiceTest {
     @Mock
     MapperToDto mapperToDtoMock;
 
+    Place place;
+    PlaceRequest placeRequest;
+    int id;
+
+    @BeforeEach
+    void setUp() {
+        placeRequest = new PlaceRequest("test");
+        place = new Place(placeRequest.getName());
+        id = 1;
+    }
+
     @Test
     void addPlace_GoodAddPlace() {
-        Place place = new Place("test");
-        PlaceRequest placeRequest = new PlaceRequest("test");
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(placeRequest)).thenReturn(place);
         placeService.addPlace(placeRequest);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).create(place);
@@ -41,8 +51,6 @@ public class PlaceServiceTest {
 
     @Test
     void addPlace_BadPlace() {
-        Place place = new Place();
-        PlaceRequest placeRequest = new PlaceRequest();
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(placeRequest)).thenReturn(place);
         placeService.addPlace(placeRequest);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).create(place);
@@ -50,7 +58,6 @@ public class PlaceServiceTest {
 
     @Test
     void deletePlace() {
-        int id = 1;
         Mockito.when(placeRepositoryMock.delete(id)).thenReturn(true);
         placeService.deletePlace(id);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).delete(id);
@@ -58,8 +65,6 @@ public class PlaceServiceTest {
 
     @Test
     void findPlace_RealPlace() {
-        int id = 1;
-        Place place = new Place("place");
         Mockito.when(placeRepositoryMock.find(id)).thenReturn(place);
         Mockito.when(mapperToDtoMock.mapToPlaceDto(place)).thenReturn(new PlaceDto());
         placeService.findPlace(id);
@@ -68,7 +73,6 @@ public class PlaceServiceTest {
 
     @Test
     void findPlace_NullPlace() {
-        int id = 1;
         Mockito.when(placeRepositoryMock.find(id)).thenReturn(null);
         Mockito.when(mapperToDtoMock.mapToPlaceDto(any())).thenReturn(new PlaceDto());
         placeService.findPlace(id);
@@ -77,24 +81,20 @@ public class PlaceServiceTest {
 
     @Test
     void updatePlace() {
-        int id = 1;
-        PlaceRequest placeRequest = new PlaceRequest("test");
-        Place place = new Place(id, placeRequest.getName());
-        Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(place);
-        Mockito.doNothing().when(placeRepositoryMock).update(place);
+        Place placeUpdate = new Place(id, placeRequest.getName());
+        Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(placeUpdate);
+        Mockito.doNothing().when(placeRepositoryMock).update(placeUpdate);
         placeService.updatePlace(id, placeRequest);
-        Mockito.verify(placeRepositoryMock, Mockito.times(1)).update(place);
+        Mockito.verify(placeRepositoryMock, Mockito.times(1)).update(placeUpdate);
     }
 
     @Test
     void updatePlace_NoValidPlace() {
-        int id = 1;
-        PlaceRequest placeRequest = new PlaceRequest();
-        Place place = new Place();
-        Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(place);
-        Mockito.doNothing().when(placeRepositoryMock).update(place);
+        Place placeUpdate = new Place(id, placeRequest.getName());
+        Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(placeUpdate);
+        Mockito.doNothing().when(placeRepositoryMock).update(placeUpdate);
         placeService.updatePlace(id, placeRequest);
-        Mockito.verify(placeRepositoryMock, Mockito.times(1)).update(place);
+        Mockito.verify(placeRepositoryMock, Mockito.times(1)).update(placeUpdate);
     }
 
     @Test
