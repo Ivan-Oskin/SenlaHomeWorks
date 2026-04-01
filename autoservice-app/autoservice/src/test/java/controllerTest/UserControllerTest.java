@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oskin.autoservice.controller.UserController;
 import com.oskin.autoservice.dto.request.UserRequest;
 import com.oskin.autoservice.exception.GlobalExceptionHandler;
+import com.oskin.autoservice.security.UserDetailService;
 import com.oskin.autoservice.service.UserService;
+import com.oskin.autoservice.utils.JwtUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,7 +43,13 @@ public class UserControllerTest {
     @Mock
     UserService userServiceMock;
     @Mock
-    PasswordEncoder passwordEncoder;
+    PasswordEncoder passwordEncoderMock;
+    @Mock
+    AuthenticationManager authenticationManagerMock;
+    @Mock
+    UserDetailService userDetailServiceMock;
+    @Mock
+    JwtUtils jwtUtilsMock;
 
     @BeforeEach
     void setUp() {
@@ -49,7 +63,7 @@ public class UserControllerTest {
     @Test
     void save_createUser() throws Exception {
         UserRequest userRequest = new UserRequest("test", "password");
-        Mockito.when(passwordEncoder.encode(userRequest.getPassword())).thenReturn("encodedPassword");
+        Mockito.when(passwordEncoderMock.encode(userRequest.getPassword())).thenReturn("encodedPassword");
         mockMvc.perform(post("/autoservice/reg")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest)))
@@ -68,5 +82,41 @@ public class UserControllerTest {
                         .content(invalidJson))
                 .andExpect(status().isUnprocessableContent());
         Mockito.verify(userServiceMock, Mockito.times(0)).createUser(any());
+    }
+
+    @Test
+    void auth_GetValidToken() throws Exception {
+        UserRequest userRequest = new UserRequest("test", "password");
+        UserDetails userDetails = User.builder()
+                .username(userRequest.getLogin())
+                .password(userRequest.getPassword()).build();
+        Mockito.when(authenticationManagerMock.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(Mockito.mock(Authentication.class));
+        Mockito.when(userDetailServiceMock.loadUserByUsername(userRequest.getLogin())).thenReturn(userDetails);
+        Mockito.when(jwtUtilsMock.generateToken(userDetails)).thenReturn("token");
+
+        mockMvc.perform(post("/autoservice/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isOk());
+        Mockito.verify(jwtUtilsMock, Mockito.times(1)).generateToken(userDetails);
+    }
+
+    @Test
+    void auth_NoFoundUser_NoGeneratedToken() throws Exception {
+        UserRequest userRequest = new UserRequest("test", "password");
+        UserDetails userDetails = User.builder()
+                .username(userRequest.getLogin())
+                .password(userRequest.getPassword()).build();
+        Mockito.when(authenticationManagerMock.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(Mockito.mock(Authentication.class));
+        Mockito.when(userDetailServiceMock.loadUserByUsername(userRequest.getLogin()))
+                .thenThrow(new UsernameNotFoundException("user no found"));
+
+        mockMvc.perform(post("/autoservice/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isUnprocessableContent());
+        Mockito.verify(jwtUtilsMock, Mockito.times(0)).generateToken(userDetails);
     }
 }
