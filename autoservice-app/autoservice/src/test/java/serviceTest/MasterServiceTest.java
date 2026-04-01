@@ -104,6 +104,22 @@ public class MasterServiceTest {
     }
 
     @Test
+    void deleteMaster() {
+        Mockito.when(masterRepositoryMock.find(id)).thenReturn(master);
+        Mockito.doNothing().when(orderMasterServiceMock).deleteByMaster(id);
+        Mockito.when(masterRepositoryMock.delete(id)).thenReturn(true);
+        masterService.deleteMaster(id);
+        Mockito.verify(masterRepositoryMock, Mockito.times(1)).delete(id);
+    }
+
+    @Test
+    void deleteMaster_masterNoFound() {
+        Mockito.when(masterRepositoryMock.find(id)).thenReturn(null);
+        masterService.deleteMaster(id);
+        Mockito.verify(masterRepositoryMock, Mockito.times(0)).delete(id);
+    }
+
+    @Test
     void getAllMaster() {
         Mockito.when(masterRepositoryMock.findAll(SortTypeMaster.ID)).thenReturn(new ArrayList<>());
         masterService.getListOfMasters(SortTypeMaster.ID);
