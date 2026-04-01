@@ -83,7 +83,6 @@ public class PlaceServiceTest {
     void updatePlace() {
         Place placeUpdate = new Place(id, placeRequest.getName());
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(placeUpdate);
-        Mockito.doNothing().when(placeRepositoryMock).update(placeUpdate);
         placeService.updatePlace(id, placeRequest);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).update(placeUpdate);
     }
@@ -92,7 +91,6 @@ public class PlaceServiceTest {
     void updatePlace_NoValidPlace() {
         Place placeUpdate = new Place(id, placeRequest.getName());
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(placeUpdate);
-        Mockito.doNothing().when(placeRepositoryMock).update(placeUpdate);
         placeService.updatePlace(id, placeRequest);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).update(placeUpdate);
     }

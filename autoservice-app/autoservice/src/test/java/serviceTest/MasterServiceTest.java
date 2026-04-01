@@ -89,7 +89,6 @@ public class MasterServiceTest {
     void updateMaster() {
         Master masterUpdate = new Master(id, masterRequest.getName());
         Mockito.when(mapperToEntityMock.mapToMasterEntity(id, masterRequest)).thenReturn(masterUpdate);
-        Mockito.doNothing().when(masterRepositoryMock).update(masterUpdate);
         masterService.updateMaster(id, masterRequest);
         Mockito.verify(masterRepositoryMock, Mockito.times(1)).update(masterUpdate);
     }
@@ -97,8 +96,7 @@ public class MasterServiceTest {
     @Test
     void updateMaster_NoValidMaster() {
         Master masterUpdate = new Master(id, masterRequest.getName());
-        Mockito.when(mapperToEntityMock.mapToMasterEntity(id, masterRequest)).thenReturn(masterUpdate);
-        Mockito.doNothing().when(masterRepositoryMock).update(masterUpdate);
+        Mockito.when(mapperToEntityMock.mapToMasterEntity(id, masterRequest)).thenReturn(masterUpdate);;
         masterService.updateMaster(id, masterRequest);
         Mockito.verify(masterRepositoryMock, Mockito.times(1)).update(masterUpdate);
     }
@@ -106,7 +104,6 @@ public class MasterServiceTest {
     @Test
     void deleteMaster() {
         Mockito.when(masterRepositoryMock.find(id)).thenReturn(master);
-        Mockito.doNothing().when(orderMasterServiceMock).deleteByMaster(id);
         Mockito.when(masterRepositoryMock.delete(id)).thenReturn(true);
         masterService.deleteMaster(id);
         Mockito.verify(masterRepositoryMock, Mockito.times(1)).delete(id);
