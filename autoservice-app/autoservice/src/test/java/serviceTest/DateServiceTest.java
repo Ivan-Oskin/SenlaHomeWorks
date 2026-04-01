@@ -43,14 +43,14 @@ public class DateServiceTest {
     MapperToDto mapperToDtoMock;
 
     @Test
-    void getNearestDate_SetEmptyListMaster_ReturnNull() {
+    void getNearestDate_WhenEmptyListMaster_ShouldReturnNull() {
         Mockito.when(masterServiceMock.getListOfMasters(SortTypeMaster.ID)).thenReturn(new ArrayList<>());
         DateDto date = dateService.getNearestDate();
         Assertions.assertNull(date);
     }
 
     @Test
-    void getNearestDate_GoodMasterAndOrder_ReturnDateNow() {
+    void getNearestDate_WhenValidMasterAndOrder_ShouldReturnDateNow() {
         ArrayList<Master> masters = new ArrayList<>(Collections.singleton(new Master()));
         ArrayList<Order> orders = new ArrayList<>(Collections.singleton(new Order()));
         Mockito.when(masterServiceMock.getListOfMasters(SortTypeMaster.ID)).thenReturn(masters);
@@ -61,14 +61,14 @@ public class DateServiceTest {
     }
 
     @Test
-    void getCountFreePlaceInDate_NoPlaceInSystem_NullPlaces() {
+    void getCountFreePlaceInDate_WhenNoPlaceInSystem_ShouldReturnNullPlaces() {
         Mockito.doReturn(new ArrayList<>()).when(dateService).getFreePlaceInDate(any(LocalDateTime.class));
         int count = dateService.getCountFreePlaceInDate(LocalDateTime.now());
         Assertions.assertEquals(0, count);
     }
 
     @Test
-    void getCountFreePlaceInDate_TwoPlaceOneOrderWithMaster_CountOne() {
+    void getCountFreePlaceInDate_WhenTwoPlaceOneOrderWithMaster_ShouldReturnCountOne() {
         Mockito.doReturn(new ArrayList<>(Arrays.asList(new Place("test1"), new Place("test2"))))
                 .when(dateService).getFreePlaceInDate(any(LocalDateTime.class));
         Mockito.when(masterServiceMock.getListOfMasters(SortTypeMaster.ID))
@@ -92,7 +92,7 @@ public class DateServiceTest {
     }
 
     @Test
-    void getOrdersInTime_NullOrdersInTime_EmptyArrayList() {
+    void getOrdersInTime_WhenNullOrdersInTime_ShouldReturnEmptyArrayList() {
         Mockito.when(orderServiceMock.getListOfOrders(any())).thenReturn(
                 new ArrayList<>(Collections.singleton(
                         new Order("test",
@@ -114,7 +114,7 @@ public class DateServiceTest {
     }
 
     @Test
-    void getOrdersInTime_OneOrdersInTime() {
+    void getOrdersInTime_WhenOrderInTime_ShouldReturnNoEmptyArray() {
         Mockito.when(orderServiceMock.getListOfOrders(any())).thenReturn(
                 new ArrayList<>(Collections.singleton(
                         new Order("test",
@@ -136,7 +136,7 @@ public class DateServiceTest {
     }
 
     @Test
-    void getFreePlaceInDate_NullOrders_OnePlace() {
+    void getFreePlaceInDate_WhenNullOrders_ShouldReturnOnePlace() {
         Mockito.when(placeServiceMock.getListOfPlace()).
                 thenReturn(new ArrayList<>(Collections.singleton(new Place("test"))));
         Mockito.doReturn(new ArrayList<>()).when(dateService).getOrdersInTime(any(), any(), any(), any());
@@ -145,7 +145,7 @@ public class DateServiceTest {
     }
 
     @Test
-    void getFreePlaceInDate_OneOrderWithIdPlace_EmptyArrayList() {
+    void getFreePlaceInDate_WhenOneOrderWithIdPlace_ShouldReturnEmptyArrayList() {
         Mockito.when(placeServiceMock.getListOfPlace()).
                 thenReturn(new ArrayList<>(Collections.singleton(new Place(1, "test"))));
         Mockito.doReturn(new ArrayList<>(Collections.singleton(

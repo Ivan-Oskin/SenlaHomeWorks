@@ -28,7 +28,7 @@ public class UserServiceTest {
     User user = new User("test", "password", UserRole.USER);
 
     @Test
-    void createUser_NoFoundUser() {
+    void createUser_WhenNoFoundUser_ShouldCreateUser() {
         Mockito.when(mapperToEntityMock.mapToUserEntity(userRequest)).thenReturn(user);
         Mockito.when(userRepositoryMock.findByLogin(user.getLogin())).thenReturn(null);
         userService.createUser(userRequest);
@@ -36,7 +36,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUser_FoundUser_throwUserAlreadyExistsException () {
+    void createUser_WhenFoundUser_ShouldThrowUserAlreadyExistsException() {
         Mockito.when(mapperToEntityMock.mapToUserEntity(userRequest)).thenReturn(user);
         Mockito.when(userRepositoryMock.findByLogin(user.getLogin())).thenReturn(user);
         Assertions.assertThrows(UserAlreadyExistsException.class, () -> userService.createUser(userRequest));

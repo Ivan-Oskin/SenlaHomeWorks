@@ -43,28 +43,36 @@ public class PlaceServiceTest {
     }
 
     @Test
-    void addPlace_GoodAddPlace() {
+    void addPlace_WhenValidPlace_ShouldCreatePlace() {
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(placeRequest)).thenReturn(place);
         placeService.addPlace(placeRequest);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).create(place);
     }
 
     @Test
-    void addPlace_BadPlace() {
+    void addPlace_WhenBadPlace_ShouldCreatePlace() {
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(placeRequest)).thenReturn(place);
         placeService.addPlace(placeRequest);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).create(place);
     }
 
     @Test
-    void deletePlace() {
+    void deletePlace_WhenValidId_ShouldDeletePlace() {
         Mockito.when(placeRepositoryMock.delete(id)).thenReturn(true);
         placeService.deletePlace(id);
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).delete(id);
     }
 
     @Test
-    void findPlace_RealPlace() {
+    void deletePlace_WhenNoValidId_ShouldDeletePlace() {
+        int noValidId = -1;
+        Mockito.when(placeRepositoryMock.delete(noValidId)).thenReturn(true);
+        placeService.deletePlace(noValidId);
+        Mockito.verify(placeRepositoryMock, Mockito.times(1)).delete(noValidId);
+    }
+
+    @Test
+    void findPlace_WhenFoundPlace_ShouldReturnPlace() {
         Mockito.when(placeRepositoryMock.find(id)).thenReturn(place);
         Mockito.when(mapperToDtoMock.mapToPlaceDto(place)).thenReturn(new PlaceDto());
         placeService.findPlace(id);
@@ -72,7 +80,7 @@ public class PlaceServiceTest {
     }
 
     @Test
-    void findPlace_NullPlace() {
+    void findPlace_WhenNullPlace_ShouldReturnNull() {
         Mockito.when(placeRepositoryMock.find(id)).thenReturn(null);
         Mockito.when(mapperToDtoMock.mapToPlaceDto(any())).thenReturn(new PlaceDto());
         placeService.findPlace(id);
@@ -80,7 +88,7 @@ public class PlaceServiceTest {
     }
 
     @Test
-    void updatePlace() {
+    void updatePlace_WhenValidPlace_ShouldUpdatePlace() {
         Place placeUpdate = new Place(id, placeRequest.getName());
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(placeUpdate);
         placeService.updatePlace(id, placeRequest);
@@ -88,7 +96,7 @@ public class PlaceServiceTest {
     }
 
     @Test
-    void updatePlace_NoValidPlace() {
+    void updatePlace_WhenNoValidPlace_ShouldUpdatePlace() {
         Place placeUpdate = new Place(id, placeRequest.getName());
         Mockito.when(mapperToEntityMock.mapToPlaceEntity(id, placeRequest)).thenReturn(placeUpdate);
         placeService.updatePlace(id, placeRequest);
@@ -96,10 +104,9 @@ public class PlaceServiceTest {
     }
 
     @Test
-    void getAllPlace() {
+    void getAllPlaceTest() {
         Mockito.when(placeRepositoryMock.findAll(SortTypePlace.ID)).thenReturn(new ArrayList<>());
         placeService.getListOfPlace();
         Mockito.verify(placeRepositoryMock, Mockito.times(1)).findAll(SortTypePlace.ID);
     }
-
 }

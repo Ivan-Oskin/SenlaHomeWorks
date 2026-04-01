@@ -56,21 +56,21 @@ public class MasterServiceTest {
     }
 
     @Test
-    void addMaster_GoodAddMaster() {
+    void addMaster_WhenValidMaster_ShouldCreateMaster() {
         Mockito.when(mapperToEntityMock.mapToMasterEntity(masterRequest)).thenReturn(master);
         masterService.addMaster(masterRequest);
         Mockito.verify(masterRepositoryMock, Mockito.times(1)).create(master);
     }
 
     @Test
-    void addMaster_BadMaster() {
+    void addMaster_WhenBadMaster_ShouldCreateMaster() {
         Mockito.when(mapperToEntityMock.mapToMasterEntity(masterRequest)).thenReturn(master);
         masterService.addMaster(masterRequest);
         Mockito.verify(masterRepositoryMock, Mockito.times(1)).create(master);
     }
 
     @Test
-    void findMaster_RealMaster() {
+    void findMaster_WhenFoundMaster_ShouldReturnMaster() {
         Mockito.when(masterRepositoryMock.find(id)).thenReturn(master);
         Mockito.when(mapperToDtoMock.mapToMasterDto(master)).thenReturn(new MasterDto());
         masterService.findMaster(id);
@@ -78,7 +78,7 @@ public class MasterServiceTest {
     }
 
     @Test
-    void findMaster_NullMaster() {
+    void findMaster_WhenNullMaster_ShouldReturnNull() {
         Mockito.when(masterRepositoryMock.find(id)).thenReturn(null);
         Mockito.when(mapperToDtoMock.mapToMasterDto(any())).thenReturn(new MasterDto());
         masterService.findMaster(id);
@@ -86,7 +86,7 @@ public class MasterServiceTest {
     }
 
     @Test
-    void updateMaster() {
+    void updateMaster_WhenValidMaster_ShouldUpdateMaster() {
         Master masterUpdate = new Master(id, masterRequest.getName());
         Mockito.when(mapperToEntityMock.mapToMasterEntity(id, masterRequest)).thenReturn(masterUpdate);
         masterService.updateMaster(id, masterRequest);
@@ -94,15 +94,16 @@ public class MasterServiceTest {
     }
 
     @Test
-    void updateMaster_NoValidMaster() {
+    void updateMaster_WhenNoValidMaster_ShouldUpdateMaster() {
         Master masterUpdate = new Master(id, masterRequest.getName());
-        Mockito.when(mapperToEntityMock.mapToMasterEntity(id, masterRequest)).thenReturn(masterUpdate);;
+        Mockito.when(mapperToEntityMock.mapToMasterEntity(id, masterRequest)).thenReturn(masterUpdate);
+        ;
         masterService.updateMaster(id, masterRequest);
         Mockito.verify(masterRepositoryMock, Mockito.times(1)).update(masterUpdate);
     }
 
     @Test
-    void deleteMaster() {
+    void deleteMaster_WhenFoundMaster_ShouldDelete() {
         Mockito.when(masterRepositoryMock.find(id)).thenReturn(master);
         Mockito.when(masterRepositoryMock.delete(id)).thenReturn(true);
         masterService.deleteMaster(id);
@@ -110,21 +111,21 @@ public class MasterServiceTest {
     }
 
     @Test
-    void deleteMaster_masterNoFound() {
+    void deleteMaster_WhenMasterNoFound_ShouldNotDelete() {
         Mockito.when(masterRepositoryMock.find(id)).thenReturn(null);
         masterService.deleteMaster(id);
         Mockito.verify(masterRepositoryMock, Mockito.times(0)).delete(id);
     }
 
     @Test
-    void getAllMaster() {
+    void getAllMasterTest() {
         Mockito.when(masterRepositoryMock.findAll(SortTypeMaster.ID)).thenReturn(new ArrayList<>());
         masterService.getListOfMasters(SortTypeMaster.ID);
         Mockito.verify(masterRepositoryMock, Mockito.times(1)).findAll(SortTypeMaster.ID);
     }
 
     @Test
-    void getMasterByOrder_RealOrder() {
+    void getMasterByOrder_ValidOrder_ShouldReturnArrayWithMaster() {
         Order order = new Order();
         String name = "order_test_name";
         ArrayList<Master> verifyMasters = new ArrayList<>(Collections.singleton(master));
@@ -137,7 +138,7 @@ public class MasterServiceTest {
     }
 
     @Test
-    void getMasterByOrder_NullOrder() {
+    void getMasterByOrder_WhenNullOrder_ShouldReturnEmptyArray() {
         String name = "order_test_name";
         Mockito.when(orderRepositoryMock.find(name)).thenReturn(null);
         ArrayList<Master> nullMaster = masterService.getMastersByOrder(name);

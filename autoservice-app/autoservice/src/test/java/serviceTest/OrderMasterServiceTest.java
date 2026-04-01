@@ -50,7 +50,7 @@ public class OrderMasterServiceTest {
 
     @BeforeEach
     void setUp() {
-        master = new Master(1,"test_Master");
+        master = new Master(1, "test_Master");
         order = new Order(
                 1,
                 "test",
@@ -65,7 +65,7 @@ public class OrderMasterServiceTest {
     }
 
     @Test
-    void addOrderMaster () {
+    void addOrderMaster_WhenValidOrderAndMaster_ShouldCreate() {
         Mockito.when(masterRepositoryMock.find(master.getId())).thenReturn(master);
         Mockito.when(orderRepositoryMock.find(order.getId())).thenReturn(order);
         orderMasterService.addOrderMaster(master.getId(), order.getId());
@@ -73,7 +73,7 @@ public class OrderMasterServiceTest {
     }
 
     @Test
-    void addOrderMaster_null_throwException() {
+    void addOrderMaster_WhenNullOrderAndMaster_ShouldThrowNullException() {
         Mockito.when(masterRepositoryMock.find(master.getId())).thenReturn(null);
         Mockito.when(orderRepositoryMock.find(order.getId())).thenReturn(null);
         Assertions.assertThrows(NullPointerException.class,
@@ -82,32 +82,44 @@ public class OrderMasterServiceTest {
     }
 
     @Test
-    void getMasterFromOrderMaster_getMaster() {
+    void getMasterFromOrderMaster_WhenValidOrderMaster_ShouldReturnArrayWithMaster() {
         ArrayList<Master> verifyMasters = new ArrayList<>(Collections.singleton(master));
         ArrayList<Master> masters = orderMasterService.getMasterFromOrderMaster(new ArrayList<>(Collections.singleton(orderMaster)));
         Assertions.assertEquals(verifyMasters, masters);
     }
 
     @Test
-    void getMasterFromOrderMaster_nullOrderMaster_EmptyMaster() {
+    void getMasterFromOrderMaster_WhenNullOrderMaster_ShouldReturnEmptyArray() {
         ArrayList<Master> masters = orderMasterService.getMasterFromOrderMaster(new ArrayList<>());
         Assertions.assertTrue(masters.isEmpty());
     }
 
     @Test
-    void deleteByMaster() {
+    void deleteByMaster_WhenMasterId_ShouldDelete() {
         orderMasterService.deleteByMaster(master.getId());
         Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).deleteByMaster(master.getId());
     }
 
     @Test
-    void deleteByOrder() {
+    void deleteByMaster_WhenOrderId_ShouldDelete() {
+        orderMasterService.deleteByMaster(order.getId());
+        Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).deleteByMaster(order.getId());
+    }
+
+    @Test
+    void deleteByOrder_WhenOrderId_ShouldDelete() {
         orderMasterService.deleteByOrder(order.getId());
         Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).deleteByOrder(order.getId());
     }
 
     @Test
-    void findOrderMaster() {
+    void deleteByOrder_WhenMasterId_ShouldDelete() {
+        orderMasterService.deleteByOrder(master.getId());
+        Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).deleteByOrder(master.getId());
+    }
+
+    @Test
+    void findOrderMaster_WhenFoundOrderMaster_ShouldReturnOrderMaster() {
         Mockito.when(orderMasterRepositoryMock.find(id)).thenReturn(orderMaster);
         Mockito.when(mapperToDtoMock.mapToOrderMasterDto(orderMaster)).thenReturn(new OrderMasterDto());
         orderMasterService.findOrderMaster(id);
@@ -115,7 +127,7 @@ public class OrderMasterServiceTest {
     }
 
     @Test
-    void findOrderMaster_NoFound() {
+    void findOrderMaster_WhenNoFoundOrderMaster_ShouldReturnNull() {
         Mockito.when(orderMasterRepositoryMock.find(id)).thenReturn(null);
         Mockito.when(mapperToDtoMock.mapToOrderMasterDto(null)).thenReturn(new OrderMasterDto());
         orderMasterService.findOrderMaster(id);
@@ -123,14 +135,14 @@ public class OrderMasterServiceTest {
     }
 
     @Test
-    void updateOrderMaster() {
+    void updateOrderMaster_WhenValidOrderMaster_ShouldUpdate() {
         Mockito.when(mapperToEntityMock.mapToOrderMasterEntity(any(Integer.class), any(OrderDto.class), any(MasterDto.class))).thenReturn(orderMaster);
         orderMasterService.updateOrderMaster(id, new OrderDto(), new MasterDto());
         Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).update(orderMaster);
     }
 
     @Test
-    void updateOrderMaster_Null() {
+    void updateOrderMaster_WhenNullOrderMaster_ShouldUpdateOrderMaster() {
         OrderMaster nullOrderMaster = new OrderMaster();
         Mockito.when(mapperToEntityMock.mapToOrderMasterEntity(any(Integer.class), any(OrderDto.class), any(MasterDto.class)))
                 .thenReturn(nullOrderMaster);
@@ -139,29 +151,26 @@ public class OrderMasterServiceTest {
     }
 
     @Test
-    void getOrderMasterByMaster_masterId() {
+    void getOrderMasterByMaster_WhenMasterId_ShouldFound() {
         orderMasterService.getOrderMasterDtoByMaster(master.getId());
         Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).getOrdersByMasterInDB(master.getId());
     }
 
     @Test
-    void getOrderMasterByMaster_orderId() {
+    void getOrderMasterByMaster_WhenOrderId_ShouldFound() {
         orderMasterService.getOrderMasterDtoByMaster(order.getId());
         Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).getOrdersByMasterInDB(order.getId());
     }
 
     @Test
-    void getOrderMasterByOrder_masterId() {
+    void getOrderMasterByOrder_WhenMasterId_ShouldFound() {
         orderMasterService.getOrderMasterDtoByOrder(master.getId());
         Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).getMastersByOrderInDB(master.getId());
     }
 
     @Test
-    void getOrderMasterByOrder_orderId() {
+    void getOrderMasterByOrder_orderId_ShouldFound() {
         orderMasterService.getOrderMasterDtoByOrder(order.getId());
         Mockito.verify(orderMasterRepositoryMock, Mockito.times(1)).getMastersByOrderInDB(order.getId());
     }
-
-
-
 }

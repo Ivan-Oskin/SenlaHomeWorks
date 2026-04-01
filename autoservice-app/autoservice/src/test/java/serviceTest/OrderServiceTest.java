@@ -71,21 +71,21 @@ public class OrderServiceTest {
     }
 
     @Test
-    void addOrder_GoodAddOrder() {
+    void addOrder_WhenFoundPlace_ShouldCreateOrder() {
         Mockito.when(mapperToEntityMock.mapToOrderEntity(any(OrderRequest.class), any(Place.class))).thenReturn(order);
         orderService.addOrder(orderRequest, placeDto);
         Mockito.verify(orderRepositoryMock, Mockito.times(1)).create(order);
     }
 
     @Test
-    void addOrder_NullPlace() {
+    void addOrder_WhenNullPlace_ShouldCreateOrder() {
         Mockito.when(mapperToEntityMock.mapToOrderEntity(any(OrderRequest.class), any(Place.class))).thenReturn(order);
         orderService.addOrder(orderRequest, new PlaceDto());
         Mockito.verify(orderRepositoryMock, Mockito.times(1)).create(order);
     }
 
     @Test
-    void findOrder_RealOrder() {
+    void findOrder_WhenFoundOrder_ShouldReturnOrder() {
         Mockito.when(orderRepositoryMock.find(id)).thenReturn(order);
         Mockito.when(mapperToDtoMock.mapToOrderDto(order)).thenReturn(new OrderDto());
         orderService.findOrder(id);
@@ -93,7 +93,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void findOrder_NullOrder() {
+    void findOrder_WhenNullOrder_ShouldReturnNull() {
         Mockito.when(orderRepositoryMock.find(id)).thenReturn(null);
         Mockito.when(mapperToDtoMock.mapToOrderDto(any())).thenReturn(new OrderDto());
         orderService.findOrder(id);
@@ -101,14 +101,14 @@ public class OrderServiceTest {
     }
 
     @Test
-    void updateOrder_NullOrderDto() {
+    void updateOrder_WhenNullOrderDto_ShouldUpdate() {
         Mockito.when(orderService.findOrder(id)).thenReturn(new OrderDto());
         orderService.updateOrder(id, orderRequest, placeDto);
         Mockito.verify(orderRepositoryMock, Mockito.times(1)).update(any(Order.class));
     }
 
     @Test
-    void updateOrder() {
+    void updateOrder_WhenValidOrderDto_ShouldUpdate() {
         OrderDto orderDto = new OrderDto();
         orderDto.setId(id);
         orderDto.setCost(2000);
@@ -123,7 +123,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    void deleteOrder() {
+    void deleteOrder_WhenFoundOrder_ShouldDeleteOrder() {
         Mockito.when(orderRepositoryMock.find(id)).thenReturn(order);
         Mockito.when(orderRepositoryMock.delete(id)).thenReturn(true);
         orderService.deleteOrder(id);
@@ -131,48 +131,48 @@ public class OrderServiceTest {
     }
 
     @Test
-    void deleteOrder_nullOrder() {
+    void deleteOrder_WhenNullOrder_ShouldNoDeleteOrder() {
         Mockito.when(orderRepositoryMock.find(id)).thenReturn(null);
         orderService.deleteOrder(id);
         Mockito.verify(orderRepositoryMock, Mockito.times(0)).delete(id);
     }
 
     @Test
-    void closeOrder() {
+    void closeOrderTest() {
         orderService.closeOrder(id);
         Mockito.verify(orderRepositoryMock, Mockito.times(1)).changeStatusInDb(id, StatusOrder.CLOSE);
     }
 
     @Test
-    void cancelOrder() {
+    void cancelOrderTest() {
         orderService.cancelOrder(id);
         Mockito.verify(orderRepositoryMock, Mockito.times(1)).changeStatusInDb(id, StatusOrder.CANCEL);
     }
 
     @Test
-    void activateOrder() {
+    void activateOrderTest() {
         orderService.activateOrder(id);
         Mockito.verify(orderRepositoryMock, Mockito.times(1)).changeStatusInDb(id, StatusOrder.ACTIVE);
     }
 
     @Test
-    void offsetOrder() {
+    void offsetOrder_WhenFoundOrder_ShouldOffset() {
         Mockito.when(orderRepositoryMock.find(id)).thenReturn(order);
-        orderService.offset(id, new OffsetRequest(1,1));
+        orderService.offset(id, new OffsetRequest(1, 1));
         Mockito.verify(orderRepositoryMock, Mockito.times(1))
                 .offsetInDb(any(Integer.class), any(LocalDateTime.class), any(LocalDateTime.class));
     }
 
     @Test
-    void offsetOrder_nullOrder() {
+    void offsetOrder_WhenNullOrder_ShouldNotOffset() {
         Mockito.when(orderRepositoryMock.find(id)).thenReturn(null);
-        orderService.offset(id, new OffsetRequest(1,1));
+        orderService.offset(id, new OffsetRequest(1, 1));
         Mockito.verify(orderRepositoryMock, Mockito.times(0))
                 .offsetInDb(any(Integer.class), any(LocalDateTime.class), any(LocalDateTime.class));
     }
 
     @Test
-    void getAllOrders() {
+    void getAllOrdersTest() {
         Mockito.when(orderRepositoryMock.findAll(SortTypeOrder.ID)).thenReturn(new ArrayList<>());
         orderService.getListOfOrders(SortTypeOrder.ID);
         Mockito.verify(orderRepositoryMock, Mockito.times(1)).findAll(SortTypeOrder.ID);
