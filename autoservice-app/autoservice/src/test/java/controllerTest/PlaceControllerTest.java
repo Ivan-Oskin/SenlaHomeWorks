@@ -56,7 +56,6 @@ public class PlaceControllerTest {
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
         placeId = 1;
-
     }
 
     @Test
