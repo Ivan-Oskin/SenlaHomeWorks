@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,9 +45,7 @@ public class PlaceControllerTest {
     private DateService dateServiceMock;
     private ObjectMapper objectMapper;
     private MockMvc mockMvc;
-    private ArgumentCaptor<PlaceRequest> captor;
     private int placeId;
-    private PlaceDto placeDto;
 
     @BeforeEach
     void setUp() {
@@ -58,11 +55,8 @@ public class PlaceControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(placeController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
-        captor = ArgumentCaptor.forClass(PlaceRequest.class);
         placeId = 1;
-        placeDto = new PlaceDto();
-        placeDto.setName("test");
-        placeDto.setId(1);
+
     }
 
     @Test
@@ -90,6 +84,9 @@ public class PlaceControllerTest {
     @Test
     void getFreePlace_WhenValidDateDto_ShouldReturnArrayPlaceDto() throws Exception {
         DateDto dateDto = new DateDto();
+        PlaceDto placeDto = new PlaceDto();
+        placeDto.setId(1);
+        placeDto.setName("test");
         dateDto.setDate(LocalDateTime.of(2026, 1, 1, 12, 0));
         Mockito.when(dateServiceMock.getFreePlaceDto(dateDto.getDate()))
                 .thenReturn(new ArrayList<>(Collections.singleton(placeDto)));
@@ -99,8 +96,9 @@ public class PlaceControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String jsonResponce = result.getResponse().getContentAsString();
-        ArrayList<PlaceDto> arrayPlaceDto = objectMapper.readValue(jsonResponce,
+
+        String jsonResponse = result.getResponse().getContentAsString();
+        ArrayList<PlaceDto> arrayPlaceDto = objectMapper.readValue(jsonResponse,
                 new TypeReference<ArrayList<PlaceDto>>() {
                 });
         Mockito.verify(dateServiceMock, Mockito.times(1)).getFreePlaceDto(dateDto.getDate());
@@ -132,8 +130,8 @@ public class PlaceControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String jsonResponce = result.getResponse().getContentAsString();
-        Integer count = objectMapper.readValue(jsonResponce, new TypeReference<Integer>() {
+        String jsonResponse = result.getResponse().getContentAsString();
+        Integer count = objectMapper.readValue(jsonResponse, new TypeReference<Integer>() {
         });
         Mockito.verify(dateServiceMock, Mockito.times(1)).getCountFreePlaceInDate(dateDto.getDate());
         Assertions.assertEquals(1, count);
