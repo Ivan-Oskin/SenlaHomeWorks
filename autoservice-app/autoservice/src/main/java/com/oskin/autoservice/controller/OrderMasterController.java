@@ -24,10 +24,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/autoservice/order_master")
 public class OrderMasterController {
-    public final OrderMasterService orderMasterService;
-    public final OrderService orderService;
-    public final MasterService masterService;
-    public final DateService dateService;
+    private final OrderMasterService orderMasterService;
+    private final OrderService orderService;
+    private final MasterService masterService;
+    private final DateService dateService;
 
     @Autowired
     public OrderMasterController(OrderMasterService orderMasterService, OrderService orderService, MasterService masterService, DateService dateService) {
