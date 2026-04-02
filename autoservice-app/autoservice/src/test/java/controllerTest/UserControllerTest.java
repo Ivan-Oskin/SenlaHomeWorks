@@ -61,7 +61,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void save_createUser() throws Exception {
+    void saveUser_WhenValidUser_ShouldSaveUserWithHashedPassword() throws Exception {
         UserRequest userRequest = new UserRequest("test", "password");
         Mockito.when(passwordEncoderMock.encode(userRequest.getPassword())).thenReturn("encodedPassword");
         mockMvc.perform(post("/autoservice/reg")
@@ -75,7 +75,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void save_InvalidJson_ReturnBadRequest() throws Exception {
+    void saveUser_WhenInvalidJson_ShouldReturnBadRequest() throws Exception {
         String invalidJson = "{\"password\":\"password\"}";
         mockMvc.perform(post("/autoservice/reg")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +85,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void auth_GetValidToken() throws Exception {
+    void auth_WhenGetValidToken_ShouldGenerateToken() throws Exception {
         UserRequest userRequest = new UserRequest("test", "password");
         UserDetails userDetails = User.builder()
                 .username(userRequest.getLogin())
@@ -103,7 +103,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void auth_NoFoundUser_NoGeneratedToken() throws Exception {
+    void auth_WhenNoFoundUser_ShouldNoGeneratedToken() throws Exception {
         UserRequest userRequest = new UserRequest("test", "password");
         UserDetails userDetails = User.builder()
                 .username(userRequest.getLogin())
