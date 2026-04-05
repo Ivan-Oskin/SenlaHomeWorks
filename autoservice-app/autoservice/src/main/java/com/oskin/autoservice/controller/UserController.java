@@ -2,6 +2,7 @@ package com.oskin.autoservice.controller;
 
 import com.oskin.autoservice.dto.JwtDto;
 import com.oskin.autoservice.dto.request.UserRequest;
+import com.oskin.autoservice.exception.NoValidUserException;
 import com.oskin.autoservice.security.UserDetailService;
 import com.oskin.autoservice.service.UserService;
 import com.oskin.autoservice.utils.JwtUtils;
@@ -36,6 +37,9 @@ public class UserController {
 
     @PostMapping("/reg")
     public void save(@RequestBody UserRequest userRequest) {
+        if(userRequest.getLogin() == null || userRequest.getPassword() == null) {
+            throw new NoValidUserException("login or password is empty");
+        }
         userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         userService.createUser(userRequest);
     }

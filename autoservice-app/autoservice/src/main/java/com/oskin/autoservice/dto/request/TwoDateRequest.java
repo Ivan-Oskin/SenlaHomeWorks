@@ -10,7 +10,7 @@ public class TwoDateRequest {
     @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     private LocalDateTime end;
 
-    TwoDateRequest() {
+    public TwoDateRequest() {
 
     }
 

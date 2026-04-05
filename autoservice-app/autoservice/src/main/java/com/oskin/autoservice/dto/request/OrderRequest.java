@@ -20,7 +20,7 @@ public class OrderRequest {
     OrderRequest() {
 
     }
-    OrderRequest(String name, int cost, LocalDateTime timeStart, LocalDateTime timeComplete, int placeId) {
+    public OrderRequest(String name, int cost, LocalDateTime timeStart, LocalDateTime timeComplete, int placeId) {
         this.name = name;
         this.cost = cost;
         this.timeStart = timeStart;

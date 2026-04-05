@@ -82,7 +82,7 @@ public class OrderController {
     }
 
     @GetMapping("/in_time/{status}/{sortType}")
-    public List<OrderDto> getOrderInTimeByCreate(@PathVariable("status") String status, @PathVariable("sortType") String sortType, @RequestBody TwoDateRequest date) {
+    public List<OrderDto> getOrderInTime(@PathVariable("status") String status, @PathVariable("sortType") String sortType, @RequestBody TwoDateRequest date) {
         StatusOrder statusOrder = StatusOrder.ACTIVE;
         SortTypeOrder sortTypeOrder = SortTypeOrder.CREATE;
         switch (status) {
@@ -108,7 +108,7 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/orders/offset/{id}")
+    @PostMapping("/offset/{id}")
     public void offset(@PathVariable("id") int id, @RequestBody OffsetRequest offsetRequest) {
         orderService.offset(id, offsetRequest);
     }

@@ -55,7 +55,7 @@ public class OrderService {
     public void deleteOrder(int id) {
         Order order = orderRepository.find(id);
         if (order != null) {
-            orderMasterRepository.deleteByOrder(id);
+            orderMasterService.deleteByOrder(id);
             orderRepository.delete(id);
         }
     }

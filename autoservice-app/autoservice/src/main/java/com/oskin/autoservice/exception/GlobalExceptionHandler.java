@@ -21,6 +21,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(responseBody, buildHeaders(), status);
     }
 
+    @ExceptionHandler(NoValidUserException.class)
+    public ResponseEntity<ExceptionResponse> handlerNoValidUserException(NoValidUserException noValidUserException) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_CONTENT;
+        ExceptionResponse responseBody = new ExceptionResponse(status.value(), "user with no valid data");
+        return new ResponseEntity<>(responseBody, buildHeaders(), status);
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ExceptionResponse> handlerBadRequestException(MethodArgumentTypeMismatchException exception) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
